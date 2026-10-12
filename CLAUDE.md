@@ -355,6 +355,14 @@ Kuratierte Produkte der Kategorie, darunter die Top-Projekte der Kategorie nach 
 Version, Basis-Version, Datenstand, Haftungshinweis, Link "Alternative vorschlagen" (öffnet ein neues GitHub Issue im Projekt-Repo, im Browser).
 Abschnitt "Moatly unterstützen" mit Link zu **GitHub Sponsors** (`https://github.com/sponsors/tmluc-cool`), dazu ein Kaffee-Symbol unten rechts in der Statusleiste (Tooltip "Spendier mir einen Kaffee"). Freiwillig und zurückhaltend: keine Pop-ups, keine Erinnerungen, die App funktioniert ohne genau gleich. `.github/FUNDING.yml` zeigt den Sponsor-Knopf im Repo.
 
+### App-Update
+- Beim Start und alle 6 Stunden fragt die App anonym bei GitHub nach dem neusten Release (`src/main/app-update.ts`).
+- Gibt es eine neuere Version, erscheint **oben rechts** ein grüner Knopf **"Update"**. Ein Klick lädt `Moatly-Setup-<version>.exe`, prüft Grösse und **SHA-256** (von GitHub beim Hochladen berechnet, Feld `digest`), installiert still (`/S --updated --force-run`) und startet Moatly neu. Fortschritt im Knopf.
+- Portable .exe (kann sich nicht selbst ersetzen): Der Klick öffnet die Download-Seite.
+
+### Layout
+- Kopf- und Statusleiste gehen über die ganze Fensterbreite. Inhalt in `.page` (max. 1680 px), auf grossen Bildschirmen Ergebnisse in zwei Spalten.
+
 ## Build und Deploy
 
 - `npm run dev`: App im Entwicklungsmodus

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { AppUpdateButton } from './components/AppUpdateButton';
 import { SearchBox } from './components/SearchBox';
 import { ConsentDialog } from './components/ConsentDialog';
 import { SignInDialog } from './components/SignInDialog';
@@ -49,7 +50,7 @@ function Page({ route }: { route: Route }) {
 
 export function App() {
   const route = useRoute();
-  const { ready, lang, account, setSignInOpen } = useApp();
+  const { ready, lang, account, setSignInOpen, appUpdate } = useApp();
 
   // Ctrl+K (Cmd+K on Mac) jumps into the search field.
   useEffect(() => {
@@ -78,13 +79,14 @@ export function App() {
     // Keyed by language: switching it renders everything again with the new texts.
     <div key={lang} className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-slate-50/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
+        <div className="flex items-center gap-4 px-6 py-3">
           <a href={href.home()} className="flex shrink-0 items-center gap-2 text-lg font-extrabold tracking-tight">
             <Logo size={32} />
             Moatly
           </a>
           <div className="flex-1">{showHeaderSearch && <div className="max-w-sm">{ready && <SearchBox size="small" />}</div>}</div>
-          <nav className="flex shrink-0 gap-1">
+          <nav className="flex shrink-0 items-center gap-1">
+            {appUpdate && <AppUpdateButton update={appUpdate} />}
             {account?.available &&
               (account.login ? (
                 <a href={href.settings()} className={navLink(false)} title={t('nav.signedInTitle')}>

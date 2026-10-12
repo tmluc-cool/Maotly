@@ -1,12 +1,13 @@
 import { app, BrowserWindow, ipcMain, nativeTheme, net, screen, session, shell } from 'electron';
+import { spawn } from 'node:child_process';
 import { join } from 'node:path';
 import icon from '../../build/icon.png?asset';
 import alternatives from '../../data/alternatives.json';
 import { detectLang, isLang, setLang, t } from '../shared/i18n';
 import { IPC } from '../shared/ipc';
-import type { AlternativesData, AppUpdateInfo, SearchParams, SettingsState, ThemeSetting } from '../shared/types';
+import type { AlternativesData, SearchParams, SettingsState, ThemeSetting } from '../shared/types';
 import { GitHubClient } from '../shared/crawler/client';
-import { checkAppUpdate } from './app-update';
+import { AppUpdater } from './app-update';
 import { config, releasesApiUrl, signInConfigured, sponsorUrl } from './config';
 import { AppDatabase } from './database';
 import { liveSearch } from './live-search';
@@ -39,7 +40,7 @@ let database: AppDatabase;
 let updater: Updater;
 let network: Network;
 let account: GitHubAccount;
-let appUpdate: AppUpdateInfo | null = null;
+let appUpdater: AppUpdater;
 
 const PROD_CSP = [
   "default-src 'none'",
@@ -277,7 +278,13 @@ function registerIpc() {
     sponsorUrl: sponsorUrl(),
     isDev,
   }));
-  ipcMain.handle(IPC.appUpdate, () => appUpdate);
+  ipcMain.handle(IPC.appUpdate, () => appUpdater.state());
+  ipcMain.handle(IPC.appUpdateInstall, async () => {
+    const update = appUpdater.state();
+    if (!update) return;
+    if (update.canInstall) await appUpdater.install();
+    else if (isAllowedExternal(update.url)) await shell.openExternal(update.url);
+  });
   ipcMain.handle(IPC.openExternal, async (_e, url: unknown) => {
     if (isAllowedExternal(url)) await shell.openExternal(url);
   });
@@ -326,6 +333,26 @@ app.whenReady().then(() => {
   updater = new Updater(database, { getToken: githubToken, autoUpdate: () => settings.autoUpdate });
   updater.on('status', (s) => send(IPC.updateEvent, s));
   updater.on('changed', () => send(IPC.dataChanged));
+  appUpdater = new AppUpdater({
+    fetch: (i, init) => net.fetch(i as string, init),
+    releasesApiUrl: releasesApiUrl(),
+    currentVersion: app.getVersion(),
+    // The portable .exe (PORTABLE_EXECUTABLE_FILE is set by its launcher) can't replace itself.
+    canInstall: process.platform === 'win32' && app.isPackaged && !process.env.PORTABLE_EXECUTABLE_FILE,
+    downloadDir: join(app.getPath('temp'), 'Moatly-update'),
+    launchInstaller: (file) =>
+      new Promise((resolve, reject) => {
+        // Silent update of the existing installation; --force-run starts Moatly again afterwards.
+        const child = spawn(file, ['/S', '--updated', '--force-run'], { detached: true, stdio: 'ignore' });
+        child.once('error', reject);
+        child.once('spawn', () => {
+          child.unref();
+          resolve();
+          app.quit();
+        });
+      }),
+  });
+  appUpdater.on('state', (s) => send(IPC.appUpdateEvent, s));
   if (opened.baseToMerge) updater.mergeBase(opened.baseToMerge.file, opened.baseToMerge.version);
 
   if (!isDev || !process.env.ELECTRON_RENDERER_URL) {
@@ -339,14 +366,10 @@ app.whenReady().then(() => {
   createWindow();
   updater.start();
 
-  // New app version? Once at start and then once a day (anonymous, only GitHub).
+  // New app version? Once at start and then every 6 hours (anonymous, only GitHub).
   if (!isDev) {
-    const checkApp = async () => {
-      appUpdate = await checkAppUpdate((i, init) => net.fetch(i as string, init), releasesApiUrl(), app.getVersion());
-      send(IPC.appUpdateEvent, appUpdate);
-    };
-    setTimeout(() => void checkApp(), 10_000);
-    setInterval(() => void checkApp(), 24 * 60 * 60 * 1000);
+    setTimeout(() => void appUpdater.check(), 10_000);
+    setInterval(() => void appUpdater.check(), 6 * 60 * 60 * 1000);
   }
 
   // Network: heartbeat once a day, submissions at most once an hour (only for members).

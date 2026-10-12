@@ -30,7 +30,7 @@ export function ProductPage({ id }: { id: string }) {
   const category = categoryById.get(product.category);
 
   return (
-    <div className="mx-auto max-w-6xl px-6 pb-20 pt-8">
+    <div className="page pb-20 pt-8">
       <nav className="text-sm text-slate-500 dark:text-slate-400">
         <a href={href.home()} className="hover:underline">
           {t('common.home')}

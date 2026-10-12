@@ -58,6 +58,7 @@ export const IPC = {
   appInfo: 'app:info',
   appUpdate: 'app:update',
   appUpdateEvent: 'app:updateEvent',
+  appUpdateInstall: 'app:updateInstall',
   openExternal: 'shell:openExternal',
   devResetCheck: 'dev:resetCheck',
   devShowConsent: 'dev:showConsent',
@@ -114,6 +115,8 @@ export interface MoatlyApi {
   /** Newer app version on GitHub, if any (checked once a day). */
   appUpdate(): Promise<AppUpdateInfo | null>;
   onAppUpdate(listener: (u: AppUpdateInfo | null) => void): () => void;
+  /** Installs the new version (the app restarts) or, for the portable .exe, opens the download page. */
+  installAppUpdate(): Promise<void>;
   openExternal(url: string): Promise<void>;
   devResetCheck(): Promise<void>;
   devShowConsent(): Promise<void>;

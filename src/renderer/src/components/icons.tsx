@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react';
+import type { ReactElement, SVGProps } from 'react';
 import type { Platform } from '@shared/types';
 
 type P = SVGProps<SVGSVGElement>;
@@ -30,6 +30,11 @@ export const UserIcon = (p: P) => (
   <svg {...base} {...p}>
     <circle cx="12" cy="8" r="4" />
     <path d="M4 21a8 8 0 0 1 16 0" />
+  </svg>
+);
+export const UpdateIcon = (p: P) => (
+  <svg {...base} {...p}>
+    <path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 3v5h5M4 13a8 8 0 0 0 14.3 4.9L20 16M20 21v-5h-5" />
   </svg>
 );
 export const SearchIcon = (p: P) => (
@@ -131,3 +136,31 @@ export function PlatformGlyph({ platform, ...p }: P & { platform: Platform }) {
       );
   }
 }
+
+/** Simple line icon per category (ids from data/alternatives.json); unknown ids get a grid. */
+const CATEGORY_PATHS: Record<string, ReactElement> = {
+  'buero-pdf': <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h6" />,
+  'kreativ-design': (
+    <>
+      <path d="M12 3a9 9 0 1 0 0 18 2 2 0 0 0 1.5-3.3 2 2 0 0 1 1.5-3.3h2.4A3.6 3.6 0 0 0 21 10.8C21 6.5 17 3 12 3z" />
+      <path d="M7.5 11.5h.01M10 7.5h.01M15 7.5h.01" />
+    </>
+  ),
+  'notizen-organisation': <path d="M7 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1M9 3h6v3H9zM8.5 13.5l2.5 2.5 4.5-5" />,
+  'speicher-medien': <path d="M7 19a5 5 0 0 1-.7-9.95A6 6 0 0 1 17.8 10.5 4.25 4.25 0 0 1 17.25 19z" />,
+  'sicherheit-netzwerk': <path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM9 12l2 2 4-4" />,
+  kommunikation: <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1 1 21 12zM8.5 12h.01M12 12h.01M15.5 12h.01" />,
+  'ki-entwicklung': <path d="M11 3l1.8 4.7 4.7 1.8-4.7 1.8L11 16l-1.8-4.7L4.5 9.5l4.7-1.8zM18.5 14l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" />,
+  'business-finanzen': <path d="M3 3v18h18M7 15l4-4 3 3 5-6" />,
+  'lernen-fitness': <path d="M2 9l10-5 10 5-10 5zM6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5M22 9v6" />,
+  'gaming-pc-tools': (
+    <path d="M7 7h10a5 5 0 0 1 5 5v1.5a3.5 3.5 0 0 1-6.3 2.1L14.5 14h-5l-1.2 1.6A3.5 3.5 0 0 1 2 13.5V12a5 5 0 0 1 5-5zM7.5 9.5v4M5.5 11.5h4M15.5 11h.01M18 12.5h.01" />
+  ),
+  'cad-3d-gis': <path d="M12 2.5l8.5 4.75v9.5L12 21.5l-8.5-4.75v-9.5zM12 21.5V12M20.5 7.25 12 12 3.5 7.25" />,
+};
+
+export const CategoryIcon = ({ id, ...p }: P & { id: string }) => (
+  <svg {...base} {...p}>
+    {CATEGORY_PATHS[id] ?? <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />}
+  </svg>
+);

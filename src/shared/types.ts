@@ -90,7 +90,14 @@ export type ThemeSetting = 'system' | 'light' | 'dark';
 /** A newer version of the app itself is available on GitHub. */
 export interface AppUpdateInfo {
   version: string;
+  /** Release page on GitHub. */
   url: string;
+  /** true: "Update" downloads, checks and installs it (installed app). false: opens the download page (portable .exe). */
+  canInstall: boolean;
+  phase: 'available' | 'downloading' | 'installing' | 'error';
+  /** Percent while downloading. */
+  progress?: number;
+  error?: string;
 }
 
 export interface AppInfo {
