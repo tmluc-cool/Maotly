@@ -6,7 +6,8 @@ Die App funktioniert auch ohne diese Schritte (Suche, Filter, Live-Suche). Was f
 | Schritt | Ohne diesen Schritt … | Aufwand |
 | --- | --- | --- |
 | 1. Daten-Repo `moatly-data` | … gibt es keine wöchentlichen Updates der Datenbank | 2 Minuten |
-| 2. Netzwerk einschalten (Cloudflare + OAuth App + ein Knopf) | … kann niemand beim Netzwerk mitmachen und bewerten | 15 Minuten, alles im Browser |
+| 2. «Mit GitHub anmelden» einschalten (OAuth App + ein Knopf) | … kann sich niemand mit GitHub anmelden | 5 Minuten, im Browser |
+| 3. Netzwerk einschalten (Cloudflare + derselbe Knopf) | … kann niemand beim Netzwerk mitmachen und bewerten | 10 Minuten, im Browser |
 
 ---
 
@@ -23,10 +24,35 @@ Danach einmal von Hand starten: im Repo `moatly-data` → **Actions** → **Week
 **Run workflow** → Häkchen bei «Also build a fresh base database» → **Run workflow**.
 Das erste Mal dauert es etwa 2 Stunden, danach läuft es jeden Montag von selbst.
 
-## 2. Netzwerk einschalten («Mitmachen»)
+## 2. «Mit GitHub anmelden» einschalten
 
-Alles passiert im Browser, du brauchst kein Terminal. Am Schluss drückst du einen Knopf auf GitHub,
-der den Server einrichtet und die App damit verbindet.
+Damit erscheint in der App oben rechts **Anmelden**. Wer sich anmeldet, sucht schneller bei GitHub.
+Dafür braucht es keinen Server.
+
+### A. GitHub-Anmeldung für die App (OAuth App)
+
+1. Öffne **https://github.com/settings/applications/new**
+2. Ausfüllen:
+   - *Application name:* `Moatly`
+   - *Homepage URL:* `https://github.com/tmluc-cool/githuub-appstore`
+   - *Authorization callback URL:* `https://github.com/tmluc-cool/githuub-appstore` (wird für die App nicht gebraucht, das Feld ist aber Pflicht)
+3. **Register application** klicken
+4. Häkchen bei **Enable Device Flow** setzen und speichern
+5. Die **Client ID** kopieren (beginnt meist mit `Ov23…`). Sie ist öffentlich und kein Geheimnis.
+   Ein **Client Secret** brauchst du dafür **nicht** – bitte nie weitergeben.
+
+### B. Knopf drücken
+
+1. Im App-Repo: **Actions** → links **Set up sign-in and server** → rechts **Run workflow**
+2. Die Client ID aus A ins Feld einfügen → **Run workflow**
+3. Nach etwa einer Minute ist der Lauf grün.
+
+Die Action trägt die Client ID selbst in die App ein und startet einen neuen Windows-Build.
+Sobald das neue Release da ist: herunterladen, installieren, oben rechts **Anmelden**.
+
+## 3. Netzwerk einschalten («Mitmachen»)
+
+Dafür braucht es zusätzlich einen kleinen Server auf Cloudflare (gratis). Auch das geht ganz im Browser.
 
 ### A. Cloudflare-Konto (gratis)
 
@@ -52,35 +78,20 @@ Im App-Repo auf GitHub: **Settings** → **Secrets and variables** → **Actions
 
 Diese Werte bleiben geheim. Niemand sieht sie, auch nicht in den Protokollen der Action.
 
-### D. GitHub-Anmeldung für die App (OAuth App)
+### D. Knopf nochmals drücken
 
-1. Öffne **https://github.com/settings/applications/new**
-2. Ausfüllen:
-   - *Application name:* `Moatly`
-   - *Homepage URL:* `https://github.com/tmluc-cool/githuub-appstore`
-   - *Authorization callback URL:* `https://github.com/tmluc-cool/githuub-appstore` (wird für die App nicht gebraucht, das Feld ist aber Pflicht)
-3. **Register application** klicken
-4. Häkchen bei **Enable Device Flow** setzen und speichern
-5. Die **Client ID** kopieren (beginnt meist mit `Ov23…`). Sie ist öffentlich und kein Geheimnis.
-   Ein **Client Secret** brauchst du dafür **nicht** – bitte nie weitergeben.
-
-### E. Knopf drücken
-
-1. Im App-Repo: **Actions** → links **Deploy server** → rechts **Run workflow**
-2. Die Client ID aus D ins Feld einfügen → **Run workflow**
-3. Nach 2–3 Minuten ist der Lauf grün. In der Zusammenfassung steht die Adresse des Servers.
-
-Die Action trägt Server-Adresse und Client ID selbst in die App ein und startet einen neuen Windows-Build.
-Sobald das neue Release da ist: herunterladen, installieren, **Einstellungen → Netzwerk → Mitmachen**.
+**Actions** → **Set up sign-in and server** → **Run workflow** (die Client ID ist schon eingetragen, das Feld darf leer bleiben).
+Nach 2–3 Minuten ist der Lauf grün, in der Zusammenfassung steht die Adresse des Servers. Die Action
+trägt sie in die App ein und startet einen neuen Windows-Build. Danach: **Einstellungen → Netzwerk → Mitmachen**.
 
 Wenn sich später am Server-Code etwas ändert, aktualisiert die Action den Server automatisch.
 
 ### Freiwillig: Admin-Dashboard
 
 Für das Dashboard (`https://moatly.<deine-adresse>.workers.dev/admin`) eine **zweite** OAuth App anlegen
-(wie in D, aber ohne Device Flow) mit *Authorization callback URL* = `https://moatly.<deine-adresse>.workers.dev/admin/callback`.
+(wie in 2A, aber ohne Device Flow) mit *Authorization callback URL* = `https://moatly.<deine-adresse>.workers.dev/admin/callback`.
 Dann im App-Repo zwei weitere Secrets eintragen: `ADMIN_OAUTH_CLIENT_ID` und `ADMIN_OAUTH_CLIENT_SECRET`
-(hier ist das Client Secret nötig, es bleibt als Secret geschützt) und **Deploy server** nochmals starten.
+(hier ist das Client Secret nötig, es bleibt als Secret geschützt) und **Set up sign-in and server** nochmals starten.
 Zugang hat nur dein GitHub-Konto.
 
 ### Später: Netzwerk-Funde und Bewertungen in den Wochenpaketen
@@ -91,7 +102,7 @@ Sobald es das Repo `moatly-data` gibt:
 2. Ihn als Secret `ADMIN_SECRET` eintragen – im App-Repo **und** im Repo `moatly-data`
 3. Im Repo `moatly-data` unter *Settings → Secrets and variables → Actions → Variables* die Variable
    `SERVER_URL` = Adresse des Servers anlegen
-4. **Deploy server** nochmals starten
+4. **Set up sign-in and server** nochmals starten
 
 ---
 

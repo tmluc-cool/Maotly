@@ -7,12 +7,14 @@ import { IPC } from '../shared/ipc';
 import type { AlternativesData, AppUpdateInfo, SearchParams, SettingsState, ThemeSetting } from '../shared/types';
 import { GitHubClient } from '../shared/crawler/client';
 import { checkAppUpdate } from './app-update';
-import { config, releasesApiUrl, sponsorUrl } from './config';
+import { config, releasesApiUrl, signInConfigured, sponsorUrl } from './config';
 import { AppDatabase } from './database';
 import { liveSearch } from './live-search';
+import { GitHubAccount } from './github-account';
 import { adoptLegacyUserData } from './legacy';
 import { Network } from './network';
 import {
+  accountSecrets,
   clearSecret,
   encryptionAvailable,
   getSecret,
@@ -36,6 +38,7 @@ let settings: Settings = { theme: 'system', autoUpdate: true };
 let database: AppDatabase;
 let updater: Updater;
 let network: Network;
+let account: GitHubAccount;
 let appUpdate: AppUpdateInfo | null = null;
 
 const PROD_CSP = [
@@ -67,9 +70,9 @@ export function isAllowedExternal(url: unknown): url is string {
   }
 }
 
-/** GitHub token for searches: network login, else own token, else none. */
+/** GitHub token for searches: "Sign in with GitHub", else an own token from the settings, else none. */
 function githubToken(): string | null {
-  return network.githubToken() ?? getSecret('own-github');
+  return account.token() ?? getSecret('own-github');
 }
 
 function send(channel: string, value?: unknown) {
@@ -249,6 +252,16 @@ function registerIpc() {
     return settingsState();
   });
 
+  ipcMain.handle(IPC.githubGet, () => account.state());
+  ipcMain.handle(IPC.githubSignIn, () => {
+    if (account.available()) account.signIn().catch(() => undefined); // the state shows the result
+  });
+  ipcMain.handle(IPC.githubCancel, () => account.cancel());
+  ipcMain.handle(IPC.githubSignOut, () => {
+    // Members need the sign-in (replies as owner); they leave the network first.
+    if (!network.isMember()) account.signOut();
+  });
+
   ipcMain.handle(IPC.networkGet, () => network.state());
   ipcMain.handle(IPC.networkAsk, () => network.showConsentAgain());
   ipcMain.handle(IPC.networkDecline, () => network.decline());
@@ -292,9 +305,19 @@ app.whenReady().then(() => {
   const opened = AppDatabase.open(app.getPath('userData'), bundledBasePath());
   database = opened.db;
 
+  account = new GitHubAccount({
+    secrets: accountSecrets,
+    store: database,
+    fetch: (input, init) => net.fetch(input as string, init),
+    clientId: () => (signInConfigured() ? config.oauthClientId : null),
+    canStore: encryptionAvailable,
+  });
+  account.on('state', (s) => send(IPC.githubEvent, s));
+
   network = new Network({
     db: database,
     secrets: networkSecrets,
+    account,
     fetch: (input, init) => net.fetch(input as string, init),
     appVersion: app.getVersion(),
   });

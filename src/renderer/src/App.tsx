@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { SearchBox } from './components/SearchBox';
 import { ConsentDialog } from './components/ConsentDialog';
+import { SignInDialog } from './components/SignInDialog';
 import { StatusBar } from './components/StatusBar';
-import { GearIcon, InfoIcon } from './components/icons';
+import { GearIcon, InfoIcon, UserIcon } from './components/icons';
 import { Logo } from './components/Logo';
 import { t } from './lib/i18n';
 import { href, navigate, useRoute, type Route } from './lib/router';
@@ -48,7 +49,7 @@ function Page({ route }: { route: Route }) {
 
 export function App() {
   const route = useRoute();
-  const { ready, lang } = useApp();
+  const { ready, lang, account, setSignInOpen } = useApp();
 
   // Ctrl+K (Cmd+K on Mac) jumps into the search field.
   useEffect(() => {
@@ -84,6 +85,16 @@ export function App() {
           </a>
           <div className="flex-1">{showHeaderSearch && <div className="max-w-sm">{ready && <SearchBox size="small" />}</div>}</div>
           <nav className="flex shrink-0 gap-1">
+            {account?.available &&
+              (account.login ? (
+                <a href={href.settings()} className={navLink(false)} title={t('nav.signedInTitle')}>
+                  <UserIcon /> @{account.login}
+                </a>
+              ) : (
+                <button type="button" className={navLink(false)} onClick={() => setSignInOpen(true)}>
+                  <UserIcon /> {t('nav.signIn')}
+                </button>
+              ))}
             <a href={href.settings()} className={navLink(route.name === 'settings')}>
               <GearIcon /> {t('nav.settings')}
             </a>
@@ -96,6 +107,7 @@ export function App() {
       <main className="flex-1 pb-8">{ready ? <Page route={route} /> : null}</main>
       {ready && <StatusBar />}
       {ready && <ConsentDialog />}
+      {ready && <SignInDialog />}
     </div>
   );
 }

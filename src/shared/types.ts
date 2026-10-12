@@ -118,6 +118,14 @@ export interface DeviceFlowInfo {
   expiresAt: string;
 }
 
+export interface GitHubAccountState {
+  /** false while the OAuth App of this build is not set up. */
+  available: boolean;
+  /** GitHub username while signed in. */
+  login: string | null;
+  flow: { state: 'idle' } | { state: 'waiting'; info: DeviceFlowInfo } | { state: 'checking' } | { state: 'error'; message: string };
+}
+
 export interface NetworkState {
   /** false while server/OAuth App of this build are not set up yet. */
   available: boolean;

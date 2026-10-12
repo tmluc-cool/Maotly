@@ -210,11 +210,17 @@ Erscheint einmal, direkt nach dem ersten Start, als Fenster über der App. Er l�
 - Danach `POST /v1/register` mit dem GitHub-Token. Der Server prüft ihn einmal über `GET https://api.github.com/user`, speichert GitHub-ID und Username und gibt ein **eigenes Session-Token** zurück. Den GitHub-Token speichert der Server **nicht**.
 - Der GitHub-Token bleibt lokal (safeStorage) und wird für Suchen bei GitHub benutzt (30 statt 10 Suchen pro Minute).
 
+### Mit GitHub anmelden (auch ohne Netzwerk)
+- Knopf **"Anmelden"** oben rechts und Abschnitt **"GitHub-Konto"** in den Einstellungen. Gleicher Device Flow wie unten, braucht nur die OAuth Client-ID, keinen Server.
+- Der Token (ohne Scopes) bleibt verschlüsselt lokal (safeStorage) und wird nur für Suchen bei GitHub benutzt (30 statt 10 pro Minute). An den eigenen Server geht dabei nichts.
+- "Mitmachen" nutzt diese Anmeldung (kein zweiter Code). Netzwerk verlassen löscht die Server-Session, die GitHub-Anmeldung bleibt bis "Abmelden". Abmelden geht erst nach dem Verlassen des Netzwerks.
+- Ohne Client-ID bleibt das Feld für einen eigenen GitHub-Token (Personal Access Token) in den Einstellungen.
+
 ### Einstellungen → "Netzwerk"
 - Status: "Nicht dabei" oder "Dabei als @username seit 12.10.2026 · 37 Beiträge"
 - Schalter **Mitmachen an/aus**:
   - **Einschalten:** zeigt denselben Erklärtext wie beim ersten Start, dann die Anmeldung.
-  - **Ausschalten:** Dialog "Netzwerk verlassen? Deine Daten auf dem Server werden gelöscht." mit [Verlassen und Daten löschen] [Abbrechen]. Ruft `DELETE /v1/me` auf, löscht Session-Token und GitHub-Token lokal, leert `pending_submissions`.
+  - **Ausschalten:** Dialog "Netzwerk verlassen? Deine Daten auf dem Server werden gelöscht." mit [Verlassen und Daten löschen] [Abbrechen]. Ruft `DELETE /v1/me` auf, löscht das Session-Token lokal, leert `pending_submissions` (die GitHub-Anmeldung bleibt).
 - Button **"Meine gespeicherten Daten anzeigen"** (`GET /v1/me`): zeigt genau, was der Server über mich weiss.
 - Link zur Datenschutzerklärung.
 
@@ -356,7 +362,7 @@ Abschnitt "Moatly unterstützen" mit Link zu **GitHub Sponsors** (`https://githu
 - `npm run validate`: prüft die kuratierte Liste gegen `base.db`
 - `npm run dist`: prüft, dass `resources/base.db` existiert, führt `validate` aus und baut mit electron-builder. `base.db` wird als `extraResources` mitgeliefert. Ergebnis im Ordner `release/`: Installer-.exe und portable .exe.
 - `npm run server:dev` / `npm run server:deploy`: Worker lokal bzw. auf Cloudflare
-- `.github/workflows/deploy-server.yml`: richtet den Server ohne Terminal ein (Secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`; Eingabe: OAuth Client-ID), trägt Server-URL und Client-ID in `src/main/config.ts` ein und startet den Windows-Build
+- `.github/workflows/deploy-server.yml` («Set up sign-in and server»): nur mit der OAuth Client-ID schaltet sie «Mit GitHub anmelden» ein; mit den Secrets `CLOUDFLARE_API_TOKEN` und `CLOUDFLARE_ACCOUNT_ID` richtet sie zusätzlich den Server ein. Trägt Client-ID und Server-URL in `src/main/config.ts` ein und startet den Windows-Build
 - Konfiguration in `src/main/config.ts`: Server-URL, OAuth Client-ID, Name des Daten-Repos. Keine Secrets in der App.
 - App-Name "Moatly", eigenes einfaches Icon (selbst gezeichnet als SVG, in .ico umgewandelt)
 - Fenster: min. 900×600, merkt sich Grösse und Position

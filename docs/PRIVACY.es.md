@@ -21,6 +21,8 @@ Una vez por semana, la app descarga un paquete de actualización desde GitHub (g
 
 En tu computadora, la app guarda una base de datos con información pública sobre proyectos de GitHub (nombre, descripción, estrellas, etc.), tu configuración y, si agregas uno, tu token de GitHub cifrado.
 
+**Iniciar sesión con GitHub (opcional):** Si inicias sesión con tu cuenta de GitHub, GitHub le da a la app una clave de acceso sin permisos especiales. La app la guarda cifrada en tu computadora, junto con tu nombre de usuario de GitHub, y la usa solo para búsquedas en GitHub (30 en lugar de 10 por minuto). Nosotros no recibimos nada. Puedes cerrar sesión en cualquier momento en la configuración; entonces la clave se borra de tu computadora.
+
 ## ¿Qué datos guardamos si participas en la red?
 
 | Datos | Para qué |

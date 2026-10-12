@@ -9,7 +9,7 @@ const LEGACY_FILES: Record<string, string> = {
   'settings.json': 'settings.json',
   'window-state.json': 'window-state.json',
   'own-github.bin': 'own-github.bin',
-  'network-github.bin': 'network-github.bin',
+  'network-github.bin': 'github.bin',
   'session.bin': 'session.bin',
 };
 

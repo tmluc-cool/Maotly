@@ -19,6 +19,8 @@ export const en = {
   'common.language': 'Language',
 
   // Header
+  'nav.signIn': 'Sign in',
+  'nav.signedInTitle': 'Signed in with GitHub – settings',
   'nav.settings': 'Settings',
   'nav.about': 'About',
 
@@ -220,6 +222,22 @@ export const en = {
   'consent.decline': 'No thanks, local only',
   'consent.readPrivacy': 'Read the privacy policy',
   'consent.fun': 'A fun project – no warranty and no liability.',
+
+  // GitHub sign-in
+  'account.title': 'GitHub account',
+  'account.signIn': 'Sign in with GitHub',
+  'account.lead':
+    'Sign in with your GitHub account: Moatly then searches GitHub faster (30 instead of 10 searches per minute). Nothing is sent to us – only GitHub sees the sign-in. You can sign out at any time.',
+  'account.signedInAs': 'Signed in as @{login}',
+  'account.signOut': 'Sign out',
+  'account.signOutMember': 'To sign out, leave the Moatly network first.',
+  'account.checking': 'Confirmed on GitHub. One moment …',
+  'account.tryAgain': 'Try again',
+  'account.copy': 'Copy code',
+  'account.copied': 'Copied',
+  'account.notAvailable': 'Signing in with GitHub isn’t set up in this version yet.',
+  'account.done': 'Done! You are signed in as @{login}.',
+  'common.close': 'Close',
 
   // Settings
   'settings.title': 'Settings',

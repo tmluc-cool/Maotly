@@ -22,9 +22,14 @@ export const config = {
 
 export const manifestUrl = () => `https://github.com/${config.dataRepo}/releases/latest/download/manifest.json`;
 
-/** The network only works once server and OAuth App are set up (see docs/EINRICHTUNG.md). */
+/** "Sign in with GitHub" works once the OAuth App is set up (see docs/EINRICHTUNG.md). */
+export function signInConfigured(): boolean {
+  return !config.oauthClientId.startsWith('REPLACE');
+}
+
+/** The network also needs the server. */
 export function networkConfigured(): boolean {
-  return !config.oauthClientId.startsWith('REPLACE') && !config.serverUrl.includes('.example.');
+  return signInConfigured() && !config.serverUrl.includes('.example.');
 }
 
 export const sponsorUrl = () => `https://github.com/sponsors/${config.sponsorUser}`;

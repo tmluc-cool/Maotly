@@ -21,6 +21,8 @@ Once a week, the app downloads an update package from GitHub (github.com, public
 
 On your computer, the app stores a database with public information about GitHub projects (name, description, stars, etc.), your settings and – if you enter one – your GitHub token in encrypted form.
 
+**Sign in with GitHub (optional):** If you sign in with your GitHub account, GitHub gives the app a sign-in key without special permissions. The app stores it encrypted on your computer, together with your GitHub username, and uses it only for searches at GitHub (30 instead of 10 per minute). We receive nothing. You can sign out at any time in the settings; then the key is deleted from your computer.
+
 ## What data do we store if you join the network?
 
 | Data | What for |

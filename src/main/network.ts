@@ -3,20 +3,22 @@ import { t, type MessageKey } from '../shared/i18n';
 import type { ActionResult, DeviceFlowInfo, MyDataResult, NetworkState, ServerUserData } from '../shared/types';
 import { config, networkConfigured } from './config';
 import type { AppDatabase } from './database';
+import { SignInCancelled, type GitHubAccount } from './github-account';
 
 export interface Secrets {
-  get(name: 'session' | 'network-github'): string | null;
-  set(name: 'session' | 'network-github', value: string): void;
-  clear(name: 'session' | 'network-github'): void;
+  get(name: 'session'): string | null;
+  set(name: 'session', value: string): void;
+  clear(name: 'session'): void;
 }
 
 export interface NetworkDeps {
   db: AppDatabase;
   secrets: Secrets;
+  /** "Sign in with GitHub": joining uses this sign-in (or starts it). */
+  account: GitHubAccount;
   fetch: typeof fetch;
   appVersion: string;
   now?: () => number;
-  sleep?: (ms: number) => Promise<void>;
   /** Whether server and OAuth App are set up. Without them nobody is asked to join. */
   available?: () => boolean;
 }
@@ -24,25 +26,26 @@ export interface NetworkDeps {
 const HOUR = 3_600_000;
 const today = (now: number) => new Date(now).toISOString().slice(0, 10);
 
-class CancelledError extends Error {}
-
 /**
  * The optional Moatly network. Strictly opt-in: before the user chose
  * "Mitmachen" and signed in with GitHub, nothing is sent to our server.
  */
 export class Network extends EventEmitter {
-  private signIn: NetworkState['signIn'] = { state: 'idle' };
-  private cancelSignIn: (() => void) | null = null;
+  private joining = false;
+  private registering = false;
+  private joinError: string | null = null;
   private forceConsentDialog = false;
   private readonly now: () => number;
-  private readonly sleep: (ms: number) => Promise<void>;
   private readonly available: () => boolean;
 
   constructor(private deps: NetworkDeps) {
     super();
     this.available = deps.available ?? networkConfigured;
     this.now = deps.now ?? Date.now;
-    this.sleep = deps.sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)));
+    // The GitHub code shown in the consent dialog comes from the account.
+    deps.account.on('state', () => {
+      if (this.joining) this.changed();
+    });
   }
 
   private get db() {
@@ -53,25 +56,30 @@ export class Network extends EventEmitter {
     return this.db.getMeta('network_consent') === 'yes' && !!this.deps.secrets.get('session');
   }
 
-  /** GitHub token from the network sign-in (30 instead of 10 searches per minute). */
-  githubToken(): string | null {
-    return this.isMember() ? this.deps.secrets.get('network-github') : null;
+  private signInState(): NetworkState['signIn'] {
+    if (this.joinError) return { state: 'error', message: this.joinError };
+    if (this.registering) return { state: 'registering' };
+    const flow = this.deps.account.state().flow;
+    if (this.joining && flow.state === 'waiting') return { state: 'waiting', info: flow.info };
+    if (this.joining && flow.state === 'checking') return { state: 'registering' };
+    return { state: 'idle' };
   }
 
   state(): NetworkState {
+    const signIn = this.signInState();
     const consent = this.db.getMeta('network_consent') as 'yes' | 'no' | null;
     const version = Number(this.db.getMeta('consent_version') ?? 0);
     const member = this.isMember();
     const available = this.available();
     const askConsent =
       available &&
-      (this.forceConsentDialog || consent === null || (consent === 'yes' && version < config.consentVersion) || this.signIn.state !== 'idle');
+      (this.forceConsentDialog || consent === null || (consent === 'yes' && version < config.consentVersion) || signIn.state !== 'idle');
     return {
       available,
       consent,
       askConsent,
       member: member ? { login: this.db.getMeta('network_login') ?? '', joinedDay: this.db.getMeta('network_joined_day') ?? '' } : null,
-      signIn: this.signIn,
+      signIn,
     };
   }
 
@@ -87,7 +95,7 @@ export class Network extends EventEmitter {
 
   /** "Nein danke, nur lokal". */
   decline() {
-    this.cancelSignIn?.();
+    if (this.joining) this.deps.account.cancel();
     this.forceConsentDialog = false;
     if (!this.isMember()) this.saveConsent('no');
     this.changed();
@@ -99,10 +107,10 @@ export class Network extends EventEmitter {
     this.changed();
   }
 
-  /** "Mitmachen – mit GitHub anmelden": device flow, then registration on our server. */
+  /** "Mitmachen – mit GitHub anmelden": GitHub sign-in (if not signed in yet), then registration on our server. */
   async join(): Promise<void> {
     if (!this.available()) return;
-    if (this.signIn.state === 'waiting' || this.signIn.state === 'registering') return;
+    if (this.joining) return;
     // Members who only have to confirm a new consent text don't need to sign in again.
     if (this.isMember()) {
       this.saveConsent('yes');
@@ -110,71 +118,43 @@ export class Network extends EventEmitter {
       this.changed();
       return;
     }
-    let cancelled = false;
-    this.cancelSignIn = () => {
-      cancelled = true;
-    };
+    this.joining = true;
+    this.joinError = null;
+    this.changed();
     try {
-      const code = await this.post<{ device_code: string; user_code: string; verification_uri: string; expires_in: number; interval: number }>(
-        'https://github.com/login/device/code',
-        { client_id: config.oauthClientId, scope: '' },
-      );
-      const info: DeviceFlowInfo = {
-        userCode: code.user_code,
-        verificationUri: code.verification_uri,
-        expiresAt: new Date(this.now() + code.expires_in * 1000).toISOString(),
-      };
-      this.signIn = { state: 'waiting', info };
-      this.changed();
-
-      let interval = Math.max(5, code.interval) * 1000;
-      let githubToken: string | null = null;
-      while (!githubToken) {
-        await this.sleep(interval);
-        if (cancelled) throw new CancelledError();
-        if (this.now() > Date.parse(info.expiresAt)) throw new Error(t('netMsg.codeExpired'));
-        const r = await this.post<{ access_token?: string; error?: string; interval?: number }>(
-          'https://github.com/login/oauth/access_token',
-          { client_id: config.oauthClientId, device_code: code.device_code, grant_type: 'urn:ietf:params:oauth:grant-type:device_code' },
-        );
-        if (r.access_token) githubToken = r.access_token;
-        else if (r.error === 'slow_down') interval = (r.interval ?? interval / 1000 + 5) * 1000;
-        else if (r.error === 'access_denied') throw new CancelledError();
-        else if (r.error && r.error !== 'authorization_pending') throw new Error(t('netMsg.signInFailed'));
-      }
-      if (cancelled) throw new CancelledError();
-
-      this.signIn = { state: 'registering' };
+      const githubToken = await this.deps.account.signIn();
+      this.registering = true;
       this.changed();
       const reg = await this.server<{ sessionToken: string; login: string; joinedDay: string }>('POST', '/v1/register', { githubToken });
       this.deps.secrets.set('session', reg.sessionToken);
-      this.deps.secrets.set('network-github', githubToken);
       this.db.setMeta('network_login', reg.login);
       this.db.setMeta('network_joined_day', reg.joinedDay);
       this.saveConsent('yes');
       this.forceConsentDialog = false;
-      this.signIn = { state: 'idle' };
-      this.changed();
       void this.heartbeat();
     } catch (err) {
-      if (err instanceof CancelledError) {
+      if (err instanceof SignInCancelled) {
         // Cancelling counts as "no".
-        this.signIn = { state: 'idle' };
         if (!this.isMember()) this.saveConsent('no');
         this.forceConsentDialog = false;
       } else {
-        this.signIn = { state: 'error', message: err instanceof ServerError ? serverMessage(err) : (err as Error).message || t('netMsg.signInFailed') };
+        this.joinError = err instanceof ServerError ? serverMessage(err) : (err as Error).message || t('netMsg.signInFailed');
       }
-      this.changed();
     } finally {
-      this.cancelSignIn = null;
+      this.joining = false;
+      this.registering = false;
+      this.changed();
     }
   }
 
   cancelJoin() {
-    this.cancelSignIn?.();
-    if (this.signIn.state === 'error') {
-      this.signIn = { state: 'idle' };
+    if (this.joining) {
+      this.deps.account.cancel();
+      return;
+    }
+    this.deps.account.cancel();
+    if (this.joinError) {
+      this.joinError = null;
       if (!this.isMember()) this.saveConsent('no');
       this.forceConsentDialog = false;
       this.changed();
@@ -193,8 +173,8 @@ export class Network extends EventEmitter {
       }
     }
     const login = this.db.getMeta('network_login');
+    // The GitHub sign-in itself stays (sign out separately in the settings).
     this.deps.secrets.clear('session');
-    this.deps.secrets.clear('network-github');
     this.db.clearSubmissions();
     // The server deleted reviews, upvotes and answers; remove the local copies right away too.
     if (login) this.db.forgetMemberReviews(login);
@@ -262,7 +242,7 @@ export class Network extends EventEmitter {
   /** Only the owner of the GitHub project may answer; the server checks it at GitHub with the member's token. */
   reply(reviewId: number, text: string): Promise<ActionResult> {
     return this.act(async () => {
-      const githubToken = this.deps.secrets.get('network-github');
+      const githubToken = this.deps.account.token();
       if (!githubToken) throw new ServerError(401, 'missing GitHub token');
       const r = await this.server<{ replyDay: string }>('POST', `/v1/reviews/${reviewId}/reply`, { text, githubToken });
       this.db.setLocalReply(reviewId, text.trim(), this.db.getMeta('network_login'), r.replyDay ?? null);
@@ -327,16 +307,6 @@ export class Network extends EventEmitter {
   }
 
   // ---------------------------------------------------------------------------
-
-  private async post<T>(url: string, body: Record<string, string>): Promise<T> {
-    const res = await this.deps.fetch(url, {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) throw new Error(`GitHub answered with ${res.status}`);
-    return (await res.json()) as T;
-  }
 
   private async server<T = unknown>(method: string, path: string, body?: unknown): Promise<T> {
     const headers: Record<string, string> = { Accept: 'application/json' };

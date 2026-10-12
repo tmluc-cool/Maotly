@@ -21,6 +21,8 @@ Die App lädt einmal pro Woche ein Update-Paket von GitHub (github.com, öffentl
 
 Auf deinem Computer speichert die App eine Datenbank mit öffentlichen Angaben zu GitHub-Projekten (Name, Beschreibung, Sterne usw.), deine Einstellungen und – falls du einen eingibst – deinen GitHub-Token verschlüsselt.
 
+**Mit GitHub anmelden (freiwillig):** Wenn du dich mit deinem GitHub-Konto anmeldest, gibt GitHub der App einen Anmelde-Schlüssel ohne besondere Berechtigungen. Die App speichert ihn verschlüsselt auf deinem Computer, zusammen mit deinem GitHub-Benutzernamen, und nutzt ihn nur für Suchen bei GitHub (30 statt 10 pro Minute). Wir erhalten davon nichts. Abmelden kannst du dich jederzeit in den Einstellungen; dann wird der Schlüssel auf deinem Computer gelöscht.
+
 ## Welche Daten speichern wir, wenn du beim Netzwerk mitmachst?
 
 | Daten | Wofür |

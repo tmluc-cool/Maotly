@@ -19,6 +19,8 @@ export const es: Messages = {
   'common.projects_other': '{count} proyectos',
   'common.language': 'Idioma',
 
+  'nav.signIn': 'Iniciar sesión',
+  'nav.signedInTitle': 'Sesión iniciada con GitHub – configuración',
   'nav.settings': 'Configuración',
   'nav.about': 'Acerca de',
 
@@ -205,6 +207,21 @@ export const es: Messages = {
   'consent.decline': 'No, gracias, solo local',
   'consent.readPrivacy': 'Leer la política de privacidad',
   'consent.fun': 'Un proyecto hecho por diversión: sin garantía y sin responsabilidad.',
+
+  'account.title': 'Cuenta de GitHub',
+  'account.signIn': 'Iniciar sesión con GitHub',
+  'account.lead':
+    'Inicia sesión con tu cuenta de GitHub: así Moatly busca más rápido en GitHub (30 en lugar de 10 búsquedas por minuto). No se nos envía nada: solo GitHub ve el inicio de sesión. Puedes cerrar sesión en cualquier momento.',
+  'account.signedInAs': 'Sesión iniciada como @{login}',
+  'account.signOut': 'Cerrar sesión',
+  'account.signOutMember': 'Para cerrar sesión, sal primero de la red Moatly.',
+  'account.checking': 'Confirmado en GitHub. Un momento …',
+  'account.tryAgain': 'Intentar de nuevo',
+  'account.copy': 'Copiar código',
+  'account.copied': 'Copiado',
+  'account.notAvailable': 'El inicio de sesión con GitHub todavía no está configurado en esta versión.',
+  'account.done': '¡Listo! Iniciaste sesión como @{login}.',
+  'common.close': 'Cerrar',
 
   'settings.title': 'Configuración',
   'net.title': 'Red Moatly',

@@ -34,6 +34,12 @@ const api: MoatlyApi = {
   setToken: (token) => ipcRenderer.invoke(IPC.tokenSet, token),
   clearToken: () => ipcRenderer.invoke(IPC.tokenClear),
 
+  githubState: () => ipcRenderer.invoke(IPC.githubGet),
+  onGitHubState: (l) => subscribe(IPC.githubEvent, l),
+  githubSignIn: () => ipcRenderer.invoke(IPC.githubSignIn),
+  githubCancel: () => ipcRenderer.invoke(IPC.githubCancel),
+  githubSignOut: () => ipcRenderer.invoke(IPC.githubSignOut),
+
   networkState: () => ipcRenderer.invoke(IPC.networkGet),
   onNetworkState: (l) => subscribe(IPC.networkEvent, l),
   askNetwork: () => ipcRenderer.invoke(IPC.networkAsk),

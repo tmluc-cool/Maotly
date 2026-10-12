@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { setLang as setI18nLang } from '@shared/i18n';
-import type { AppInfo, AppUpdateInfo, DbStats, Lang, NetworkState, ThemeSetting, UpdateStatus } from '@shared/types';
+import type { AppInfo, AppUpdateInfo, DbStats, GitHubAccountState, Lang, NetworkState, ThemeSetting, UpdateStatus } from '@shared/types';
 
 interface AppState {
   ready: boolean;
@@ -8,6 +8,10 @@ interface AppState {
   stats: DbStats | null;
   update: UpdateStatus | null;
   network: NetworkState | null;
+  account: GitHubAccountState | null;
+  /** The "Sign in with GitHub" dialog. */
+  signInOpen: boolean;
+  setSignInOpen(open: boolean): void;
   appUpdate: AppUpdateInfo | null;
   theme: ThemeSetting;
   lang: Lang;
@@ -43,6 +47,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [stats, setStats] = useState<DbStats | null>(null);
   const [update, setUpdate] = useState<UpdateStatus | null>(null);
   const [network, setNetwork] = useState<NetworkState | null>(null);
+  const [account, setAccount] = useState<GitHubAccountState | null>(null);
+  const [signInOpen, setSignInOpen] = useState(false);
   const [appUpdate, setAppUpdate] = useState<AppUpdateInfo | null>(null);
   const [theme, setThemeState] = useState<ThemeSetting>('system');
   const [lang, setLangState] = useState<Lang>('en');
@@ -56,17 +62,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void (async () => {
-      const [appInfo, s, u, n, settings] = await Promise.all([
+      const [appInfo, s, u, n, a, settings] = await Promise.all([
         window.api.getAppInfo(),
         window.api.stats(),
         window.api.updateStatus(),
         window.api.networkState(),
+        window.api.githubState(),
         window.api.getSettings(),
       ]);
       setInfo(appInfo);
       setStats(s);
       setUpdate(u);
       setNetwork(n);
+      setAccount(a);
       setThemeState(settings.theme);
       applyLang(settings.language);
       setLangState(settings.language);
@@ -79,6 +87,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }),
       window.api.onDataChanged(bumpData),
       window.api.onNetworkState(setNetwork),
+      window.api.onGitHubState(setAccount),
       window.api.onAppUpdate(setAppUpdate),
     ];
     void window.api.appUpdate().then(setAppUpdate);
@@ -106,8 +115,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AppState>(
-    () => ({ ready, info, stats, update, network, appUpdate, theme, lang, dataVersion, setTheme, setLang, refreshStats, bumpData }),
-    [ready, info, stats, update, network, appUpdate, theme, lang, dataVersion, setTheme, setLang, refreshStats, bumpData],
+    () => ({ ready, info, stats, update, network, account, signInOpen, setSignInOpen, appUpdate, theme, lang, dataVersion, setTheme, setLang, refreshStats, bumpData }),
+    [ready, info, stats, update, network, account, signInOpen, appUpdate, theme, lang, dataVersion, setTheme, setLang, refreshStats, bumpData],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

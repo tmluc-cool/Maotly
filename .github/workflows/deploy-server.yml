@@ -1,13 +1,14 @@
-# Sets up (and later updates) the Moatly network server on Cloudflare – no terminal needed.
+# Sets up "Sign in with GitHub" and (later updates) the Moatly network server on Cloudflare – no terminal needed.
 #
-# Needs two repository secrets (Settings → Secrets and variables → Actions), see docs/EINRICHTUNG.md:
-#   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
+# Only the sign-in: run it with the Client ID of the OAuth App, no secrets needed.
+# Sign-in and network: also add two repository secrets (Settings → Secrets and variables → Actions),
+# see docs/EINRICHTUNG.md: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
 # Optional: ADMIN_SECRET (same value as in the moatly-data repo), ADMIN_OAUTH_CLIENT_ID / ADMIN_OAUTH_CLIENT_SECRET (dashboard login).
 #
 # Creates the D1 database, applies the migrations, creates missing random secrets, deploys the Worker,
 # then writes the server address (and the OAuth Client ID, if given) into the app and starts a new app build.
 
-name: Deploy server
+name: Set up sign-in and server
 
 on:
   workflow_dispatch:
@@ -37,6 +38,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WRANGLER_SEND_METRICS: 'false'
+      CLIENT_ID: ${{ inputs.oauth_client_id }}
     steps:
       - name: Check Cloudflare secrets
         run: |
@@ -46,7 +48,12 @@ jobs:
             echo "SKIP=1" >> "$GITHUB_ENV"
             exit 0
           fi
-          echo "::error::Please add the repository secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID first (see docs/EINRICHTUNG.md)."
+          if [ -n "$CLIENT_ID" ]; then
+            echo "::notice::No Cloudflare secrets: only 'Sign in with GitHub' is set up, the network stays off."
+            echo "NO_SERVER=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          echo "::error::Enter the Client ID of the OAuth App and/or add the repository secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (see docs/EINRICHTUNG.md)."
           exit 1
 
       - uses: actions/checkout@v4
@@ -62,10 +69,10 @@ jobs:
         if: env.SKIP != '1'
         run: |
           npm ci --ignore-scripts --no-audit --no-fund
-          npm install --prefix server --no-audit --no-fund
+          if [ "$NO_SERVER" != "1" ]; then npm install --prefix server --no-audit --no-fund; fi
 
       - name: D1 database
-        if: env.SKIP != '1'
+        if: env.SKIP != '1' && env.NO_SERVER != '1'
         run: |
           WRANGLER="$GITHUB_WORKSPACE/server/node_modules/.bin/wrangler"
           TSX="$GITHUB_WORKSPACE/node_modules/.bin/tsx"
@@ -81,7 +88,7 @@ jobs:
           cd server && "$WRANGLER" d1 migrations apply moatly --remote
 
       - name: Deploy Worker
-        if: env.SKIP != '1'
+        if: env.SKIP != '1' && env.NO_SERVER != '1'
         working-directory: server
         env:
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
@@ -116,7 +123,7 @@ jobs:
           echo "SERVER_URL=$URL" >> "$GITHUB_ENV"
 
       - name: Check that the server answers
-        if: env.SKIP != '1'
+        if: env.SKIP != '1' && env.NO_SERVER != '1'
         run: |
           for i in 1 2 3 4 5 6; do
             if curl -fsS "$SERVER_URL/" | grep -q Moatly; then echo "Server answers: $SERVER_URL"; exit 0; fi
@@ -127,31 +134,29 @@ jobs:
       - name: Connect the app to the server
         if: env.SKIP != '1'
         env:
-          CLIENT_ID: ${{ inputs.oauth_client_id }}
           BRANCH: ${{ github.ref_name }}
           GH_TOKEN: ${{ github.token }}
         run: |
           node_modules/.bin/tsx scripts/deploy-helper.ts config "$SERVER_URL" "$CLIENT_ID"
           git checkout -- server/wrangler.toml
           if git diff --quiet; then
-            echo "The app already uses this server."
+            echo "The app is already set up like this."
           else
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -am "Connect the app to the Moatly server"
+            git commit -am "Set up GitHub sign-in and server address in the app"
             git push origin "HEAD:$BRANCH"
             # Pushes made by this workflow don't start other workflows, so start the Windows build explicitly.
             gh workflow run build-windows.yml --ref "$BRANCH"
           fi
           {
-            echo "## Moatly server is running"
-            echo ""
-            echo "Address: $SERVER_URL"
+            if [ -n "$SERVER_URL" ]; then echo "## Moatly server is running"; echo ""; echo "Address: $SERVER_URL"; echo ""; fi
             if grep -q "REPLACE_WITH_OAUTH_CLIENT_ID" src/main/config.ts; then
-              echo ""
               echo "Still missing: the **Client ID** of the OAuth App. Run this workflow again and paste it into the field."
+            elif grep -q "example.workers.dev" src/main/config.ts; then
+              echo "**Sign in with GitHub** is set up; it appears in the next Windows build (started automatically)."
+              echo "For the network (**Join**), add the Cloudflare secrets and run this workflow again."
             else
-              echo ""
-              echo "The app is connected. The next Windows build (started automatically) shows the **Join** switch."
+              echo "Sign-in and network are set up. The next Windows build (started automatically) shows **Sign in** and **Join**."
             fi
           } >> "$GITHUB_STEP_SUMMARY"

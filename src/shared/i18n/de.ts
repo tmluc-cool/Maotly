@@ -19,6 +19,8 @@ export const de: Messages = {
   'common.projects_other': '{count} Projekte',
   'common.language': 'Sprache',
 
+  'nav.signIn': 'Anmelden',
+  'nav.signedInTitle': 'Mit GitHub angemeldet – Einstellungen',
   'nav.settings': 'Einstellungen',
   'nav.about': 'Über',
 
@@ -205,6 +207,21 @@ export const de: Messages = {
   'consent.decline': 'Nein danke, nur lokal',
   'consent.readPrivacy': 'Datenschutzerklärung lesen',
   'consent.fun': 'Ein Spass-Projekt – ohne Gewähr und ohne Haftung.',
+
+  'account.title': 'GitHub-Konto',
+  'account.signIn': 'Mit GitHub anmelden',
+  'account.lead':
+    'Melde dich mit deinem GitHub-Konto an: Dann sucht Moatly schneller bei GitHub (30 statt 10 Suchen pro Minute). An uns wird nichts geschickt – nur GitHub sieht die Anmeldung. Du kannst dich jederzeit abmelden.',
+  'account.signedInAs': 'Angemeldet als @{login}',
+  'account.signOut': 'Abmelden',
+  'account.signOutMember': 'Zum Abmelden zuerst das Moatly-Netzwerk verlassen.',
+  'account.checking': 'Bei GitHub bestätigt. Einen Moment …',
+  'account.tryAgain': 'Nochmals versuchen',
+  'account.copy': 'Code kopieren',
+  'account.copied': 'Kopiert',
+  'account.notAvailable': 'Die Anmeldung mit GitHub ist in dieser Version noch nicht eingerichtet.',
+  'account.done': 'Fertig! Du bist als @{login} angemeldet.',
+  'common.close': 'Schliessen',
 
   'settings.title': 'Einstellungen',
   'net.title': 'Moatly-Netzwerk',

@@ -72,10 +72,11 @@ Every release contains `delta-YYYY-MM-DD.db`, `manifest.json` (all packages with
 `latest_base`) and, once a month, `base-YYYY-MM-DD.db`. The app loads
 `https://github.com/<owner>/moatly-data/releases/latest/download/manifest.json`.
 
-### 2. Network (OAuth App + Cloudflare server)
-No terminal needed: create a free Cloudflare account, add the repository secrets `CLOUDFLARE_API_TOKEN` and
-`CLOUDFLARE_ACCOUNT_ID`, create a GitHub OAuth App with "Enable Device Flow", then run
-*Actions → Deploy server → Run workflow* with its Client ID. The workflow (`.github/workflows/deploy-server.yml`)
+### 2. Sign in with GitHub and network (OAuth App + Cloudflare server)
+No terminal needed. Create a GitHub OAuth App with "Enable Device Flow" and run
+*Actions → Set up sign-in and server → Run workflow* with its Client ID: that alone turns on "Sign in with GitHub"
+(faster searches, no server involved). For the network, also add the repository secrets `CLOUDFLARE_API_TOKEN` and
+`CLOUDFLARE_ACCOUNT_ID` (free Cloudflare account) and run it again. The workflow (`.github/workflows/deploy-server.yml`)
 creates the D1 database, applies the migrations, creates missing random secrets, deploys the Worker, writes the
 server address and Client ID into `src/main/config.ts` and starts a new Windows build. Step by step:
 [docs/EINRICHTUNG.md](docs/EINRICHTUNG.md) (German).
