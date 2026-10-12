@@ -120,3 +120,8 @@ Full privacy policy: [docs/PRIVACY.md](docs/PRIVACY.md) (also in [German](docs/P
 ---
 
 No affiliation with the companies mentioned. Product names belong to their respective owners.
+
+## License
+
+Moatly is open source under the [MIT License](LICENSE).
+The project data shown in the app comes from public GitHub repositories and belongs to their owners.
