@@ -20,9 +20,10 @@ export const StarIcon = (p: P) => (
     <path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17.1 6.1 20.3l1.3-6.5L2.5 9.3l6.6-.8z" />
   </svg>
 );
-export const HeartIcon = (p: P) => (
+export const CoffeeIcon = (p: P) => (
   <svg {...base} {...p}>
-    <path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.6 4.5 7.1 4.5c2 0 3.6 1.1 4.9 2.9 1.3-1.8 2.9-2.9 4.9-2.9 3.5 0 5.7 3.5 4.4 6.8-1.8 4.6-9.3 9.2-9.3 9.2z" />
+    <path d="M6 2v2M10 2v2M14 2v2" />
+    <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1" />
   </svg>
 );
 export const SearchIcon = (p: P) => (

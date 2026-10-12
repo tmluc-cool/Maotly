@@ -21,8 +21,6 @@ export const en = {
   // Header
   'nav.settings': 'Settings',
   'nav.about': 'About',
-  'nav.sponsor': 'Sponsor',
-  'nav.sponsorTitle': 'Support GratisStatt on GitHub Sponsors (opens your browser)',
 
   // Search box
   'searchBox.placeholder': 'What are you paying for right now?',
@@ -165,6 +163,7 @@ export const en = {
   'sponsor.text':
     'GratisStatt is free and stays free – without ads or tracking. If it saves you money, you can support the project with a small amount on GitHub Sponsors. Completely voluntary: the app works exactly the same without it.',
   'sponsor.button': 'Sponsor on GitHub',
+  'sponsor.coffeeTitle': 'Buy me a coffee – support GratisStatt on GitHub Sponsors',
 
   // Not found
   'notFound.title': 'This page doesn’t exist',

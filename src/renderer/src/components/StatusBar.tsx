@@ -1,5 +1,6 @@
 import type { UpdateStatus } from '@shared/types';
 import { formatCount, formatDate } from '../lib/format';
+import { CoffeeIcon } from './icons';
 import { t } from '../lib/i18n';
 import { useApp } from '../state';
 
@@ -24,7 +25,7 @@ export function progressText(u: UpdateStatus): string {
 
 /** Bottom bar: update progress or database size and date. */
 export function StatusBar() {
-  const { stats, update, appUpdate } = useApp();
+  const { stats, update, appUpdate, info } = useApp();
   const running = update?.running;
   const manual = update?.job === 'manual';
 
@@ -59,6 +60,17 @@ export function StatusBar() {
           ) : running ? null : (
             <button type="button" className="btn-link" onClick={() => void window.api.updateNow()}>
               {t(update?.paused ? 'status.resume' : 'status.updateNow')}
+            </button>
+          )}
+          {info && (
+            <button
+              type="button"
+              className="grid h-7 w-7 place-items-center rounded-full text-amber-700 transition hover:bg-amber-100 dark:text-amber-400 dark:hover:bg-amber-900/40"
+              title={t('sponsor.coffeeTitle')}
+              aria-label={t('sponsor.coffeeTitle')}
+              onClick={() => void window.api.openExternal(info.sponsorUrl)}
+            >
+              <CoffeeIcon width={18} height={18} />
             </button>
           )}
         </span>

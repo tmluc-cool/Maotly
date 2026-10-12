@@ -29,7 +29,7 @@ It is built automatically by the GitHub Action `.github/workflows/build-windows.
 ## Support
 
 GratisStatt is free and stays free – without ads or tracking. If it saves you money, you can support it on
-**[GitHub Sponsors](https://github.com/sponsors/tmluc-cool)** ❤ (also via the "Sponsor" button in the app).
+**[GitHub Sponsors](https://github.com/sponsors/tmluc-cool)** ❤ (also via the coffee cup ☕ at the bottom right of the app).
 Completely voluntary.
 
 ## Quick start (development)

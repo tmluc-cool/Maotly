@@ -21,8 +21,6 @@ export const es: Messages = {
 
   'nav.settings': 'Configuración',
   'nav.about': 'Acerca de',
-  'nav.sponsor': 'Apoyar',
-  'nav.sponsorTitle': 'Apoya GratisStatt en GitHub Sponsors (abre el navegador)',
 
   'searchBox.placeholder': '¿Qué estás pagando ahora mismo?',
   'searchBox.placeholderSmall': 'Buscar …  (Ctrl+K)',
@@ -154,6 +152,7 @@ export const es: Messages = {
   'sponsor.text':
     'GratisStatt es gratis y seguirá siéndolo, sin publicidad ni rastreo. Si te ahorra dinero, puedes apoyar el proyecto con una pequeña cantidad en GitHub Sponsors. Totalmente voluntario: la app funciona exactamente igual sin ello.',
   'sponsor.button': 'Patrocinar en GitHub',
+  'sponsor.coffeeTitle': 'Invítame a un café: apoya GratisStatt en GitHub Sponsors',
 
   'notFound.title': 'Esta página no existe',
   'notFound.lead': 'Quizás se cambió el nombre de la entrada.',

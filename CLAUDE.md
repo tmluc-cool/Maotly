@@ -347,7 +347,7 @@ Kuratierte Produkte der Kategorie, darunter die Top-Projekte der Kategorie nach 
 
 ### Über
 Version, Basis-Version, Datenstand, Haftungshinweis, Link "Alternative vorschlagen" (öffnet ein neues GitHub Issue im Projekt-Repo, im Browser).
-Abschnitt "GratisStatt unterstützen" mit Link zu **GitHub Sponsors** (`https://github.com/sponsors/tmluc-cool`), dazu ein Knopf "Unterstützen" in der Kopfzeile. Freiwillig und zurückhaltend: keine Pop-ups, keine Erinnerungen, die App funktioniert ohne genau gleich. `.github/FUNDING.yml` zeigt den Sponsor-Knopf im Repo.
+Abschnitt "GratisStatt unterstützen" mit Link zu **GitHub Sponsors** (`https://github.com/sponsors/tmluc-cool`), dazu ein Kaffee-Symbol unten rechts in der Statusleiste (Tooltip "Spendier mir einen Kaffee"). Freiwillig und zurückhaltend: keine Pop-ups, keine Erinnerungen, die App funktioniert ohne genau gleich. `.github/FUNDING.yml` zeigt den Sponsor-Knopf im Repo.
 
 ## Build und Deploy
 

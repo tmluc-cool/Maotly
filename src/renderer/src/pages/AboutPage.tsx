@@ -1,4 +1,4 @@
-import { HeartIcon } from '../components/icons';
+import { CoffeeIcon } from '../components/icons';
 import { formatDate } from '../lib/format';
 import { t, tn } from '../lib/i18n';
 import { href } from '../lib/router';
@@ -43,11 +43,11 @@ export function AboutPage() {
       </section>
       <section className="card space-y-3">
         <h2 className="flex items-center gap-2 text-lg font-bold">
-          <HeartIcon className="text-pink-500" width={18} height={18} /> {t('sponsor.title')}
+          <CoffeeIcon className="text-amber-700 dark:text-amber-400" width={20} height={20} /> {t('sponsor.title')}
         </h2>
         <p className="text-sm text-slate-700 dark:text-slate-300">{t('sponsor.text')}</p>
         <button type="button" className="btn-secondary" disabled={!info} onClick={() => info && void window.api.openExternal(info.sponsorUrl)}>
-          <HeartIcon className="text-pink-500" /> {t('sponsor.button')}
+          <CoffeeIcon className="text-amber-700 dark:text-amber-400" /> {t('sponsor.button')}
         </button>
       </section>
       <section className="card space-y-2 text-sm text-slate-700 dark:text-slate-300">
