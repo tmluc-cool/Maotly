@@ -1,58 +1,62 @@
+import { CoffeeIcon } from '../components/icons';
 import { formatDate } from '../lib/format';
+import { t, tn } from '../lib/i18n';
+import { href } from '../lib/router';
 import { useApp } from '../state';
 
 export function AboutPage() {
-  const { info, snapshotDate, newestFetch } = useApp();
+  const { info, stats } = useApp();
 
   const suggest = () => {
     if (!info) return;
-    const title = 'Alternative vorschlagen: ';
-    const body = [
-      '**Für welches bezahlte Produkt?**',
-      '',
-      '**Welche Open-Source-Alternative (GitHub-Link)?**',
-      '',
-      '**Läuft auf (Windows, Mac, Linux, Android, iOS, Web, Server)?**',
-      '',
-      '**Wie schwierig ist die Installation (einfach, mittel, profi)?**',
-      '',
-    ].join('\n');
     void window.api.openExternal(
-      `${info.projectRepoUrl}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`,
+      `${info.projectRepoUrl}/issues/new?title=${encodeURIComponent(t('about.issueTitle'))}&body=${encodeURIComponent(t('about.issueBody'))}`,
     );
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 px-6 pb-16 pt-8">
-      <h1 className="text-3xl font-extrabold tracking-tight">Über GratisStatt</h1>
-
+    <div className="mx-auto max-w-3xl space-y-6 px-6 pb-20 pt-8">
+      <h1 className="text-3xl font-extrabold tracking-tight">{t('about.title')}</h1>
       <section className="card space-y-3">
         <p>
-          GratisStatt zeigt dir kostenlose Open-Source-Programme von GitHub, die bezahlte Software ersetzen können. Alles
-          läuft lokal auf deinem Computer – ohne Konto, ohne Werbung und ohne Tracking. Die App spricht nur mit GitHub.
+          {t('about.intro')} {t('about.name')}
         </p>
         <dl className="grid grid-cols-[auto,1fr] gap-x-6 gap-y-1 text-sm">
-          <dt className="text-slate-500 dark:text-slate-400">Version</dt>
+          <dt className="text-slate-500 dark:text-slate-400">{t('about.version')}</dt>
           <dd>{info?.version ?? '…'}</dd>
-          <dt className="text-slate-500 dark:text-slate-400">Datenstand</dt>
+          <dt className="text-slate-500 dark:text-slate-400">{t('about.baseVersion')}</dt>
+          <dd>{formatDate(stats?.baseVersion)}</dd>
+          <dt className="text-slate-500 dark:text-slate-400">{t('about.dataDate')}</dt>
           <dd>
-            {formatDate(snapshotDate)}
-            {newestFetch && <> (teilweise live aktualisiert am {formatDate(newestFetch)})</>}
+            {formatDate(stats?.dataDate)}
+            {stats && <> · {tn('common.projects', stats.count)}</>}
           </dd>
         </dl>
-        <button type="button" className="btn-primary" onClick={suggest}>
-          Alternative vorschlagen
+        <div className="flex flex-wrap gap-2">
+          <button type="button" className="btn-primary" onClick={suggest}>
+            {t('about.suggest')}
+          </button>
+          <a className="btn-secondary" href={href.privacy()}>
+            {t('common.privacy')}
+          </a>
+        </div>
+      </section>
+      <section className="card space-y-3">
+        <h2 className="flex items-center gap-2 text-lg font-bold">
+          <CoffeeIcon className="text-amber-700 dark:text-amber-400" width={20} height={20} /> {t('sponsor.title')}
+        </h2>
+        <p className="text-sm text-slate-700 dark:text-slate-300">{t('sponsor.text')}</p>
+        <button type="button" className="btn-secondary" disabled={!info} onClick={() => info && void window.api.openExternal(info.sponsorUrl)}>
+          <CoffeeIcon className="text-amber-700 dark:text-amber-400" /> {t('sponsor.button')}
         </button>
       </section>
-
       <section className="card space-y-2 text-sm text-slate-700 dark:text-slate-300">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Haftungshinweis</h2>
-        <p>
-          Die Angaben werden sorgfältig gepflegt, aber ohne Gewähr. Ob eine Alternative für dich passt, musst du selbst
-          prüfen. Programme werden direkt von GitHub heruntergeladen und nie automatisch gestartet. Für Inhalt und
-          Sicherheit der Programme sind deren Entwicklerinnen und Entwickler verantwortlich.
+        <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t('about.disclaimerTitle')}</h2>
+        <p className="rounded-lg bg-amber-50 px-3 py-2 font-medium text-amber-900 dark:bg-amber-900/30 dark:text-amber-100">
+          {t('about.disclaimer')}
         </p>
-        <p className="font-medium">Keine Verbindung zu den genannten Firmen. Produktnamen gehören den jeweiligen Inhabern.</p>
+        <p>{t('about.disclaimerMore')}</p>
+        <p className="font-medium">{t('about.noAffiliation')}</p>
       </section>
     </div>
   );

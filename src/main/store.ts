@@ -1,7 +1,9 @@
 import { app, safeStorage } from 'electron';
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { isLang, type Lang } from '../shared/i18n';
 import type { ThemeSetting } from '../shared/types';
+import type { Secrets } from './network';
 
 function userFile(name: string) {
   const dir = app.getPath('userData');
@@ -10,22 +12,16 @@ function userFile(name: string) {
 }
 
 /** Writes atomically so a crash never leaves half a file behind. */
-export function writeText(name: string, data: string) {
+function writeText(name: string, data: string) {
   const file = userFile(name);
-  const tmp = `${file}.tmp`;
-  writeFileSync(tmp, data, 'utf8');
-  renameSync(tmp, file);
-}
-
-export function readText(name: string): string | null {
-  const file = userFile(name);
-  return existsSync(file) ? readFileSync(file, 'utf8') : null;
+  writeFileSync(`${file}.tmp`, data, 'utf8');
+  renameSync(`${file}.tmp`, file);
 }
 
 function readJson<T>(name: string, fallback: T): T {
   try {
-    const raw = readText(name);
-    return raw ? { ...fallback, ...JSON.parse(raw) } : fallback;
+    const file = userFile(name);
+    return existsSync(file) ? { ...fallback, ...JSON.parse(readFileSync(file, 'utf8')) } : fallback;
   } catch {
     return fallback;
   }
@@ -33,20 +29,23 @@ function readJson<T>(name: string, fallback: T): T {
 
 // --- Settings ---------------------------------------------------------------
 
-interface Settings {
+export interface Settings {
   theme: ThemeSetting;
+  autoUpdate: boolean;
+  /** Chosen language; unset = follow the system (English if it isn't German or Spanish). */
+  language?: Lang;
 }
 
-const SETTINGS_FILE = 'settings.json';
-
 export function loadSettings(): Settings {
-  const s = readJson<Settings>(SETTINGS_FILE, { theme: 'system' });
+  const s = readJson<Settings>('settings.json', { theme: 'system', autoUpdate: true });
   if (!['system', 'light', 'dark'].includes(s.theme)) s.theme = 'system';
+  s.autoUpdate = s.autoUpdate !== false;
+  if (!isLang(s.language)) delete s.language;
   return s;
 }
 
 export function saveSettings(settings: Settings) {
-  writeText(SETTINGS_FILE, JSON.stringify(settings, null, 2));
+  writeText('settings.json', JSON.stringify(settings, null, 2));
 }
 
 // --- Window state ------------------------------------------------------------
@@ -59,53 +58,53 @@ export interface WindowState {
   maximized?: boolean;
 }
 
-const WINDOW_FILE = 'window-state.json';
-
 export function loadWindowState(): WindowState {
-  return readJson<WindowState>(WINDOW_FILE, { width: 1200, height: 800 });
+  return readJson<WindowState>('window-state.json', { width: 1200, height: 800 });
 }
 
 export function saveWindowState(state: WindowState) {
   try {
-    writeText(WINDOW_FILE, JSON.stringify(state));
+    writeText('window-state.json', JSON.stringify(state));
   } catch {
     /* not important enough to fail */
   }
 }
 
-// --- GitHub token (encrypted with safeStorage, never plain text) -------------
+// --- Secrets (encrypted with safeStorage, never plain text, never in the renderer) ----
 
-const TOKEN_FILE = 'github-token.bin';
-let tokenCache: string | null | undefined;
+type SecretName = 'own-github' | 'network-github' | 'session';
+const cache = new Map<SecretName, string | null>();
 
-export function tokenEncryptionAvailable(): boolean {
+export function encryptionAvailable(): boolean {
   return safeStorage.isEncryptionAvailable();
 }
 
-export function getToken(): string | null {
-  if (tokenCache !== undefined) return tokenCache;
-  tokenCache = null;
+export function getSecret(name: SecretName): string | null {
+  if (cache.has(name)) return cache.get(name)!;
+  let value: string | null = null;
   try {
-    const file = userFile(TOKEN_FILE);
-    if (existsSync(file) && safeStorage.isEncryptionAvailable()) {
-      tokenCache = safeStorage.decryptString(readFileSync(file));
-    }
+    const file = userFile(`${name}.bin`);
+    if (existsSync(file) && safeStorage.isEncryptionAvailable()) value = safeStorage.decryptString(readFileSync(file));
   } catch {
-    tokenCache = null;
+    value = null;
   }
-  return tokenCache;
+  cache.set(name, value);
+  return value;
 }
 
-export function setToken(token: string) {
-  if (!safeStorage.isEncryptionAvailable()) {
-    throw new Error('Verschlüsselung ist auf diesem System nicht verfügbar.');
-  }
-  const file = userFile(TOKEN_FILE);
-  writeFileSync(file, safeStorage.encryptString(token));
-  tokenCache = token;
+export function setSecret(name: SecretName, value: string) {
+  if (!safeStorage.isEncryptionAvailable()) throw new Error('Encryption is not available on this system.');
+  writeFileSync(userFile(`${name}.bin`), safeStorage.encryptString(value));
+  cache.set(name, value);
 }
 
-export function clearToken() {
-  rmSync(userFile(TOKEN_FILE), { force: true });
-  tokenCache = null;
+export function clearSecret(name: SecretName) {
+  rmSync(userFile(`${name}.bin`), { force: true });
+  cache.set(name, null);
 }
+
+export const networkSecrets: Secrets = {
+  get: (n) => getSecret(n),
+  set: (n, v) => setSecret(n, v),
+  clear: (n) => clearSecret(n),
+};

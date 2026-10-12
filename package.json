@@ -2,7 +2,7 @@
   "name": "gratisstatt",
   "productName": "GratisStatt",
   "version": "0.1.0",
-  "description": "Kostenlose Open-Source-Alternativen zu bezahlter Software finden.",
+  "description": "Find free open-source alternatives to paid software.",
   "author": "GratisStatt",
   "license": "MIT",
   "private": true,
@@ -11,15 +11,21 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json && tsc --noEmit -p server/tsconfig.json",
     "test": "vitest run",
-    "fetch-stats": "node scripts/fetch-stats.mjs",
-    "validate": "node scripts/validate-data.mjs",
+    "build-base-db": "tsx scripts/build-base-db.ts",
+    "validate": "tsx scripts/validate-data.ts",
+    "build-delta": "tsx scripts/build-delta.ts",
     "icon": "node scripts/make-icon.mjs",
-    "dist": "npm run fetch-stats && npm run validate && electron-vite build && electron-builder --win --x64",
-    "dist:offline": "npm run validate && electron-vite build && electron-builder --win --x64"
+    "dist": "tsx scripts/check-base.ts && npm run validate && electron-vite build && electron-builder --win --x64 --publish never",
+    "server:dev": "npm --prefix server run dev",
+    "server:deploy": "npm --prefix server run deploy",
+    "fetch-base": "tsx scripts/fetch-base.ts",
+    "server:typecheck": "tsc --noEmit -p server/tsconfig.json"
   },
   "devDependencies": {
+    "@tanstack/react-virtual": "^3.14.15",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -35,8 +41,13 @@
     "react-dom": "^19.3.0",
     "sharp": "^0.35.5",
     "tailwindcss": "^3.4.19",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vite": "^7.3.7",
-    "vitest": "^3.2.7"
+    "vitest": "^3.2.7",
+    "zod": "^3.25.76"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3"
   }
 }

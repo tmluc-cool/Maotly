@@ -4,7 +4,9 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "lib": [
-      "ES2023"
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
     ],
     "types": [
       "node",
@@ -33,6 +35,7 @@
     "src/preload/**/*",
     "src/shared/**/*",
     "tests/**/*",
+    "scripts/**/*.ts",
     "data/*.json"
   ]
 }

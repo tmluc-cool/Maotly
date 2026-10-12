@@ -1,0 +1,27 @@
+name = "gratisstatt"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+# Privacy: no persistent Worker logs.
+[observability]
+enabled = false
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gratisstatt"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+[vars]
+DATA_REPO = "tmluc-cool/gratisstatt-data"
+
+# Daily at 03:17 UTC: delete members inactive for 12 months.
+[triggers]
+crons = ["17 3 * * *"]
+
+# Secrets (never in this file), set with "npx wrangler secret put <NAME>":
+#   ADMIN_SECRET               long random string, also stored as secret in the gratisstatt-data repo
+#   ADMIN_GITHUB_ID            your numeric GitHub id
+#   ADMIN_OAUTH_CLIENT_ID      OAuth App for the dashboard login
+#   ADMIN_OAUTH_CLIENT_SECRET
+#   SESSION_SECRET             long random string to sign the admin cookie

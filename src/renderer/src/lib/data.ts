@@ -1,4 +1,5 @@
 import raw from '@data/alternatives.json';
+import { locale } from '@shared/i18n';
 import type { AlternativesData, Category, PaidProduct } from '@shared/types';
 import { createProductSearch } from './search';
 
@@ -20,5 +21,5 @@ export const POPULAR_LABELS: Record<string, string> = {
 };
 
 export function productsInCategory(categoryId: string): PaidProduct[] {
-  return data.products.filter((p) => p.category === categoryId).sort((a, b) => a.name.localeCompare(b.name, 'de'));
+  return data.products.filter((p) => p.category === categoryId).sort((a, b) => a.name.localeCompare(b.name, locale()));
 }

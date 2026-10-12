@@ -1,210 +1,299 @@
-import { useEffect, useState } from 'react';
-import type { RateLimitInfo, SettingsState, ThemeSetting } from '@shared/types';
-import { formatDate, formatDateTime } from '../lib/format';
+import { useEffect, useRef, useState } from 'react';
+import { LANG_NAMES, LANGS } from '@shared/i18n';
+import type { MyDataResult, SettingsState, ThemeSetting } from '@shared/types';
+import { progressText } from '../components/StatusBar';
+import { formatBytes, formatCount, formatDate, formatDateTime } from '../lib/format';
+import { t } from '../lib/i18n';
+import { href } from '../lib/router';
 import { useApp } from '../state';
 
-const TOKEN_HELP_URL =
-  'https://docs.github.com/de/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token';
+const TOKEN_HELP_URL = 'https://github.com/settings/personal-access-tokens/new';
 
-function LimitText({ info }: { info: RateLimitInfo }) {
-  if (info.remaining === null || info.limit === null) return <>unbekannt (offline?)</>;
+function Toggle({ checked, onChange, label }: { checked: boolean; onChange(v: boolean): void; label: string }) {
   return (
-    <>
-      {info.remaining} von {info.limit}
-      {info.resetAt && <span className="text-slate-500 dark:text-slate-400"> · zurückgesetzt um {formatDateTime(info.resetAt)}</span>}
-    </>
+    <label className="flex cursor-pointer items-center gap-3">
+      <span className="relative inline-flex">
+        <input type="checkbox" className="peer sr-only" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+        <span className="h-6 w-11 rounded-full bg-slate-300 transition peer-checked:bg-brand-500 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500/40 dark:bg-slate-700" />
+        <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition peer-checked:translate-x-5" />
+      </span>
+      <span className="font-medium">{label}</span>
+    </label>
+  );
+}
+
+function NetworkSection() {
+  const { network } = useApp();
+  const [myData, setMyData] = useState<MyDataResult | null>(null);
+  const [leaveMsg, setLeaveMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const leaveRef = useRef<HTMLDialogElement>(null);
+  const member = network?.member;
+
+  const leave = async () => {
+    setBusy(true);
+    try {
+      const r = await window.api.leaveNetwork();
+      leaveRef.current?.close();
+      setMyData(null);
+      setLeaveMsg(r.ok ? t('net.left') : (r.message ?? null));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="card space-y-4">
+      <h2 className="text-lg font-bold">{t('net.title')}</h2>
+      <p className="text-sm text-slate-600 dark:text-slate-400">{t('net.lead')}</p>
+      <p className="font-medium">
+        {member ? (
+          <>
+            {t('net.memberSince', { login: member.login, date: formatDate(member.joinedDay) })}
+            {myData?.ok && <> · {t('net.contributions', { count: formatCount(myData.data.submissions) })}</>}
+          </>
+        ) : (
+          t('net.notMember')
+        )}
+      </p>
+      {network && !network.available && !member ? (
+        <p className="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+          {t('net.notAvailable')}
+        </p>
+      ) : (
+      <Toggle
+        checked={!!member}
+        label={t('net.join')}
+        onChange={(on) => {
+          setLeaveMsg(null);
+          if (on) void window.api.askNetwork();
+          else leaveRef.current?.showModal();
+        }}
+      />
+      )}
+      <div className="flex flex-wrap gap-2">
+        {member && (
+          <button type="button" className="btn-secondary" onClick={() => void window.api.myData().then(setMyData)}>
+            {t('net.showData')}
+          </button>
+        )}
+        <a className="btn-secondary" href={href.privacy()}>
+          {t('common.privacy')}
+        </a>
+      </div>
+      {myData &&
+        (myData.ok ? (
+          <dl className="grid grid-cols-[auto,1fr] gap-x-6 gap-y-1 rounded-xl bg-slate-50 p-4 text-sm dark:bg-slate-800/60">
+            <dt className="text-slate-500">{t('net.d.login')}</dt>
+            <dd>@{myData.data.login}</dd>
+            <dt className="text-slate-500">{t('net.d.appVersion')}</dt>
+            <dd>{myData.data.appVersion ?? '–'}</dd>
+            <dt className="text-slate-500">{t('net.d.joined')}</dt>
+            <dd>{formatDate(myData.data.joinedDay)}</dd>
+            <dt className="text-slate-500">{t('net.d.lastActive')}</dt>
+            <dd>{formatDate(myData.data.lastActiveDay)}</dd>
+            <dt className="text-slate-500">{t('net.d.contributions')}</dt>
+            <dd>{t('net.d.contributionsValue', { submissions: myData.data.submissions, pending: myData.data.pendingSubmissions })}</dd>
+            <dt className="text-slate-500">{t('net.d.reviews')}</dt>
+            <dd>{t('net.d.reviewsValue', { reviews: myData.data.reviews ?? 0, votes: myData.data.votes ?? 0 })}</dd>
+            <dt className="text-slate-500">{t('net.d.status')}</dt>
+            <dd>{t(myData.data.status === 'active' ? 'net.d.active' : 'net.d.blocked')}</dd>
+            <dd className="col-span-2 pt-2 text-xs text-slate-500">{t('net.d.nothingMore')}</dd>
+          </dl>
+        ) : (
+          <p className="text-sm text-rose-700 dark:text-rose-300">{myData.message}</p>
+        ))}
+      {leaveMsg && <p className="text-sm">{leaveMsg}</p>}
+
+      <dialog
+        ref={leaveRef}
+        className="w-[min(28rem,calc(100vw-2rem))] rounded-2xl bg-white p-6 text-slate-900 shadow-2xl backdrop:bg-slate-950/60 dark:bg-slate-900 dark:text-slate-100"
+      >
+        <h3 className="text-lg font-bold">{t('net.leaveTitle')}</h3>
+        <p className="mt-2">{t('net.leaveText')}</p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <button type="button" className="btn-primary bg-rose-600 hover:bg-rose-700" disabled={busy} onClick={() => void leave()}>
+            {t(busy ? 'net.deleting' : 'net.leaveConfirm')}
+          </button>
+          <button type="button" className="btn-secondary" onClick={() => leaveRef.current?.close()}>
+            {t('common.cancel')}
+          </button>
+        </div>
+      </dialog>
+    </section>
   );
 }
 
 export function SettingsPage() {
-  const { theme, setTheme, snapshotDate, newestFetch, applyStatsState, setStatus } = useApp();
+  const { theme, setTheme, lang, setLang, stats, update, network, info, refreshStats } = useApp();
   const [settings, setSettings] = useState<SettingsState | null>(null);
   const [token, setToken] = useState('');
   const [tokenMsg, setTokenMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [busy, setBusy] = useState<string | null>(null);
-  const [actionMsg, setActionMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  const reload = async () => setSettings(await window.api.getSettings());
   useEffect(() => {
-    void reload();
-  }, []);
+    void window.api.getSettings().then(setSettings);
+    void refreshStats();
+  }, [refreshStats]);
 
   const saveToken = async () => {
-    setBusy('token');
+    setBusy(true);
     setTokenMsg(null);
     try {
       const res = await window.api.setToken(token);
       if (res.ok) {
         setToken('');
-        setTokenMsg({ ok: true, text: 'Token gespeichert. Du hast jetzt 5000 Anfragen pro Stunde.' });
-        await reload();
-      } else {
-        setTokenMsg({ ok: false, text: res.message });
-      }
+        setTokenMsg({ ok: true, text: t('token.saved') });
+        setSettings(await window.api.getSettings());
+      } else setTokenMsg({ ok: false, text: res.message });
     } finally {
-      setBusy(null);
-    }
-  };
-
-  const removeToken = async () => {
-    setBusy('token');
-    try {
-      setSettings(await window.api.clearToken());
-      setTokenMsg({ ok: true, text: 'Token entfernt.' });
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  const clearCache = async () => {
-    setBusy('cache');
-    try {
-      applyStatsState(await window.api.clearCache());
-      setStatus(null);
-      setActionMsg('Cache geleert. Die App nutzt jetzt wieder die mitgelieferten Daten.');
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  const refreshAll = async () => {
-    if (!settings?.hasToken) {
-      const ok = window.confirm(
-        'Ohne eigenen GitHub-Token sind nur 60 Anfragen pro Stunde erlaubt. Für alle Daten braucht es über 200.\n\n' +
-          'Die App aktualisiert so viel wie möglich und hört dann auf. Trotzdem starten?',
-      );
-      if (!ok) return;
-    }
-    setBusy('refresh');
-    setActionMsg(null);
-    try {
-      const res = await window.api.refreshAll();
-      applyStatsState(await window.api.getAllStats());
-      setStatus(res.status);
-      const suffix =
-        res.status.kind === 'ratelimited'
-          ? ' GitHub-Limit erreicht – der Rest folgt später.'
-          : res.status.kind === 'offline'
-            ? ' Du bist offline.'
-            : '';
-      setActionMsg(`${res.updated} Repos aktualisiert.${suffix}`);
-      await reload();
-    } finally {
-      setBusy(null);
+      setBusy(false);
     }
   };
 
   const themes: { value: ThemeSetting; label: string }[] = [
-    { value: 'system', label: 'Wie das System' },
-    { value: 'light', label: 'Hell' },
-    { value: 'dark', label: 'Dunkel' },
+    { value: 'system', label: t('theme.system') },
+    { value: 'light', label: t('theme.light') },
+    { value: 'dark', label: t('theme.dark') },
   ];
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 px-6 pb-16 pt-8">
-      <h1 className="text-3xl font-extrabold tracking-tight">Einstellungen</h1>
+    <div className="mx-auto max-w-3xl space-y-6 px-6 pb-20 pt-8">
+      <h1 className="text-3xl font-extrabold tracking-tight">{t('settings.title')}</h1>
 
-      <section className="card">
-        <h2 className="text-lg font-bold">Eigener GitHub-Token (freiwillig)</h2>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-          Ohne Token erlaubt GitHub 60 Anfragen pro Stunde. Mit einem eigenen Token sind es 5000. Der Token braucht keine
-          Berechtigungen und wird verschlüsselt auf diesem Computer gespeichert.{' '}
-          <button type="button" className="text-brand-700 underline dark:text-brand-300" onClick={() => void window.api.openExternal(TOKEN_HELP_URL)}>
-            So erstellst du einen Token
-          </button>
-        </p>
+      <NetworkSection />
 
-        {settings?.hasToken ? (
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200">
-              Token ist gespeichert
-            </span>
-            <button type="button" className="btn-secondary" disabled={busy === 'token'} onClick={() => void removeToken()}>
-              Token entfernen
+      {!network?.member && (
+        <section className="card">
+          <h2 className="text-lg font-bold">{t('token.title')}</h2>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+            {t('token.lead')}{' '}
+            <button type="button" className="text-brand-700 underline dark:text-brand-300" onClick={() => void window.api.openExternal(TOKEN_HELP_URL)}>
+              {t('token.create')}
             </button>
-          </div>
-        ) : (
-          <form
-            className="mt-4 flex flex-wrap gap-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void saveToken();
+          </p>
+          {settings?.hasOwnToken ? (
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200">
+                {t('token.isSaved')}
+              </span>
+              <button type="button" className="btn-secondary" onClick={() => void window.api.clearToken().then(setSettings)}>
+                {t('token.remove')}
+              </button>
+            </div>
+          ) : (
+            <form
+              className="mt-4 flex flex-wrap gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void saveToken();
+              }}
+            >
+              <input
+                type="password"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                placeholder="github_pat_…"
+                autoComplete="off"
+                spellCheck={false}
+                disabled={settings ? !settings.encryptionAvailable : false}
+                className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+                aria-label={t('token.aria')}
+              />
+              <button type="submit" className="btn-primary" disabled={!token.trim() || busy || !settings?.encryptionAvailable}>
+                {t(busy ? 'common.checking' : 'common.save')}
+              </button>
+            </form>
+          )}
+          {settings && !settings.encryptionAvailable && (
+            <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">{t('token.noEncryption')}</p>
+          )}
+          {tokenMsg && <p className={`mt-2 text-sm ${tokenMsg.ok ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'}`}>{tokenMsg.text}</p>}
+        </section>
+      )}
+
+      <section className="card space-y-4">
+        <h2 className="text-lg font-bold">{t('db.title')}</h2>
+        {settings && (
+          <Toggle
+            checked={settings.autoUpdate}
+            label={t('db.auto')}
+            onChange={(on) => {
+              setSettings({ ...settings, autoUpdate: on });
+              void window.api.setAutoUpdate(on);
             }}
-          >
-            <input
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              placeholder="github_pat_…"
-              autoComplete="off"
-              spellCheck={false}
-              className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
-              aria-label="GitHub-Token"
-              disabled={settings ? !settings.tokenEncryptionAvailable : false}
-            />
-            <button type="submit" className="btn-primary" disabled={!token.trim() || busy === 'token' || !settings?.tokenEncryptionAvailable}>
-              {busy === 'token' ? 'Prüfe …' : 'Speichern'}
-            </button>
-          </form>
+          />
         )}
-        {settings && !settings.tokenEncryptionAvailable && (
-          <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">
-            Dein System bietet keine sichere Verschlüsselung an. Ein Token kann deshalb nicht gespeichert werden.
-          </p>
-        )}
-        {tokenMsg && (
-          <p className={`mt-2 text-sm ${tokenMsg.ok ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'}`}>
-            {tokenMsg.text}
-          </p>
-        )}
-      </section>
-
-      <section className="card">
-        <h2 className="text-lg font-bold">Daten</h2>
-        <dl className="mt-3 grid grid-cols-[auto,1fr] gap-x-6 gap-y-2 text-sm">
-          <dt className="text-slate-500 dark:text-slate-400">Verbleibende GitHub-Anfragen</dt>
-          <dd>{settings ? <LimitText info={settings.rateLimit} /> : '…'}</dd>
-          <dt className="text-slate-500 dark:text-slate-400">Verbleibende Suchen</dt>
-          <dd>{settings ? <LimitText info={settings.searchRateLimit} /> : '…'}</dd>
-          <dt className="text-slate-500 dark:text-slate-400">Mitgelieferte Daten vom</dt>
-          <dd>{formatDate(snapshotDate)}</dd>
-          <dt className="text-slate-500 dark:text-slate-400">Zuletzt live aktualisiert</dt>
-          <dd>{newestFetch ? formatDateTime(newestFetch) : 'noch nie'}</dd>
+        <dl className="grid grid-cols-[auto,1fr] gap-x-6 gap-y-1.5 text-sm">
+          <dt className="text-slate-500 dark:text-slate-400">{t('db.projects')}</dt>
+          <dd>{stats ? formatCount(stats.count) : '…'}</dd>
+          <dt className="text-slate-500 dark:text-slate-400">{t('db.size')}</dt>
+          <dd>{stats ? formatBytes(stats.sizeBytes) : '…'}</dd>
+          <dt className="text-slate-500 dark:text-slate-400">{t('about.dataDate')}</dt>
+          <dd>{formatDate(stats?.dataDate)}</dd>
+          <dt className="text-slate-500 dark:text-slate-400">{t('about.baseVersion')}</dt>
+          <dd>{formatDate(stats?.baseVersion)}</dd>
+          <dt className="text-slate-500 dark:text-slate-400">{t('db.lastCheck')}</dt>
+          <dd>{stats?.lastUpdateCheck ? formatDateTime(stats.lastUpdateCheck) : t('db.never')}</dd>
+          <dt className="text-slate-500 dark:text-slate-400">{t('db.applied')}</dt>
+          <dd>
+            {stats?.appliedDeltas.length
+              ? t('db.appliedValue', { count: stats.appliedDeltas.length, date: formatDate(stats.appliedDeltas.at(-1)) })
+              : t('db.none')}
+          </dd>
         </dl>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" className="btn-secondary" disabled={busy !== null} onClick={() => void clearCache()}>
-            Cache leeren
-          </button>
-          <button type="button" className="btn-primary" disabled={busy !== null} onClick={() => void refreshAll()}>
-            {busy === 'refresh' ? 'Aktualisiere …' : 'Alle Daten jetzt aktualisieren'}
+        {update?.running && <p className="text-sm text-brand-700 dark:text-brand-300">{progressText(update)}</p>}
+        <div className="flex flex-wrap gap-2">
+          {update?.running && update.job === 'manual' ? (
+            <button type="button" className="btn-secondary" onClick={() => void window.api.updatePause()}>
+              {t('db.pause')}
+            </button>
+          ) : (
+            <button type="button" className="btn-primary" disabled={update?.running} onClick={() => void window.api.updateNow()}>
+              {t(update?.paused ? 'status.resume' : 'status.updateNow')}
+            </button>
+          )}
+          <button type="button" className="btn-secondary" disabled={update?.running} onClick={() => void window.api.vacuum()}>
+            {t('db.vacuum')}
           </button>
         </div>
-        {!settings?.hasToken && (
-          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-            Hinweis: Ohne Token reicht das Limit nicht für alle Daten auf einmal.
-          </p>
-        )}
-        {actionMsg && <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">{actionMsg}</p>}
       </section>
 
       <section className="card">
-        <h2 className="text-lg font-bold">Darstellung</h2>
-        <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label="Farbschema">
+        <h2 className="text-lg font-bold">{t('common.language')}</h2>
+        <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label={t('common.language')}>
+          {LANGS.map((l) => (
+            <button key={l} type="button" role="radio" lang={l} aria-checked={lang === l} aria-pressed={lang === l} className="chip-toggle" onClick={() => setLang(l)}>
+              {LANG_NAMES[l]}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="card">
+        <h2 className="text-lg font-bold">{t('appearance.title')}</h2>
+        <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label={t('appearance.aria')}>
           {themes.map((t) => (
-            <button
-              key={t.value}
-              type="button"
-              role="radio"
-              aria-checked={theme === t.value}
-              aria-pressed={theme === t.value}
-              className="chip-toggle"
-              onClick={() => setTheme(t.value)}
-            >
+            <button key={t.value} type="button" role="radio" aria-checked={theme === t.value} aria-pressed={theme === t.value} className="chip-toggle" onClick={() => setTheme(t.value)}>
               {t.label}
             </button>
           ))}
         </div>
       </section>
+
+      {info?.isDev && (
+        <section className="card border-dashed">
+          <h2 className="text-lg font-bold">{t('dev.title')}</h2>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" className="btn-secondary" onClick={() => void window.api.devResetCheck().then(refreshStats)}>
+              {t('dev.resetCheck')}
+            </button>
+            <button type="button" className="btn-secondary" onClick={() => void window.api.devShowConsent()}>
+              {t('dev.showConsent')}
+            </button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

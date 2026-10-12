@@ -1,13 +1,18 @@
 import { useEffect } from 'react';
 import { SearchBox } from './components/SearchBox';
-import { StatusBanner } from './components/StatusBanner';
+import { ConsentDialog } from './components/ConsentDialog';
+import { StatusBar } from './components/StatusBar';
 import { GearIcon, InfoIcon } from './components/icons';
+import { Logo } from './components/Logo';
+import { t } from './lib/i18n';
 import { href, navigate, useRoute, type Route } from './lib/router';
 import { AboutPage } from './pages/AboutPage';
 import { CategoryPage } from './pages/CategoryPage';
 import { HomePage } from './pages/HomePage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { PrivacyPage } from './pages/PrivacyPage';
 import { ProductPage } from './pages/ProductPage';
+import { ProjectPage } from './pages/ProjectPage';
 import { SearchPage } from './pages/SearchPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { useApp } from './state';
@@ -24,14 +29,18 @@ function Page({ route }: { route: Route }) {
       return <HomePage />;
     case 'product':
       return <ProductPage id={route.id} />;
+    case 'project':
+      return <ProjectPage id={route.id} />;
     case 'category':
-      return <CategoryPage id={route.id} />;
+      return <CategoryPage id={route.id} filters={route.filters} />;
     case 'search':
-      return <SearchPage query={route.query} />;
+      return <SearchPage q={route.q} filters={route.filters} />;
     case 'settings':
       return <SettingsPage />;
     case 'about':
       return <AboutPage />;
+    case 'privacy':
+      return <PrivacyPage />;
     default:
       return <NotFoundPage />;
   }
@@ -39,7 +48,7 @@ function Page({ route }: { route: Route }) {
 
 export function App() {
   const route = useRoute();
-  const { ready } = useApp();
+  const { ready, lang } = useApp();
 
   // Ctrl+K (Cmd+K on Mac) jumps into the search field.
   useEffect(() => {
@@ -65,28 +74,28 @@ export function App() {
     }`;
 
   return (
-    <div className="flex min-h-screen flex-col">
+    // Keyed by language: switching it renders everything again with the new texts.
+    <div key={lang} className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-slate-50/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
           <a href={href.home()} className="flex shrink-0 items-center gap-2 text-lg font-extrabold tracking-tight">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-brand-500 to-teal-600 text-sm text-white">
-              0
-            </span>
+            <Logo size={32} />
             GratisStatt
           </a>
           <div className="flex-1">{showHeaderSearch && <div className="max-w-sm">{ready && <SearchBox size="small" />}</div>}</div>
-          <StatusBanner />
           <nav className="flex shrink-0 gap-1">
             <a href={href.settings()} className={navLink(route.name === 'settings')}>
-              <GearIcon /> Einstellungen
+              <GearIcon /> {t('nav.settings')}
             </a>
             <a href={href.about()} className={navLink(route.name === 'about')}>
-              <InfoIcon /> Über
+              <InfoIcon /> {t('nav.about')}
             </a>
           </nav>
         </div>
       </header>
-      <main className="flex-1">{ready ? <Page route={route} /> : null}</main>
+      <main className="flex-1 pb-8">{ready ? <Page route={route} /> : null}</main>
+      {ready && <StatusBar />}
+      {ready && <ConsentDialog />}
     </div>
   );
 }

@@ -1,0 +1,110 @@
+# Weekly update package for all GratisStatt users.
+#
+# This file belongs into the public repo "gratisstatt-data" (copy it to
+# .github/workflows/weekly-delta.yml there). The code comes from the app repo.
+# It only runs in a repo whose name ends with "/gratisstatt-data".
+#
+# Settings in gratisstatt-data:
+#   Variables: APP_REPO (e.g. tmluc-cool/githuub-appstore), SERVER_URL (network server, optional)
+#   Secrets:   ADMIN_SECRET (same value as on the server, optional)
+
+name: Weekly update package
+
+on:
+  schedule:
+    - cron: '23 4 * * 1' # Mondays, early morning (UTC)
+  workflow_dispatch:
+    inputs:
+      base:
+        description: 'Also build a fresh base database'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-delta
+  cancel-in-progress: false
+
+jobs:
+  package:
+    if: endsWith(github.repository, '/gratisstatt-data')
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      APP_REPO: ${{ vars.APP_REPO || 'tmluc-cool/githuub-appstore' }}
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    steps:
+      - name: Check out app code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.APP_REPO }}
+          path: app
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install
+        working-directory: app
+        run: |
+          npm ci --ignore-scripts
+          npm rebuild better-sqlite3
+
+      - name: Date and plan
+        id: plan
+        run: |
+          echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+          # A fresh base once a month (first Monday) or on request.
+          if [ "${{ inputs.base }}" = "true" ] || [ "$(date -u +%d)" -le 7 ]; then echo "base=1" >> "$GITHUB_OUTPUT"; else echo "base=0" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Previous manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p prev out
+          gh release download --repo "$GITHUB_REPOSITORY" --pattern manifest.json --dir prev || echo "No previous release yet."
+
+      - name: Build base database (monthly, ~2 hours)
+        if: steps.plan.outputs.base == '1'
+        working-directory: app
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npx tsx scripts/build-base-db.ts --out "../out/base-${{ steps.plan.outputs.date }}.db"
+
+      - name: Build update package
+        working-directory: app
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SERVER_URL: ${{ vars.SERVER_URL }}
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+        run: |
+          BASE_ARG=""
+          if [ -f "../out/base-${{ steps.plan.outputs.date }}.db" ]; then BASE_ARG="--base ../out/base-${{ steps.plan.outputs.date }}.db"; fi
+          npx tsx scripts/build-delta.ts --repo "$GITHUB_REPOSITORY" --out ../out --prev ../prev/manifest.json $BASE_ARG
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DATE="${{ steps.plan.outputs.date }}"
+          gh release create "delta-$DATE" out/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Update package $DATE" \
+            --notes "Weekly update package for GratisStatt. Checksums are in manifest.json." \
+            --latest
+
+      - name: Remove old review copies
+        # Reviews are only kept in the newest release, so deleted reviews really disappear.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DATE="${{ steps.plan.outputs.date }}"
+          for tag in $(gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName --jq '.[].tagName'); do
+            if [ "$tag" != "delta-$DATE" ]; then
+              gh release delete-asset "$tag" reviews.json --repo "$GITHUB_REPOSITORY" --yes 2>/dev/null || true
+            fi
+          done

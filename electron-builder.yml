@@ -9,6 +9,13 @@ files:
   - package.json
   - '!**/*.map'
 asar: true
+# better-sqlite3 >= 13 uses Node-API: the same binary works in Node and Electron, no rebuild needed.
+npmRebuild: false
+asarUnpack:
+  - '**/*.node'
+extraResources:
+  - from: resources/base.db
+    to: base.db
 win:
   icon: build/icon.ico
   target:

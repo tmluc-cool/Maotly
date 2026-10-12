@@ -1,637 +1,637 @@
 {
   "categories": [
-    { "id": "buero-pdf", "name": "Büro & PDF" },
-    { "id": "kreativ-design", "name": "Kreativ & Design" },
-    { "id": "notizen-organisation", "name": "Notizen & Organisation" },
-    { "id": "speicher-medien", "name": "Speicher & Medien" },
-    { "id": "sicherheit-netzwerk", "name": "Sicherheit & Netzwerk" },
-    { "id": "kommunikation", "name": "Kommunikation" },
-    { "id": "ki-entwicklung", "name": "KI & Entwicklung" },
-    { "id": "business-finanzen", "name": "Business & Finanzen" },
-    { "id": "lernen-fitness", "name": "Lernen & Fitness" },
-    { "id": "gaming-pc-tools", "name": "Gaming & PC-Tools" },
-    { "id": "cad-3d-gis", "name": "CAD, 3D & GIS" }
+    { "id": "buero-pdf", "name": { "en": "Office & PDF", "de": "Büro & PDF", "es": "Oficina y PDF" } },
+    { "id": "kreativ-design", "name": { "en": "Creative & Design", "de": "Kreativ & Design", "es": "Creatividad y diseño" } },
+    { "id": "notizen-organisation", "name": { "en": "Notes & Organization", "de": "Notizen & Organisation", "es": "Notas y organización" } },
+    { "id": "speicher-medien", "name": { "en": "Storage & Media", "de": "Speicher & Medien", "es": "Almacenamiento y multimedia" } },
+    { "id": "sicherheit-netzwerk", "name": { "en": "Security & Network", "de": "Sicherheit & Netzwerk", "es": "Seguridad y redes" } },
+    { "id": "kommunikation", "name": { "en": "Communication", "de": "Kommunikation", "es": "Comunicación" } },
+    { "id": "ki-entwicklung", "name": { "en": "AI & Development", "de": "KI & Entwicklung", "es": "IA y desarrollo" } },
+    { "id": "business-finanzen", "name": { "en": "Business & Finance", "de": "Business & Finanzen", "es": "Negocios y finanzas" } },
+    { "id": "lernen-fitness", "name": { "en": "Learning & Fitness", "de": "Lernen & Fitness", "es": "Aprendizaje y fitness" } },
+    { "id": "gaming-pc-tools", "name": { "en": "Gaming & PC Tools", "de": "Gaming & PC-Tools", "es": "Gaming y herramientas para PC" } },
+    { "id": "cad-3d-gis", "name": { "en": "CAD, 3D & GIS", "de": "CAD, 3D & GIS", "es": "CAD, 3D y SIG" } }
   ],
   "products": [
     {
       "id": "microsoft-365",
       "name": "Microsoft 365 / Office",
-      "aliases": ["office", "word", "excel", "powerpoint", "microsoft office", "office 365", "ms office", "textverarbeitung", "tabellen"],
+      "aliases": ["office", "word", "excel", "powerpoint", "microsoft office", "office 365", "ms office", "textverarbeitung", "tabellen", "word processor", "spreadsheet", "procesador de textos", "hoja de cálculo"],
       "category": "buero-pdf",
       "alternatives": [
-        { "repo": "LibreOffice/core", "summary": "Komplettes Büropaket mit Text, Tabellen und Präsentationen. Öffnet Word- und Excel-Dateien.", "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://www.libreoffice.org/download/download/", "note": "Das GitHub-Repo ist nur ein Spiegel. Den Installer gibt es auf libreoffice.org." },
-        { "repo": "ONLYOFFICE/DesktopEditors", "summary": "Büroprogramm, das sehr ähnlich aussieht wie Microsoft Office und Word-Dateien gut darstellt.", "platforms": ["windows", "mac", "linux"], "level": "einfach" }
+        { "repo": "LibreOffice/core", "summary": { "en": "Complete office suite for documents, spreadsheets and presentations. Opens Word and Excel files.", "de": "Komplettes Büropaket mit Text, Tabellen und Präsentationen. Öffnet Word- und Excel-Dateien.", "es": "Paquete de oficina completo con textos, hojas de cálculo y presentaciones. Abre archivos de Word y Excel." }, "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://www.libreoffice.org/download/download/", "note": { "en": "The GitHub repo is only a mirror. You can get the installer at libreoffice.org.", "de": "Das GitHub-Repo ist nur ein Spiegel. Den Installer gibt es auf libreoffice.org.", "es": "El repositorio de GitHub es solo una copia. El instalador está en libreoffice.org." } },
+        { "repo": "ONLYOFFICE/DesktopEditors", "summary": { "en": "Office suite that looks very much like Microsoft Office and displays Word files well.", "de": "Büroprogramm, das sehr ähnlich aussieht wie Microsoft Office und Word-Dateien gut darstellt.", "es": "Programa de oficina muy parecido a Microsoft Office que muestra bien los archivos de Word." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" }
       ]
     },
     {
       "id": "adobe-acrobat",
       "name": "Adobe Acrobat",
-      "aliases": ["acrobat", "pdf", "acrobat pro", "pdf bearbeiten", "pdf editor", "adobe reader"],
+      "aliases": ["acrobat", "pdf", "acrobat pro", "pdf bearbeiten", "pdf editor", "adobe reader", "edit pdf", "editar pdf", "editor de pdf"],
       "category": "buero-pdf",
       "alternatives": [
-        { "repo": "Stirling-Tools/Stirling-PDF", "summary": "Über 50 PDF-Werkzeuge im Browser: zusammenfügen, teilen, drehen, komprimieren, Text erkennen.", "platforms": ["web", "server"], "level": "mittel" },
-        { "repo": "pdfarranger/pdfarranger", "summary": "PDF-Seiten einfach per Maus sortieren, drehen, löschen und Dateien zusammenfügen.", "platforms": ["windows", "linux"], "level": "einfach" },
-        { "repo": "sumatrapdfreader/sumatrapdf", "summary": "Sehr schneller, schlanker PDF-Leser für Windows. Liest auch E-Books und Comics.", "platforms": ["windows"], "level": "einfach" }
+        { "repo": "Stirling-Tools/Stirling-PDF", "summary": { "en": "Over 50 PDF tools in your browser: merge, split, rotate, compress and recognize text.", "de": "Über 50 PDF-Werkzeuge im Browser: zusammenfügen, teilen, drehen, komprimieren, Text erkennen.", "es": "Más de 50 herramientas PDF en el navegador: unir, dividir, girar, comprimir y reconocer texto." }, "platforms": ["web", "server"], "level": "mittel" },
+        { "repo": "pdfarranger/pdfarranger", "summary": { "en": "Easily reorder, rotate and delete PDF pages with your mouse, and merge files.", "de": "PDF-Seiten einfach per Maus sortieren, drehen, löschen und Dateien zusammenfügen.", "es": "Ordena, gira y borra páginas de PDF arrastrándolas, y une archivos fácilmente." }, "platforms": ["windows", "linux"], "level": "einfach" },
+        { "repo": "sumatrapdfreader/sumatrapdf", "summary": { "en": "Very fast, lightweight PDF reader for Windows. Also opens e-books and comics.", "de": "Sehr schneller, schlanker PDF-Leser für Windows. Liest auch E-Books und Comics.", "es": "Lector de PDF muy rápido y ligero para Windows. También abre libros electrónicos y cómics." }, "platforms": ["windows"], "level": "einfach" }
       ]
     },
     {
       "id": "docusign",
       "name": "DocuSign",
-      "aliases": ["e-signatur", "unterschrift", "digital unterschreiben", "signatur"],
+      "aliases": ["e-signatur", "unterschrift", "digital unterschreiben", "signatur", "e-signature", "sign documents", "firma electrónica", "firmar documentos"],
       "category": "buero-pdf",
       "alternatives": [
-        { "repo": "docusealco/docuseal", "summary": "Dokumente online unterschreiben lassen, mit Formularfeldern und Verlauf.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "documenso/documenso", "summary": "Offene Alternative für digitale Unterschriften, selbst gehostet.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "docusealco/docuseal", "summary": { "en": "Get documents signed online, with form fields and an activity history.", "de": "Dokumente online unterschreiben lassen, mit Formularfeldern und Verlauf.", "es": "Pide firmas de documentos en línea, con campos de formulario e historial." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "documenso/documenso", "summary": { "en": "Open alternative for digital signatures that you host yourself.", "de": "Offene Alternative für digitale Unterschriften, selbst gehostet.", "es": "Alternativa abierta para firmas digitales, alojada en tu propio servidor." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "microsoft-visio",
       "name": "Microsoft Visio / Lucidchart",
-      "aliases": ["visio", "lucidchart", "diagramm", "flussdiagramm", "organigramm"],
+      "aliases": ["visio", "lucidchart", "diagramm", "flussdiagramm", "organigramm", "diagram", "flowchart", "diagrama", "diagrama de flujo"],
       "category": "buero-pdf",
       "alternatives": [
-        { "repo": "jgraph/drawio-desktop", "summary": "Diagramme, Flussdiagramme und Organigramme zeichnen. Öffnet auch Visio-Dateien.", "platforms": ["windows", "mac", "linux"], "level": "einfach" },
-        { "repo": "excalidraw/excalidraw", "summary": "Skizzen und Diagramme im Handzeichnungs-Stil direkt im Browser.", "platforms": ["web"], "level": "einfach", "website": "https://excalidraw.com" }
+        { "repo": "jgraph/drawio-desktop", "summary": { "en": "Draw diagrams, flowcharts and org charts. Also opens Visio files.", "de": "Diagramme, Flussdiagramme und Organigramme zeichnen. Öffnet auch Visio-Dateien.", "es": "Dibuja diagramas, diagramas de flujo y organigramas. También abre archivos de Visio." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" },
+        { "repo": "excalidraw/excalidraw", "summary": { "en": "Sketches and diagrams with a hand-drawn look, right in your browser.", "de": "Skizzen und Diagramme im Handzeichnungs-Stil direkt im Browser.", "es": "Bocetos y diagramas con estilo dibujado a mano, directamente en el navegador." }, "platforms": ["web"], "level": "einfach", "website": "https://excalidraw.com" }
       ]
     },
     {
       "id": "grammarly",
       "name": "Grammarly",
-      "aliases": ["rechtschreibung", "grammatik", "korrektur", "duden mentor"],
+      "aliases": ["rechtschreibung", "grammatik", "korrektur", "duden mentor", "spell check", "grammar check", "corrector ortográfico", "gramática"],
       "category": "buero-pdf",
       "alternatives": [
-        { "repo": "languagetool-org/languagetool", "summary": "Prüft Rechtschreibung, Grammatik und Stil in über 30 Sprachen, auch Deutsch.", "platforms": ["server"], "level": "mittel", "website": "https://languagetool.org", "note": "Die Browser-Erweiterung von LanguageTool kannst du gratis nutzen, ohne Server." }
+        { "repo": "languagetool-org/languagetool", "summary": { "en": "Checks spelling, grammar and style in over 30 languages, including English.", "de": "Prüft Rechtschreibung, Grammatik und Stil in über 30 Sprachen, auch Deutsch.", "es": "Revisa ortografía, gramática y estilo en más de 30 idiomas, incluido el español." }, "platforms": ["server"], "level": "mittel", "website": "https://languagetool.org", "note": { "en": "You can use the LanguageTool browser extension for free, without a server.", "de": "Die Browser-Erweiterung von LanguageTool kannst du gratis nutzen, ohne Server.", "es": "Puedes usar gratis la extensión de LanguageTool para el navegador, sin servidor." } }
       ]
     },
     {
       "id": "deepl-pro",
       "name": "DeepL Pro",
-      "aliases": ["deepl", "übersetzer", "uebersetzer", "übersetzung", "google translate"],
+      "aliases": ["deepl", "übersetzer", "uebersetzer", "übersetzung", "google translate", "translator", "translation", "traductor", "traducción"],
       "category": "buero-pdf",
       "alternatives": [
-        { "repo": "LibreTranslate/LibreTranslate", "summary": "Übersetzungsdienst, der komplett auf dem eigenen Server läuft. Keine Daten an Dritte.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "LibreTranslate/LibreTranslate", "summary": { "en": "Translation service that runs entirely on your own server. No data goes to third parties.", "de": "Übersetzungsdienst, der komplett auf dem eigenen Server läuft. Keine Daten an Dritte.", "es": "Servicio de traducción que funciona por completo en tu propio servidor. Sin enviar datos a terceros." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "adobe-photoshop",
       "name": "Adobe Photoshop",
-      "aliases": ["photoshop", "ps", "bildbearbeitung", "fotobearbeitung", "bilder bearbeiten"],
+      "aliases": ["photoshop", "ps", "bildbearbeitung", "fotobearbeitung", "bilder bearbeiten", "image editing", "photo editing", "edición de fotos", "editor de imágenes"],
       "category": "kreativ-design",
       "alternatives": [
-        { "repo": "GNOME/gimp", "summary": "Der Klassiker für Bildbearbeitung: Ebenen, Masken, Filter und Retusche.", "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://www.gimp.org/downloads/", "note": "Das GitHub-Repo ist nur ein Spiegel. Den Installer gibt es auf gimp.org." },
-        { "repo": "KDE/krita", "summary": "Malprogramm für digitale Kunst und Illustrationen, mit vielen Pinseln. Ideal mit Grafiktablett.", "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://krita.org/de/download/" },
-        { "repo": "PintaProject/Pinta", "summary": "Einfaches Bildbearbeitungsprogramm, ähnlich wie Paint.NET. Gut für den Einstieg.", "platforms": ["windows", "mac", "linux"], "level": "einfach" }
+        { "repo": "GNOME/gimp", "summary": { "en": "The classic for image editing: layers, masks, filters and retouching.", "de": "Der Klassiker für Bildbearbeitung: Ebenen, Masken, Filter und Retusche.", "es": "El clásico de la edición de imágenes: capas, máscaras, filtros y retoque." }, "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://www.gimp.org/downloads/", "note": { "en": "The GitHub repo is only a mirror. You can get the installer at gimp.org.", "de": "Das GitHub-Repo ist nur ein Spiegel. Den Installer gibt es auf gimp.org.", "es": "El repositorio de GitHub es solo una copia. El instalador está en gimp.org." } },
+        { "repo": "KDE/krita", "summary": { "en": "Painting program for digital art and illustrations, with lots of brushes. Ideal with a drawing tablet.", "de": "Malprogramm für digitale Kunst und Illustrationen, mit vielen Pinseln. Ideal mit Grafiktablett.", "es": "Programa de pintura para arte digital e ilustraciones, con muchos pinceles. Ideal con tableta gráfica." }, "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://krita.org/de/download/" },
+        { "repo": "PintaProject/Pinta", "summary": { "en": "Simple image editor, similar to Paint.NET. Good for beginners.", "de": "Einfaches Bildbearbeitungsprogramm, ähnlich wie Paint.NET. Gut für den Einstieg.", "es": "Editor de imágenes sencillo, parecido a Paint.NET. Ideal para empezar." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" }
       ]
     },
     {
       "id": "adobe-lightroom",
       "name": "Adobe Lightroom",
-      "aliases": ["lightroom", "lr", "raw", "fotos entwickeln", "raw-entwickler"],
+      "aliases": ["lightroom", "lr", "raw", "fotos entwickeln", "raw-entwickler", "raw editor", "photo processing", "revelado raw", "revelar fotos"],
       "category": "kreativ-design",
       "alternatives": [
-        { "repo": "darktable-org/darktable", "summary": "Fotos im RAW-Format entwickeln und verwalten, ähnlich wie Lightroom.", "platforms": ["windows", "mac", "linux"], "level": "einfach" },
-        { "repo": "RawTherapee/RawTherapee", "summary": "Leistungsstarker RAW-Entwickler mit vielen Werkzeugen für Farbe und Schärfe.", "platforms": ["windows", "mac", "linux"], "level": "einfach" }
+        { "repo": "darktable-org/darktable", "summary": { "en": "Edit and organize RAW photos, similar to Lightroom.", "de": "Fotos im RAW-Format entwickeln und verwalten, ähnlich wie Lightroom.", "es": "Edita y organiza fotos en formato RAW, parecido a Lightroom." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" },
+        { "repo": "RawTherapee/RawTherapee", "summary": { "en": "Powerful RAW photo editor with lots of tools for color and sharpness.", "de": "Leistungsstarker RAW-Entwickler mit vielen Werkzeugen für Farbe und Schärfe.", "es": "Potente editor de fotos RAW con muchas herramientas para color y nitidez." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" }
       ]
     },
     {
       "id": "adobe-illustrator",
       "name": "Adobe Illustrator",
-      "aliases": ["illustrator", "ai", "vektorgrafik", "logo", "svg"],
+      "aliases": ["illustrator", "ai", "vektorgrafik", "logo", "svg", "vector graphics", "logo design", "gráficos vectoriales", "diseño de logos"],
       "category": "kreativ-design",
       "alternatives": [
-        { "repo": "inkscape/inkscape", "summary": "Vektorgrafiken, Logos und Illustrationen erstellen. Arbeitet mit SVG-Dateien.", "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://inkscape.org/release/" }
+        { "repo": "inkscape/inkscape", "summary": { "en": "Create vector graphics, logos and illustrations. Works with SVG files.", "de": "Vektorgrafiken, Logos und Illustrationen erstellen. Arbeitet mit SVG-Dateien.", "es": "Crea gráficos vectoriales, logotipos e ilustraciones. Trabaja con archivos SVG." }, "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://inkscape.org/release/" }
       ]
     },
     {
       "id": "adobe-premiere-pro",
       "name": "Adobe Premiere Pro / Final Cut",
-      "aliases": ["premiere", "premiere pro", "final cut", "videoschnitt", "video bearbeiten", "davinci"],
+      "aliases": ["premiere", "premiere pro", "final cut", "videoschnitt", "video bearbeiten", "davinci", "video editing", "video editor", "edición de video", "editor de video"],
       "category": "kreativ-design",
       "alternatives": [
-        { "repo": "KDE/kdenlive", "summary": "Videoschnitt mit mehreren Spuren, Effekten und Übergängen.", "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://kdenlive.org/de/download/" },
-        { "repo": "mltframework/shotcut", "summary": "Videoeditor für viele Formate, ohne Import-Wartezeit.", "platforms": ["windows", "mac", "linux"], "level": "einfach" },
-        { "repo": "OpenShot/openshot-qt", "summary": "Sehr einfacher Videoeditor, gut für Anfänger und Familienvideos.", "platforms": ["windows", "mac", "linux"], "level": "einfach" }
+        { "repo": "KDE/kdenlive", "summary": { "en": "Video editing with multiple tracks, effects and transitions.", "de": "Videoschnitt mit mehreren Spuren, Effekten und Übergängen.", "es": "Edición de video con varias pistas, efectos y transiciones." }, "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://kdenlive.org/de/download/" },
+        { "repo": "mltframework/shotcut", "summary": { "en": "Video editor for many formats, with no waiting for imports.", "de": "Videoeditor für viele Formate, ohne Import-Wartezeit.", "es": "Editor de video para muchos formatos, sin esperas al importar." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" },
+        { "repo": "OpenShot/openshot-qt", "summary": { "en": "Very simple video editor, good for beginners and family videos.", "de": "Sehr einfacher Videoeditor, gut für Anfänger und Familienvideos.", "es": "Editor de video muy sencillo, ideal para principiantes y videos familiares." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" }
       ]
     },
     {
       "id": "adobe-after-effects",
       "name": "Adobe After Effects",
-      "aliases": ["after effects", "ae", "compositing", "motion graphics", "visuelle effekte"],
+      "aliases": ["after effects", "ae", "compositing", "motion graphics", "visuelle effekte", "visual effects", "vfx", "efectos visuales"],
       "category": "kreativ-design",
       "alternatives": [
-        { "repo": "NatronGitHub/Natron", "summary": "Programm für visuelle Effekte und Compositing mit Knoten-System.", "platforms": ["windows", "mac", "linux"], "level": "profi" }
+        { "repo": "NatronGitHub/Natron", "summary": { "en": "Program for visual effects and compositing with a node-based system.", "de": "Programm für visuelle Effekte und Compositing mit Knoten-System.", "es": "Programa de efectos visuales y composición con un sistema de nodos." }, "platforms": ["windows", "mac", "linux"], "level": "profi" }
       ]
     },
     {
       "id": "adobe-audition",
       "name": "Adobe Audition",
-      "aliases": ["audition", "audio bearbeiten", "podcast", "tonaufnahme"],
+      "aliases": ["audition", "audio bearbeiten", "podcast", "tonaufnahme", "audio editing", "audio recording", "edición de audio", "grabar audio"],
       "category": "kreativ-design",
       "alternatives": [
-        { "repo": "audacity/audacity", "summary": "Audio aufnehmen und schneiden, ideal für Podcasts und Sprachaufnahmen.", "platforms": ["windows", "mac", "linux"], "level": "einfach" }
+        { "repo": "audacity/audacity", "summary": { "en": "Record and edit audio, ideal for podcasts and voice recordings.", "de": "Audio aufnehmen und schneiden, ideal für Podcasts und Sprachaufnahmen.", "es": "Graba y edita audio, ideal para podcasts y grabaciones de voz." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" }
       ]
     },
     {
       "id": "fl-studio",
       "name": "FL Studio / Ableton",
-      "aliases": ["fl studio", "ableton", "ableton live", "musik produzieren", "daw", "beats"],
+      "aliases": ["fl studio", "ableton", "ableton live", "musik produzieren", "daw", "beats", "music production", "make music", "producción musical", "hacer música"],
       "category": "kreativ-design",
       "alternatives": [
-        { "repo": "LMMS/lmms", "summary": "Musik produzieren mit Synthesizern, Beats und Piano-Roll, ähnlich wie FL Studio.", "platforms": ["windows", "mac", "linux"], "level": "einfach" }
+        { "repo": "LMMS/lmms", "summary": { "en": "Make music with synthesizers, beats and a piano roll, similar to FL Studio.", "de": "Musik produzieren mit Synthesizern, Beats und Piano-Roll, ähnlich wie FL Studio.", "es": "Produce música con sintetizadores, ritmos y piano roll, parecido a FL Studio." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" }
       ]
     },
     {
       "id": "figma",
       "name": "Figma / Canva Pro",
-      "aliases": ["figma", "canva", "canva pro", "ui design", "webdesign", "prototyp"],
+      "aliases": ["figma", "canva", "canva pro", "ui design", "webdesign", "prototyp", "web design", "prototype", "diseño web", "prototipo"],
       "category": "kreativ-design",
       "alternatives": [
-        { "repo": "penpot/penpot", "summary": "Design und Prototypen im Browser, gemeinsam im Team. Offene Alternative zu Figma.", "platforms": ["web", "server"], "level": "einfach", "website": "https://penpot.app" }
+        { "repo": "penpot/penpot", "summary": { "en": "Design and prototypes in your browser, together with your team. Open alternative to Figma.", "de": "Design und Prototypen im Browser, gemeinsam im Team. Offene Alternative zu Figma.", "es": "Diseño y prototipos en el navegador, en equipo. Alternativa abierta a Figma." }, "platforms": ["web", "server"], "level": "einfach", "website": "https://penpot.app" }
       ]
     },
     {
       "id": "midjourney",
       "name": "Midjourney",
-      "aliases": ["ki bilder", "bildgenerator", "dall-e", "stable diffusion", "ai art"],
+      "aliases": ["ki bilder", "bildgenerator", "dall-e", "stable diffusion", "ai art", "ai images", "image generator", "imágenes con ia", "generador de imágenes"],
       "category": "kreativ-design",
       "alternatives": [
-        { "repo": "lllyasviel/Fooocus", "summary": "KI-Bilder aus Text erzeugen, mit einfacher Oberfläche. Läuft auf dem eigenen PC.", "platforms": ["windows", "linux"], "level": "mittel", "note": "Braucht eine starke Grafikkarte (am besten NVIDIA)." },
-        { "repo": "Comfy-Org/ComfyUI", "summary": "Sehr flexibles Werkzeug für KI-Bilder mit Bausteinen, die man verbindet.", "platforms": ["windows", "mac", "linux"], "level": "profi", "note": "Braucht eine starke Grafikkarte." }
+        { "repo": "lllyasviel/Fooocus", "summary": { "en": "Create AI images from text with a simple interface. Runs on your own PC.", "de": "KI-Bilder aus Text erzeugen, mit einfacher Oberfläche. Läuft auf dem eigenen PC.", "es": "Crea imágenes con IA a partir de texto, con una interfaz sencilla. Funciona en tu propio PC." }, "platforms": ["windows", "linux"], "level": "mittel", "note": { "en": "Needs a powerful graphics card (ideally NVIDIA).", "de": "Braucht eine starke Grafikkarte (am besten NVIDIA).", "es": "Necesita una tarjeta gráfica potente (idealmente NVIDIA)." } },
+        { "repo": "Comfy-Org/ComfyUI", "summary": { "en": "Very flexible tool for AI images, built from blocks that you connect.", "de": "Sehr flexibles Werkzeug für KI-Bilder mit Bausteinen, die man verbindet.", "es": "Herramienta muy flexible para imágenes con IA, con bloques que vas conectando." }, "platforms": ["windows", "mac", "linux"], "level": "profi", "note": { "en": "Needs a powerful graphics card.", "de": "Braucht eine starke Grafikkarte.", "es": "Necesita una tarjeta gráfica potente." } }
       ]
     },
     {
       "id": "camtasia",
       "name": "Camtasia / Snagit",
-      "aliases": ["camtasia", "snagit", "screenshot", "bildschirmaufnahme", "screen recorder"],
+      "aliases": ["camtasia", "snagit", "screenshot", "bildschirmaufnahme", "screen recorder", "screen recording", "captura de pantalla", "grabar pantalla"],
       "category": "kreativ-design",
       "alternatives": [
-        { "repo": "ShareX/ShareX", "summary": "Screenshots und Bildschirmvideos mit vielen Werkzeugen zum Beschriften und Teilen.", "platforms": ["windows"], "level": "einfach" },
-        { "repo": "flameshot-org/flameshot", "summary": "Schnelle Screenshots mit Pfeilen, Text und Markierungen.", "platforms": ["windows", "mac", "linux"], "level": "einfach" },
-        { "repo": "obsproject/obs-studio", "summary": "Bildschirm aufnehmen und live streamen, sehr vielseitig.", "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://obsproject.com/de/download" }
+        { "repo": "ShareX/ShareX", "summary": { "en": "Screenshots and screen videos with lots of tools for adding notes and sharing.", "de": "Screenshots und Bildschirmvideos mit vielen Werkzeugen zum Beschriften und Teilen.", "es": "Capturas y videos de pantalla con muchas herramientas para anotar y compartir." }, "platforms": ["windows"], "level": "einfach" },
+        { "repo": "flameshot-org/flameshot", "summary": { "en": "Quick screenshots with arrows, text and highlights.", "de": "Schnelle Screenshots mit Pfeilen, Text und Markierungen.", "es": "Capturas de pantalla rápidas con flechas, texto y marcas." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" },
+        { "repo": "obsproject/obs-studio", "summary": { "en": "Record your screen and stream live. Very versatile.", "de": "Bildschirm aufnehmen und live streamen, sehr vielseitig.", "es": "Graba tu pantalla y transmite en vivo. Muy versátil." }, "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://obsproject.com/de/download" }
       ]
     },
     {
       "id": "loom",
       "name": "Loom",
-      "aliases": ["bildschirmvideo", "video nachricht", "screen recording"],
+      "aliases": ["bildschirmvideo", "video nachricht", "screen recording", "video message", "screen video", "mensaje de video", "grabar pantalla"],
       "category": "kreativ-design",
       "alternatives": [
-        { "repo": "CapSoftware/Cap", "summary": "Kurze Bildschirmvideos aufnehmen und mit einem Link teilen.", "platforms": ["windows", "mac"], "level": "einfach", "website": "https://cap.so/download" }
+        { "repo": "CapSoftware/Cap", "summary": { "en": "Record short screen videos and share them with a link.", "de": "Kurze Bildschirmvideos aufnehmen und mit einem Link teilen.", "es": "Graba videos cortos de tu pantalla y compártelos con un enlace." }, "platforms": ["windows", "mac"], "level": "einfach", "website": "https://cap.so/download" }
       ]
     },
     {
       "id": "notion",
       "name": "Notion",
-      "aliases": ["notizen", "wiki", "datenbank", "workspace"],
+      "aliases": ["notizen", "wiki", "datenbank", "workspace", "notes", "database", "notas", "base de datos"],
       "category": "notizen-organisation",
       "alternatives": [
-        { "repo": "AppFlowy-IO/AppFlowy", "summary": "Notizen, Aufgaben und Datenbanken wie in Notion, aber die Daten bleiben bei dir.", "platforms": ["windows", "mac", "linux", "android", "ios"], "level": "einfach" },
-        { "repo": "toeverything/AFFiNE", "summary": "Notizen, Whiteboard und Dokumente in einer App, lokal gespeichert.", "platforms": ["windows", "mac", "linux", "web"], "level": "einfach" },
-        { "repo": "anyproto/anytype-ts", "summary": "Notizen und Wissen verknüpfen, verschlüsselt und offline nutzbar.", "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://download.anytype.io" }
+        { "repo": "AppFlowy-IO/AppFlowy", "summary": { "en": "Notes, tasks and databases like in Notion, but your data stays with you.", "de": "Notizen, Aufgaben und Datenbanken wie in Notion, aber die Daten bleiben bei dir.", "es": "Notas, tareas y bases de datos como en Notion, pero tus datos se quedan contigo." }, "platforms": ["windows", "mac", "linux", "android", "ios"], "level": "einfach" },
+        { "repo": "toeverything/AFFiNE", "summary": { "en": "Notes, whiteboard and documents in one app, saved on your device.", "de": "Notizen, Whiteboard und Dokumente in einer App, lokal gespeichert.", "es": "Notas, pizarra y documentos en una sola app, guardados en tu dispositivo." }, "platforms": ["windows", "mac", "linux", "web"], "level": "einfach" },
+        { "repo": "anyproto/anytype-ts", "summary": { "en": "Link your notes and knowledge together, encrypted and usable offline.", "de": "Notizen und Wissen verknüpfen, verschlüsselt und offline nutzbar.", "es": "Conecta tus notas y conocimientos, con cifrado y uso sin conexión." }, "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://download.anytype.io" }
       ]
     },
     {
       "id": "evernote",
       "name": "Evernote",
-      "aliases": ["notizbuch", "notiz app", "onenote"],
+      "aliases": ["notizbuch", "notiz app", "onenote", "notebook", "notes app", "app de notas", "bloc de notas"],
       "category": "notizen-organisation",
       "alternatives": [
-        { "repo": "laurent22/joplin", "summary": "Notizen und To-dos auf allen Geräten, mit Synchronisation. Kann Evernote-Dateien importieren.", "platforms": ["windows", "mac", "linux", "android", "ios"], "level": "einfach" }
+        { "repo": "laurent22/joplin", "summary": { "en": "Notes and to-dos on all your devices, kept in sync. Can import Evernote files.", "de": "Notizen und To-dos auf allen Geräten, mit Synchronisation. Kann Evernote-Dateien importieren.", "es": "Notas y tareas en todos tus dispositivos, sincronizadas. Puede importar archivos de Evernote." }, "platforms": ["windows", "mac", "linux", "android", "ios"], "level": "einfach" }
       ]
     },
     {
       "id": "todoist",
       "name": "Todoist",
-      "aliases": ["aufgaben", "to-do", "todo", "aufgabenliste", "ticktick"],
+      "aliases": ["aufgaben", "to-do", "todo", "aufgabenliste", "ticktick", "tasks", "to-do list", "tareas", "lista de tareas"],
       "category": "notizen-organisation",
       "alternatives": [
-        { "repo": "super-productivity/super-productivity", "summary": "Aufgabenliste mit Zeiterfassung und Fokus-Timer.", "platforms": ["windows", "mac", "linux", "android"], "level": "einfach" },
-        { "repo": "go-vikunja/vikunja", "summary": "Aufgaben und Projekte verwalten, auf dem eigenen Server.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "super-productivity/super-productivity", "summary": { "en": "To-do list with time tracking and a focus timer.", "de": "Aufgabenliste mit Zeiterfassung und Fokus-Timer.", "es": "Lista de tareas con registro de tiempo y temporizador de concentración." }, "platforms": ["windows", "mac", "linux", "android"], "level": "einfach" },
+        { "repo": "go-vikunja/vikunja", "summary": { "en": "Manage tasks and projects on your own server.", "de": "Aufgaben und Projekte verwalten, auf dem eigenen Server.", "es": "Gestiona tareas y proyectos en tu propio servidor." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "trello",
       "name": "Trello",
-      "aliases": ["kanban", "board", "karten"],
+      "aliases": ["kanban", "board", "karten", "cards", "kanban board", "tablero", "tarjetas"],
       "category": "notizen-organisation",
       "alternatives": [
-        { "repo": "plankanban/planka", "summary": "Kanban-Boards wie bei Trello, zum Selbsthosten.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "wekan/wekan", "summary": "Kanban-Boards für Teams, auf dem eigenen Server.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "plankanban/planka", "summary": { "en": "Kanban boards like Trello, to host yourself.", "de": "Kanban-Boards wie bei Trello, zum Selbsthosten.", "es": "Tableros kanban como en Trello, para alojar tú mismo." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "wekan/wekan", "summary": { "en": "Kanban boards for teams, on your own server.", "de": "Kanban-Boards für Teams, auf dem eigenen Server.", "es": "Tableros kanban para equipos, en tu propio servidor." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "jira",
       "name": "Jira / Asana",
-      "aliases": ["jira", "asana", "projektmanagement", "monday", "tickets"],
+      "aliases": ["jira", "asana", "projektmanagement", "monday", "tickets", "project management", "gestión de proyectos"],
       "category": "notizen-organisation",
       "alternatives": [
-        { "repo": "makeplane/plane", "summary": "Projekte, Aufgaben und Sprints planen, ähnlich wie Jira.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "opf/openproject", "summary": "Umfangreiches Projektmanagement mit Zeitplänen und Gantt-Diagrammen.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "makeplane/plane", "summary": { "en": "Plan projects, tasks and sprints, similar to Jira.", "de": "Projekte, Aufgaben und Sprints planen, ähnlich wie Jira.", "es": "Planifica proyectos, tareas y sprints, parecido a Jira." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "opf/openproject", "summary": { "en": "Full-featured project management with schedules and Gantt charts.", "de": "Umfangreiches Projektmanagement mit Zeitplänen und Gantt-Diagrammen.", "es": "Gestión de proyectos completa con cronogramas y diagramas de Gantt." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "airtable",
       "name": "Airtable",
-      "aliases": ["tabellen datenbank", "no-code datenbank"],
+      "aliases": ["tabellen datenbank", "no-code datenbank", "spreadsheet database", "no-code database", "base de datos sin código"],
       "category": "notizen-organisation",
       "alternatives": [
-        { "repo": "nocodb/nocodb", "summary": "Datenbank, die sich wie eine Tabelle bedienen lässt.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "teableio/teable", "summary": "Tabellen-Datenbank ohne Programmieren, auch für grosse Datenmengen.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "nocodb/nocodb", "summary": { "en": "A database you can use just like a spreadsheet.", "de": "Datenbank, die sich wie eine Tabelle bedienen lässt.", "es": "Una base de datos que se usa como una hoja de cálculo." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "teableio/teable", "summary": { "en": "Spreadsheet-style database with no coding needed, even for large amounts of data.", "de": "Tabellen-Datenbank ohne Programmieren, auch für grosse Datenmengen.", "es": "Base de datos tipo hoja de cálculo sin programar, incluso para grandes cantidades de datos." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "calendly",
       "name": "Calendly",
-      "aliases": ["termine", "terminbuchung", "termin planen", "doodle"],
+      "aliases": ["termine", "terminbuchung", "termin planen", "doodle", "appointments", "scheduling", "citas", "agendar citas"],
       "category": "notizen-organisation",
       "alternatives": [
-        { "repo": "calcom/cal.diy", "summary": "Andere können online freie Termine bei dir buchen.", "platforms": ["server"], "level": "profi" }
+        { "repo": "calcom/cal.diy", "summary": { "en": "Let others book free time slots with you online.", "de": "Andere können online freie Termine bei dir buchen.", "es": "Deja que otras personas reserven en línea tus horarios libres." }, "platforms": ["server"], "level": "profi" }
       ]
     },
     {
       "id": "typeform",
       "name": "Typeform / SurveyMonkey",
-      "aliases": ["typeform", "surveymonkey", "umfrage", "formular", "google forms"],
+      "aliases": ["typeform", "surveymonkey", "umfrage", "formular", "google forms", "survey", "form", "encuesta", "formulario"],
       "category": "notizen-organisation",
       "alternatives": [
-        { "repo": "formbricks/formbricks", "summary": "Umfragen und Formulare erstellen und auswerten.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "formbricks/formbricks", "summary": { "en": "Create surveys and forms and analyze the results.", "de": "Umfragen und Formulare erstellen und auswerten.", "es": "Crea encuestas y formularios y analiza los resultados." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "zapier",
       "name": "Zapier",
-      "aliases": ["automatisierung", "make", "ifttt", "workflow"],
+      "aliases": ["automatisierung", "make", "ifttt", "workflow", "automation", "automatización"],
       "category": "notizen-organisation",
       "alternatives": [
-        { "repo": "n8n-io/n8n", "summary": "Abläufe zwischen Apps automatisieren, mit Bausteinen per Maus.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "activepieces/activepieces", "summary": "Einfache Automatisierungen zwischen hunderten Apps, ähnlich wie Zapier.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "n8n-io/n8n", "summary": { "en": "Automate workflows between apps by connecting blocks with your mouse.", "de": "Abläufe zwischen Apps automatisieren, mit Bausteinen per Maus.", "es": "Automatiza procesos entre apps conectando bloques con unos clics." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "activepieces/activepieces", "summary": { "en": "Simple automations between hundreds of apps, similar to Zapier.", "de": "Einfache Automatisierungen zwischen hunderten Apps, ähnlich wie Zapier.", "es": "Automatizaciones sencillas entre cientos de apps, parecido a Zapier." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "pocket",
       "name": "Pocket / Readwise",
-      "aliases": ["pocket", "readwise", "später lesen", "read later", "artikel speichern"],
+      "aliases": ["pocket", "readwise", "später lesen", "read later", "artikel speichern", "save articles", "leer más tarde", "guardar artículos"],
       "category": "notizen-organisation",
       "alternatives": [
-        { "repo": "wallabag/wallabag", "summary": "Artikel aus dem Web speichern und später ohne Werbung lesen.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "wallabag/wallabag", "summary": { "en": "Save articles from the web and read them later without ads.", "de": "Artikel aus dem Web speichern und später ohne Werbung lesen.", "es": "Guarda artículos de la web y léelos más tarde sin anuncios." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "feedly-pro",
       "name": "Feedly Pro",
-      "aliases": ["feedly", "rss", "news reader", "feed"],
+      "aliases": ["feedly", "rss", "news reader", "feed", "rss reader", "lector rss", "lector de noticias"],
       "category": "notizen-organisation",
       "alternatives": [
-        { "repo": "FreshRSS/FreshRSS", "summary": "News und Blogs per RSS an einem Ort lesen.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "FreshRSS/FreshRSS", "summary": { "en": "Read news and blogs in one place via RSS.", "de": "News und Blogs per RSS an einem Ort lesen.", "es": "Lee noticias y blogs en un solo lugar mediante RSS." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "dropbox",
       "name": "Dropbox / Google One / iCloud+",
-      "aliases": ["dropbox", "google one", "google drive", "icloud", "onedrive", "cloud speicher", "cloud"],
+      "aliases": ["dropbox", "google one", "google drive", "icloud", "onedrive", "cloud speicher", "cloud", "cloud storage", "almacenamiento en la nube", "nube"],
       "category": "speicher-medien",
       "alternatives": [
-        { "repo": "nextcloud/server", "summary": "Eigene Cloud für Dateien, Kalender und Kontakte, zum Beispiel auf einem NAS.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "syncthing/syncthing", "summary": "Ordner direkt zwischen deinen Geräten synchronisieren, ohne Cloud dazwischen.", "platforms": ["windows", "mac", "linux", "android"], "level": "mittel" }
+        { "repo": "nextcloud/server", "summary": { "en": "Your own cloud for files, calendars and contacts, for example on a NAS.", "de": "Eigene Cloud für Dateien, Kalender und Kontakte, zum Beispiel auf einem NAS.", "es": "Tu propia nube para archivos, calendarios y contactos, por ejemplo en un NAS." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "syncthing/syncthing", "summary": { "en": "Sync folders directly between your devices, with no cloud in between.", "de": "Ordner direkt zwischen deinen Geräten synchronisieren, ohne Cloud dazwischen.", "es": "Sincroniza carpetas directamente entre tus dispositivos, sin pasar por la nube." }, "platforms": ["windows", "mac", "linux", "android"], "level": "mittel" }
       ]
     },
     {
       "id": "google-fotos",
-      "name": "Google Fotos / iCloud Fotos",
-      "aliases": ["google fotos", "google photos", "icloud fotos", "fotos sichern", "fotoalbum"],
+      "name": "Google Photos / iCloud Photos",
+      "aliases": ["google fotos", "google photos", "icloud fotos", "fotos sichern", "fotoalbum", "icloud photos", "photo backup", "photo album", "álbum de fotos"],
       "category": "speicher-medien",
       "alternatives": [
-        { "repo": "immich-app/immich", "summary": "Fotos und Videos vom Handy automatisch sichern, wie Google Fotos, auf dem eigenen Server.", "platforms": ["server", "android", "ios"], "level": "mittel" },
-        { "repo": "photoprism/photoprism", "summary": "Fotosammlung mit KI-Suche und Karte, auf dem eigenen Server.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "immich-app/immich", "summary": { "en": "Automatically back up photos and videos from your phone, like Google Photos, on your own server.", "de": "Fotos und Videos vom Handy automatisch sichern, wie Google Fotos, auf dem eigenen Server.", "es": "Guarda automáticamente fotos y videos del teléfono, como Google Fotos, en tu propio servidor." }, "platforms": ["server", "android", "ios"], "level": "mittel" },
+        { "repo": "photoprism/photoprism", "summary": { "en": "Photo collection with AI search and a map view, on your own server.", "de": "Fotosammlung mit KI-Suche und Karte, auf dem eigenen Server.", "es": "Colección de fotos con búsqueda por IA y mapa, en tu propio servidor." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "plex-pass",
       "name": "Plex Pass",
-      "aliases": ["plex", "mediaserver", "filme streamen", "emby"],
+      "aliases": ["plex", "mediaserver", "filme streamen", "emby", "media server", "stream movies", "servidor multimedia", "ver películas"],
       "category": "speicher-medien",
       "alternatives": [
-        { "repo": "jellyfin/jellyfin", "summary": "Mediaserver für eigene Filme, Serien und Musik, ohne Abo.", "platforms": ["server"], "level": "mittel", "note": "Für eigene Filme und Serien, kein Netflix-Ersatz." }
+        { "repo": "jellyfin/jellyfin", "summary": { "en": "Media server for your own movies, shows and music, with no subscription.", "de": "Mediaserver für eigene Filme, Serien und Musik, ohne Abo.", "es": "Servidor multimedia para tus propias películas, series y música, sin suscripción." }, "platforms": ["server"], "level": "mittel", "note": { "en": "For your own movies and shows. Not a Netflix replacement.", "de": "Für eigene Filme und Serien, kein Netflix-Ersatz.", "es": "Para tus propias películas y series. No reemplaza a Netflix." } }
       ]
     },
     {
       "id": "spotify",
       "name": "Spotify",
-      "aliases": ["musik", "musik streamen", "apple music", "youtube music"],
+      "aliases": ["musik", "musik streamen", "apple music", "youtube music", "music", "music streaming", "música", "escuchar música"],
       "category": "speicher-medien",
       "alternatives": [
-        { "repo": "navidrome/navidrome", "summary": "Eigene Musiksammlung von überall streamen, wie ein privates Spotify.", "platforms": ["server"], "level": "mittel", "note": "Nur für eigene Musikdateien. Kein Ersatz für den Spotify-Katalog." }
+        { "repo": "navidrome/navidrome", "summary": { "en": "Stream your own music collection from anywhere, like a private Spotify.", "de": "Eigene Musiksammlung von überall streamen, wie ein privates Spotify.", "es": "Escucha tu propia colección de música desde cualquier lugar, como un Spotify privado." }, "platforms": ["server"], "level": "mittel", "note": { "en": "Only for your own music files. Not a replacement for the Spotify catalog.", "de": "Nur für eigene Musikdateien. Kein Ersatz für den Spotify-Katalog.", "es": "Solo para tus propios archivos de música. No reemplaza el catálogo de Spotify." } }
       ]
     },
     {
       "id": "backblaze",
       "name": "Backblaze / Acronis",
-      "aliases": ["backblaze", "acronis", "backup", "datensicherung", "sicherung"],
+      "aliases": ["backblaze", "acronis", "backup", "datensicherung", "sicherung", "data backup", "copia de seguridad", "respaldo"],
       "category": "speicher-medien",
       "alternatives": [
-        { "repo": "duplicati/duplicati", "summary": "Verschlüsselte Backups auf externe Festplatte oder in die Cloud, mit Zeitplan.", "platforms": ["windows", "mac", "linux"], "level": "einfach" },
-        { "repo": "restic/restic", "summary": "Schnelle, sichere Backups über die Kommandozeile.", "platforms": ["windows", "mac", "linux"], "level": "profi" }
+        { "repo": "duplicati/duplicati", "summary": { "en": "Encrypted backups to an external drive or the cloud, on a schedule.", "de": "Verschlüsselte Backups auf externe Festplatte oder in die Cloud, mit Zeitplan.", "es": "Copias de seguridad cifradas en un disco externo o en la nube, de forma programada." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" },
+        { "repo": "restic/restic", "summary": { "en": "Fast, secure backups from the command line.", "de": "Schnelle, sichere Backups über die Kommandozeile.", "es": "Copias de seguridad rápidas y seguras desde la línea de comandos." }, "platforms": ["windows", "mac", "linux"], "level": "profi" }
       ]
     },
     {
       "id": "1password",
       "name": "1Password / LastPass",
-      "aliases": ["1password", "lastpass", "passwort manager", "passwörter", "passwoerter", "dashlane"],
+      "aliases": ["1password", "lastpass", "passwort manager", "passwörter", "passwoerter", "dashlane", "password manager", "passwords", "gestor de contraseñas", "contraseñas"],
       "category": "sicherheit-netzwerk",
       "alternatives": [
-        { "repo": "bitwarden/clients", "summary": "Passwortmanager für alle Geräte. Die Grundversion ist gratis.", "platforms": ["windows", "mac", "linux", "android", "ios", "web"], "level": "einfach", "website": "https://bitwarden.com/download/" },
-        { "repo": "keepassxreboot/keepassxc", "summary": "Passwörter sicher in einer verschlüsselten Datei auf deinem PC speichern.", "platforms": ["windows", "mac", "linux"], "level": "einfach" },
-        { "repo": "dani-garcia/vaultwarden", "summary": "Eigener Bitwarden-Server, schlank genug für ein NAS oder einen Raspberry Pi.", "platforms": ["server"], "level": "profi" }
+        { "repo": "bitwarden/clients", "summary": { "en": "Password manager for all your devices. The basic version is free.", "de": "Passwortmanager für alle Geräte. Die Grundversion ist gratis.", "es": "Gestor de contraseñas para todos tus dispositivos. La versión básica es gratis." }, "platforms": ["windows", "mac", "linux", "android", "ios", "web"], "level": "einfach", "website": "https://bitwarden.com/download/" },
+        { "repo": "keepassxreboot/keepassxc", "summary": { "en": "Store your passwords safely in an encrypted file on your PC.", "de": "Passwörter sicher in einer verschlüsselten Datei auf deinem PC speichern.", "es": "Guarda tus contraseñas de forma segura en un archivo cifrado en tu PC." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" },
+        { "repo": "dani-garcia/vaultwarden", "summary": { "en": "Your own Bitwarden server, light enough for a NAS or a Raspberry Pi.", "de": "Eigener Bitwarden-Server, schlank genug für ein NAS oder einen Raspberry Pi.", "es": "Tu propio servidor de Bitwarden, tan ligero que funciona en un NAS o una Raspberry Pi." }, "platforms": ["server"], "level": "profi" }
       ]
     },
     {
       "id": "nordvpn",
       "name": "NordVPN / ExpressVPN",
-      "aliases": ["nordvpn", "expressvpn", "vpn", "surfshark", "wireguard"],
+      "aliases": ["nordvpn", "expressvpn", "vpn", "surfshark", "wireguard", "virtual private network", "red privada virtual"],
       "category": "sicherheit-netzwerk",
-      "note": "Ein eigenes VPN gibt dir sicheren Zugriff aufs Heimnetz, versteckt deine IP aber nicht wie NordVPN.",
+      "note": { "en": "Your own VPN gives you secure access to your home network, but it doesn't hide your IP address like NordVPN does.", "de": "Ein eigenes VPN gibt dir sicheren Zugriff aufs Heimnetz, versteckt deine IP aber nicht wie NordVPN.", "es": "Una VPN propia te da acceso seguro a la red de tu casa, pero no oculta tu IP como NordVPN." },
       "alternatives": [
-        { "repo": "wg-easy/wg-easy", "summary": "Eigenes WireGuard-VPN mit einfacher Weboberfläche einrichten.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "juanfont/headscale", "summary": "Eigener Server für Tailscale, um alle deine Geräte privat zu verbinden.", "platforms": ["server"], "level": "profi" }
+        { "repo": "wg-easy/wg-easy", "summary": { "en": "Set up your own WireGuard VPN with a simple web interface.", "de": "Eigenes WireGuard-VPN mit einfacher Weboberfläche einrichten.", "es": "Configura tu propia VPN WireGuard con una interfaz web sencilla." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "juanfont/headscale", "summary": { "en": "Your own server for Tailscale, to connect all your devices privately.", "de": "Eigener Server für Tailscale, um alle deine Geräte privat zu verbinden.", "es": "Tu propio servidor para Tailscale, para conectar todos tus dispositivos de forma privada." }, "platforms": ["server"], "level": "profi" }
       ]
     },
     {
       "id": "norton",
       "name": "Norton / McAfee",
-      "aliases": ["norton", "mcafee", "antivirus", "virenschutz", "kaspersky", "avast"],
+      "aliases": ["norton", "mcafee", "antivirus", "virenschutz", "kaspersky", "avast", "virus protection", "virus scanner", "protección antivirus"],
       "category": "sicherheit-netzwerk",
-      "note": "Unter Windows reicht für die meisten der eingebaute Microsoft Defender.",
+      "note": { "en": "On Windows, the built-in Microsoft Defender is enough for most people.", "de": "Unter Windows reicht für die meisten der eingebaute Microsoft Defender.", "es": "En Windows, el Microsoft Defender incluido es suficiente para la mayoría." },
       "alternatives": [
-        { "repo": "Cisco-Talos/clamav", "summary": "Virenscanner für Dateien und E-Mails, vor allem für Server gedacht.", "platforms": ["windows", "mac", "linux"], "level": "profi" }
+        { "repo": "Cisco-Talos/clamav", "summary": { "en": "Virus scanner for files and emails, mainly meant for servers.", "de": "Virenscanner für Dateien und E-Mails, vor allem für Server gedacht.", "es": "Antivirus para archivos y correos electrónicos, pensado sobre todo para servidores." }, "platforms": ["windows", "mac", "linux"], "level": "profi" }
       ]
     },
     {
       "id": "teamviewer",
       "name": "TeamViewer / AnyDesk",
-      "aliases": ["teamviewer", "anydesk", "fernwartung", "fernzugriff", "remote desktop"],
+      "aliases": ["teamviewer", "anydesk", "fernwartung", "fernzugriff", "remote desktop", "remote access", "remote support", "acceso remoto", "escritorio remoto"],
       "category": "sicherheit-netzwerk",
       "alternatives": [
-        { "repo": "rustdesk/rustdesk", "summary": "Fernzugriff auf andere Computer, zum Beispiel um Familie zu helfen.", "platforms": ["windows", "mac", "linux", "android", "ios"], "level": "einfach" }
+        { "repo": "rustdesk/rustdesk", "summary": { "en": "Remote access to other computers, for example to help family members.", "de": "Fernzugriff auf andere Computer, zum Beispiel um Familie zu helfen.", "es": "Acceso remoto a otros equipos, por ejemplo para ayudar a tu familia." }, "platforms": ["windows", "mac", "linux", "android", "ios"], "level": "einfach" }
       ]
     },
     {
       "id": "zoom",
       "name": "Zoom",
-      "aliases": ["videokonferenz", "videocall", "meeting", "google meet", "webex"],
+      "aliases": ["videokonferenz", "videocall", "meeting", "google meet", "webex", "video conference", "video call", "videoconferencia", "videollamada"],
       "category": "kommunikation",
       "alternatives": [
-        { "repo": "jitsi/jitsi-meet", "summary": "Videokonferenzen direkt im Browser, ohne Konto und ohne Installation.", "platforms": ["web"], "level": "einfach", "website": "https://meet.jit.si" }
+        { "repo": "jitsi/jitsi-meet", "summary": { "en": "Video calls right in your browser, with no account and nothing to install.", "de": "Videokonferenzen direkt im Browser, ohne Konto und ohne Installation.", "es": "Videoconferencias directamente en el navegador, sin cuenta y sin instalar nada." }, "platforms": ["web"], "level": "einfach", "website": "https://meet.jit.si" }
       ]
     },
     {
       "id": "slack",
       "name": "Slack / Microsoft Teams",
-      "aliases": ["slack", "teams", "microsoft teams", "team chat", "firmenchat"],
+      "aliases": ["slack", "teams", "microsoft teams", "team chat", "firmenchat", "company chat", "work chat", "chat de empresa", "chat de equipo"],
       "category": "kommunikation",
       "alternatives": [
-        { "repo": "mattermost/mattermost", "summary": "Team-Chat mit Kanälen und Dateien, ähnlich wie Slack.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "RocketChat/Rocket.Chat", "summary": "Chat für Teams und Kundenkontakt, auf dem eigenen Server.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "zulip/zulip", "summary": "Team-Chat mit Themen-Threads, damit nichts untergeht.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "mattermost/mattermost", "summary": { "en": "Team chat with channels and files, similar to Slack.", "de": "Team-Chat mit Kanälen und Dateien, ähnlich wie Slack.", "es": "Chat de equipo con canales y archivos, parecido a Slack." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "RocketChat/Rocket.Chat", "summary": { "en": "Chat for teams and customer contact, on your own server.", "de": "Chat für Teams und Kundenkontakt, auf dem eigenen Server.", "es": "Chat para equipos y atención al cliente, en tu propio servidor." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "zulip/zulip", "summary": { "en": "Team chat organized by topic threads, so nothing gets lost.", "de": "Team-Chat mit Themen-Threads, damit nichts untergeht.", "es": "Chat de equipo con hilos por tema, para que nada se pierda." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "mailchimp",
       "name": "Mailchimp",
-      "aliases": ["newsletter", "e-mail marketing", "brevo", "sendinblue"],
+      "aliases": ["newsletter", "e-mail marketing", "brevo", "sendinblue", "email marketing", "mailing list", "boletín", "marketing por correo"],
       "category": "kommunikation",
       "alternatives": [
-        { "repo": "knadh/listmonk", "summary": "Newsletter und Mailinglisten verwalten und versenden.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "knadh/listmonk", "summary": { "en": "Manage and send newsletters and mailing lists.", "de": "Newsletter und Mailinglisten verwalten und versenden.", "es": "Gestiona y envía boletines y listas de correo." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "hootsuite",
       "name": "Hootsuite / Buffer",
-      "aliases": ["hootsuite", "buffer", "social media planen", "posts planen"],
+      "aliases": ["hootsuite", "buffer", "social media planen", "posts planen", "schedule posts", "social media scheduling", "programar publicaciones", "redes sociales"],
       "category": "kommunikation",
       "alternatives": [
-        { "repo": "gitroomhq/postiz-app", "summary": "Social-Media-Beiträge für viele Netzwerke planen und veröffentlichen.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "gitroomhq/postiz-app", "summary": { "en": "Plan and publish social media posts for many networks.", "de": "Social-Media-Beiträge für viele Netzwerke planen und veröffentlichen.", "es": "Planifica y publica contenido en muchas redes sociales." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "linktree-pro",
       "name": "Linktree Pro",
-      "aliases": ["linktree", "link in bio", "linkseite"],
+      "aliases": ["linktree", "link in bio", "linkseite", "link page", "página de enlaces", "enlace en la bio"],
       "category": "kommunikation",
       "alternatives": [
-        { "repo": "sethcottle/littlelink", "summary": "Eigene Link-Seite für Social-Media-Profile, als einfache Webseite.", "platforms": ["web"], "level": "mittel" }
+        { "repo": "sethcottle/littlelink", "summary": { "en": "Your own link page for your social media profiles, as a simple website.", "de": "Eigene Link-Seite für Social-Media-Profile, als einfache Webseite.", "es": "Tu propia página de enlaces para tus perfiles en redes sociales, como una web sencilla." }, "platforms": ["web"], "level": "mittel" }
       ]
     },
     {
       "id": "chatgpt-plus",
       "name": "ChatGPT Plus / Claude Pro",
-      "aliases": ["chatgpt", "claude", "ki chat", "chatbot", "gemini", "copilot pro"],
+      "aliases": ["chatgpt", "claude", "ki chat", "chatbot", "gemini", "copilot pro", "ai chat", "ai assistant", "chat con ia", "asistente de ia"],
       "category": "ki-entwicklung",
-      "note": "Lokale KI-Modelle sind schwächer und brauchen einen starken Computer.",
+      "note": { "en": "Local AI models are less capable and need a powerful computer.", "de": "Lokale KI-Modelle sind schwächer und brauchen einen starken Computer.", "es": "Los modelos de IA locales rinden menos y necesitan un equipo potente." },
       "alternatives": [
-        { "repo": "janhq/jan", "summary": "KI-Chat, der komplett offline auf deinem Computer läuft.", "platforms": ["windows", "mac", "linux"], "level": "einfach" },
-        { "repo": "ollama/ollama", "summary": "KI-Sprachmodelle lokal herunterladen und ausführen.", "platforms": ["windows", "mac", "linux"], "level": "mittel" },
-        { "repo": "open-webui/open-webui", "summary": "Chat-Oberfläche wie ChatGPT für eigene KI-Modelle, zum Selbsthosten.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "janhq/jan", "summary": { "en": "AI chat that runs completely offline on your computer.", "de": "KI-Chat, der komplett offline auf deinem Computer läuft.", "es": "Chat con IA que funciona totalmente sin conexión en tu equipo." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" },
+        { "repo": "ollama/ollama", "summary": { "en": "Download and run AI language models on your own computer.", "de": "KI-Sprachmodelle lokal herunterladen und ausführen.", "es": "Descarga y ejecuta modelos de lenguaje de IA en tu propio equipo." }, "platforms": ["windows", "mac", "linux"], "level": "mittel" },
+        { "repo": "open-webui/open-webui", "summary": { "en": "A ChatGPT-style chat interface for your own AI models, to host yourself.", "de": "Chat-Oberfläche wie ChatGPT für eigene KI-Modelle, zum Selbsthosten.", "es": "Interfaz de chat como ChatGPT para tus propios modelos de IA, para alojar tú mismo." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "github-copilot",
       "name": "GitHub Copilot",
-      "aliases": ["copilot", "code assistent", "cursor", "ki programmieren"],
+      "aliases": ["copilot", "code assistent", "cursor", "ki programmieren", "code assistant", "ai coding", "asistente de código", "programar con ia"],
       "category": "ki-entwicklung",
       "alternatives": [
-        { "repo": "continuedev/continue", "summary": "KI-Helfer zum Programmieren in VS Code und JetBrains, auch mit lokalen Modellen.", "platforms": ["windows", "mac", "linux"], "level": "mittel" },
-        { "repo": "TabbyML/tabby", "summary": "Eigener KI-Code-Assistent auf dem eigenen Server.", "platforms": ["server"], "level": "profi" }
+        { "repo": "continuedev/continue", "summary": { "en": "AI helper for coding in VS Code and JetBrains, also works with local models.", "de": "KI-Helfer zum Programmieren in VS Code und JetBrains, auch mit lokalen Modellen.", "es": "Asistente de IA para programar en VS Code y JetBrains, también con modelos locales." }, "platforms": ["windows", "mac", "linux"], "level": "mittel" },
+        { "repo": "TabbyML/tabby", "summary": { "en": "Your own AI coding assistant on your own server.", "de": "Eigener KI-Code-Assistent auf dem eigenen Server.", "es": "Tu propio asistente de código con IA en tu propio servidor." }, "platforms": ["server"], "level": "profi" }
       ]
     },
     {
       "id": "otter-ai",
-      "name": "Otter.ai / Transkription",
-      "aliases": ["otter", "transkription", "sprache zu text", "diktieren", "untertitel"],
+      "name": "Otter.ai",
+      "aliases": ["otter", "transkription", "sprache zu text", "diktieren", "untertitel", "transcription", "transcripción", "speech to text", "voz a texto"],
       "category": "ki-entwicklung",
       "alternatives": [
-        { "repo": "chidiwilliams/buzz", "summary": "Audio und Video offline in Text umwandeln, auch auf Deutsch.", "platforms": ["windows", "mac", "linux"], "level": "einfach" },
-        { "repo": "ggml-org/whisper.cpp", "summary": "Sehr schnelle Spracherkennung für die Kommandozeile.", "platforms": ["windows", "mac", "linux"], "level": "profi" }
+        { "repo": "chidiwilliams/buzz", "summary": { "en": "Turn audio and video into text offline, in English and many other languages.", "de": "Audio und Video offline in Text umwandeln, auch auf Deutsch.", "es": "Convierte audio y video en texto sin conexión, también en español." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" },
+        { "repo": "ggml-org/whisper.cpp", "summary": { "en": "Very fast speech recognition for the command line.", "de": "Sehr schnelle Spracherkennung für die Kommandozeile.", "es": "Reconocimiento de voz muy rápido para la línea de comandos." }, "platforms": ["windows", "mac", "linux"], "level": "profi" }
       ]
     },
     {
       "id": "postman",
       "name": "Postman",
-      "aliases": ["api testen", "insomnia", "rest client"],
+      "aliases": ["api testen", "insomnia", "rest client", "api testing", "test api", "probar api"],
       "category": "ki-entwicklung",
       "alternatives": [
-        { "repo": "usebruno/bruno", "summary": "Programmierschnittstellen (APIs) testen, alles lokal gespeichert.", "platforms": ["windows", "mac", "linux"], "level": "einfach" },
-        { "repo": "hoppscotch/hoppscotch", "summary": "APIs direkt im Browser testen, schnell und schlank.", "platforms": ["web"], "level": "einfach", "website": "https://hoppscotch.io" }
+        { "repo": "usebruno/bruno", "summary": { "en": "Test programming interfaces (APIs), with everything saved on your computer.", "de": "Programmierschnittstellen (APIs) testen, alles lokal gespeichert.", "es": "Prueba interfaces de programación (API), con todo guardado en tu equipo." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" },
+        { "repo": "hoppscotch/hoppscotch", "summary": { "en": "Test APIs right in your browser, fast and lightweight.", "de": "APIs direkt im Browser testen, schnell und schlank.", "es": "Prueba API directamente en el navegador, de forma rápida y ligera." }, "platforms": ["web"], "level": "einfach", "website": "https://hoppscotch.io" }
       ]
     },
     {
       "id": "vercel",
       "name": "Vercel / Heroku",
-      "aliases": ["vercel", "heroku", "netlify", "hosting", "deployment"],
+      "aliases": ["vercel", "heroku", "netlify", "hosting", "deployment", "web hosting", "alojamiento web"],
       "category": "ki-entwicklung",
       "alternatives": [
-        { "repo": "coollabsio/coolify", "summary": "Eigene Plattform, um Webseiten und Apps auf dem eigenen Server zu betreiben.", "platforms": ["server"], "level": "profi" }
+        { "repo": "coollabsio/coolify", "summary": { "en": "Your own platform for running websites and apps on your own server.", "de": "Eigene Plattform, um Webseiten und Apps auf dem eigenen Server zu betreiben.", "es": "Tu propia plataforma para publicar sitios web y apps en tu propio servidor." }, "platforms": ["server"], "level": "profi" }
       ]
     },
     {
       "id": "bexio",
-      "name": "Bexio / Rechnungsprogramme",
-      "aliases": ["bexio", "rechnungen", "rechnung schreiben", "offerte", "faktura"],
+      "name": "Bexio / FreshBooks",
+      "aliases": ["bexio", "rechnungen", "rechnung schreiben", "offerte", "faktura", "freshbooks", "invoicing", "invoice", "facturación", "facturas"],
       "category": "business-finanzen",
       "alternatives": [
-        { "repo": "invoiceninja/invoiceninja", "summary": "Rechnungen, Offerten und Zahlungen verwalten.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "akaunting/akaunting", "summary": "Buchhaltung und Rechnungen für kleine Firmen, im Browser.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "invoiceninja/invoiceninja", "summary": { "en": "Manage invoices, quotes and payments.", "de": "Rechnungen, Offerten und Zahlungen verwalten.", "es": "Gestiona facturas, presupuestos y pagos." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "akaunting/akaunting", "summary": { "en": "Accounting and invoicing for small businesses, in your browser.", "de": "Buchhaltung und Rechnungen für kleine Firmen, im Browser.", "es": "Contabilidad y facturación para pequeñas empresas, en el navegador." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "quickbooks",
       "name": "Banana / QuickBooks",
-      "aliases": ["banana", "quickbooks", "buchhaltung", "finanzen", "abacus"],
+      "aliases": ["banana", "quickbooks", "buchhaltung", "finanzen", "abacus", "accounting", "finances", "contabilidad", "finanzas"],
       "category": "business-finanzen",
       "alternatives": [
-        { "repo": "Gnucash/gnucash", "summary": "Buchhaltung für Privat und kleine Firmen, mit doppelter Buchführung.", "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://www.gnucash.org/download.phtml" }
+        { "repo": "Gnucash/gnucash", "summary": { "en": "Accounting for personal use and small businesses, with double-entry bookkeeping.", "de": "Buchhaltung für Privat und kleine Firmen, mit doppelter Buchführung.", "es": "Contabilidad personal y para pequeñas empresas, con partida doble." }, "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://www.gnucash.org/download.phtml" }
       ]
     },
     {
       "id": "ynab",
       "name": "YNAB",
-      "aliases": ["you need a budget", "budget", "haushaltsbuch", "ausgaben", "finanzplanung"],
+      "aliases": ["you need a budget", "budget", "haushaltsbuch", "ausgaben", "finanzplanung", "budgeting", "expense tracker", "presupuesto", "control de gastos"],
       "category": "business-finanzen",
       "alternatives": [
-        { "repo": "actualbudget/actual", "summary": "Budget-App nach dem gleichen Prinzip wie YNAB, lokal und schnell.", "platforms": ["web", "server"], "level": "mittel" },
-        { "repo": "firefly-iii/firefly-iii", "summary": "Persönliche Finanzen und Ausgaben verwalten, auf dem eigenen Server.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "actualbudget/actual", "summary": { "en": "Budgeting app that works the same way as YNAB, local and fast.", "de": "Budget-App nach dem gleichen Prinzip wie YNAB, lokal und schnell.", "es": "App de presupuesto con el mismo método que YNAB, local y rápida." }, "platforms": ["web", "server"], "level": "mittel" },
+        { "repo": "firefly-iii/firefly-iii", "summary": { "en": "Manage your personal finances and spending on your own server.", "de": "Persönliche Finanzen und Ausgaben verwalten, auf dem eigenen Server.", "es": "Gestiona tus finanzas personales y gastos en tu propio servidor." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "hubspot",
       "name": "HubSpot / Salesforce",
-      "aliases": ["hubspot", "salesforce", "crm", "kundenverwaltung", "pipedrive"],
+      "aliases": ["hubspot", "salesforce", "crm", "kundenverwaltung", "pipedrive", "customer management", "gestión de clientes"],
       "category": "business-finanzen",
       "alternatives": [
-        { "repo": "twentyhq/twenty", "summary": "Modernes CRM, um Kunden, Kontakte und Verkäufe zu verwalten.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "espocrm/espocrm", "summary": "Bewährtes CRM für Kunden, Aufgaben und E-Mails.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "twentyhq/twenty", "summary": { "en": "Modern CRM to manage customers, contacts and sales.", "de": "Modernes CRM, um Kunden, Kontakte und Verkäufe zu verwalten.", "es": "CRM moderno para gestionar clientes, contactos y ventas." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "espocrm/espocrm", "summary": { "en": "Proven CRM for customers, tasks and emails.", "de": "Bewährtes CRM für Kunden, Aufgaben und E-Mails.", "es": "CRM de confianza para clientes, tareas y correos electrónicos." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "shopify",
       "name": "Shopify",
-      "aliases": ["onlineshop", "webshop", "e-commerce", "shop"],
+      "aliases": ["onlineshop", "webshop", "e-commerce", "shop", "online store", "tienda online", "tienda en línea", "comercio electrónico"],
       "category": "business-finanzen",
       "alternatives": [
-        { "repo": "woocommerce/woocommerce", "summary": "Onlineshop als Erweiterung für WordPress.", "platforms": ["server"], "level": "mittel" },
-        { "repo": "PrestaShop/PrestaShop", "summary": "Vollständige Onlineshop-Software mit vielen Erweiterungen.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "woocommerce/woocommerce", "summary": { "en": "Online store as an add-on for WordPress.", "de": "Onlineshop als Erweiterung für WordPress.", "es": "Tienda online como extensión para WordPress." }, "platforms": ["server"], "level": "mittel" },
+        { "repo": "PrestaShop/PrestaShop", "summary": { "en": "Complete online store software with lots of add-ons.", "de": "Vollständige Onlineshop-Software mit vielen Erweiterungen.", "es": "Software completo de tienda online con muchas extensiones." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "wix",
       "name": "Wix / Squarespace",
-      "aliases": ["wix", "squarespace", "webseite", "homepage", "website baukasten", "jimdo"],
+      "aliases": ["wix", "squarespace", "webseite", "homepage", "website baukasten", "jimdo", "website builder", "website", "creador de sitios web", "página web"],
       "category": "business-finanzen",
       "alternatives": [
-        { "repo": "WordPress/WordPress", "summary": "Das bekannteste System für Webseiten und Blogs.", "platforms": ["server"], "level": "mittel", "website": "https://de.wordpress.org/download/", "note": "Das GitHub-Repo ist nur ein Spiegel. Download auf wordpress.org." },
-        { "repo": "TryGhost/Ghost", "summary": "Moderne Plattform für Blogs und Newsletter mit Abos.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "WordPress/WordPress", "summary": { "en": "The best-known system for websites and blogs.", "de": "Das bekannteste System für Webseiten und Blogs.", "es": "El sistema más conocido para sitios web y blogs." }, "platforms": ["server"], "level": "mittel", "website": "https://de.wordpress.org/download/", "note": { "en": "The GitHub repo is only a mirror. Download it at wordpress.org.", "de": "Das GitHub-Repo ist nur ein Spiegel. Download auf wordpress.org.", "es": "El repositorio de GitHub es solo una copia. Descárgalo en wordpress.org." } },
+        { "repo": "TryGhost/Ghost", "summary": { "en": "Modern platform for blogs and newsletters with subscriptions.", "de": "Moderne Plattform für Blogs und Newsletter mit Abos.", "es": "Plataforma moderna para blogs y boletines con suscripciones." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "quizlet-plus",
       "name": "Quizlet Plus",
-      "aliases": ["quizlet", "karteikarten", "lernkarten", "vokabeln lernen"],
+      "aliases": ["quizlet", "karteikarten", "lernkarten", "vokabeln lernen", "flashcards", "learn vocabulary", "tarjetas de estudio", "aprender vocabulario"],
       "category": "lernen-fitness",
       "alternatives": [
-        { "repo": "ankitects/anki", "summary": "Lernkarten mit cleverem Wiederholungssystem, ideal für Vokabeln und Prüfungen.", "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://apps.ankiweb.net" }
+        { "repo": "ankitects/anki", "summary": { "en": "Flashcards with a clever review system, ideal for vocabulary and exams.", "de": "Lernkarten mit cleverem Wiederholungssystem, ideal für Vokabeln und Prüfungen.", "es": "Tarjetas de estudio con un sistema de repaso inteligente, ideal para vocabulario y exámenes." }, "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://apps.ankiweb.net" }
       ]
     },
     {
       "id": "strava-premium",
       "name": "Strava Premium",
-      "aliases": ["strava", "laufen", "velo", "sport tracker", "training"],
+      "aliases": ["strava", "laufen", "velo", "sport tracker", "training", "running", "cycling", "correr", "ciclismo"],
       "category": "lernen-fitness",
       "alternatives": [
-        { "repo": "SamR1/FitTrackee", "summary": "Trainings wie Laufen und Velofahren aufzeichnen und auswerten, auf dem eigenen Server.", "platforms": ["server"], "level": "mittel" }
+        { "repo": "SamR1/FitTrackee", "summary": { "en": "Track and analyze workouts like running and cycling, on your own server.", "de": "Trainings wie Laufen und Velofahren aufzeichnen und auswerten, auf dem eigenen Server.", "es": "Registra y analiza entrenamientos como correr o ir en bici, en tu propio servidor." }, "platforms": ["server"], "level": "mittel" }
       ]
     },
     {
       "id": "ccleaner",
       "name": "CCleaner",
-      "aliases": ["pc aufräumen", "pc aufraeumen", "speicher freigeben", "cleaner"],
+      "aliases": ["pc aufräumen", "pc aufraeumen", "speicher freigeben", "cleaner", "pc cleanup", "free up space", "limpiar pc", "liberar espacio"],
       "category": "gaming-pc-tools",
       "alternatives": [
-        { "repo": "bleachbit/bleachbit", "summary": "Unnötige Dateien löschen und Speicherplatz freigeben.", "platforms": ["windows", "linux"], "level": "einfach", "website": "https://www.bleachbit.org/download" }
+        { "repo": "bleachbit/bleachbit", "summary": { "en": "Delete unnecessary files and free up disk space.", "de": "Unnötige Dateien löschen und Speicherplatz freigeben.", "es": "Borra archivos innecesarios y libera espacio en disco." }, "platforms": ["windows", "linux"], "level": "einfach", "website": "https://www.bleachbit.org/download" }
       ]
     },
     {
       "id": "winrar",
       "name": "WinRAR",
-      "aliases": ["rar", "zip", "entpacken", "archiv", "winzip"],
+      "aliases": ["rar", "zip", "entpacken", "archiv", "winzip", "unzip", "extract files", "descomprimir", "comprimir archivos"],
       "category": "gaming-pc-tools",
       "alternatives": [
-        { "repo": "M2Team/NanaZip", "summary": "Moderner Entpacker für Windows 11, basiert auf 7-Zip.", "platforms": ["windows"], "level": "einfach" },
-        { "repo": "peazip/PeaZip", "summary": "Entpacker für über 200 Archivformate, auch RAR.", "platforms": ["windows", "mac", "linux"], "level": "einfach" }
+        { "repo": "M2Team/NanaZip", "summary": { "en": "Modern tool for unpacking files on Windows 11, based on 7-Zip.", "de": "Moderner Entpacker für Windows 11, basiert auf 7-Zip.", "es": "Descompresor moderno para Windows 11, basado en 7-Zip." }, "platforms": ["windows"], "level": "einfach" },
+        { "repo": "peazip/PeaZip", "summary": { "en": "Unpacks over 200 archive formats, including RAR.", "de": "Entpacker für über 200 Archivformate, auch RAR.", "es": "Descompresor para más de 200 formatos de archivo comprimido, incluido RAR." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" }
       ]
     },
     {
       "id": "bandicam",
       "name": "Bandicam / Fraps",
-      "aliases": ["bandicam", "fraps", "spiele aufnehmen", "gameplay aufnehmen"],
+      "aliases": ["bandicam", "fraps", "spiele aufnehmen", "gameplay aufnehmen", "record games", "record gameplay", "grabar juegos", "grabar partidas"],
       "category": "gaming-pc-tools",
       "alternatives": [
-        { "repo": "obsproject/obs-studio", "summary": "Spiele und Bildschirm aufnehmen oder live auf Twitch und YouTube streamen.", "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://obsproject.com/de/download" }
+        { "repo": "obsproject/obs-studio", "summary": { "en": "Record games and your screen, or stream live on Twitch and YouTube.", "de": "Spiele und Bildschirm aufnehmen oder live auf Twitch und YouTube streamen.", "es": "Graba juegos y tu pantalla, o transmite en vivo en Twitch y YouTube." }, "platforms": ["windows", "mac", "linux"], "level": "einfach", "website": "https://obsproject.com/de/download" }
       ]
     },
     {
       "id": "advanced-systemcare",
       "name": "Advanced SystemCare / Game Booster",
-      "aliases": ["advanced systemcare", "game booster", "pc optimieren", "tuning", "windows optimieren"],
+      "aliases": ["advanced systemcare", "game booster", "pc optimieren", "tuning", "windows optimieren", "optimize pc", "speed up pc", "optimizar pc", "acelerar pc"],
       "category": "gaming-pc-tools",
       "alternatives": [
-        { "repo": "ChrisTitusTech/winutil", "summary": "Windows aufräumen, Programme installieren und Einstellungen optimieren.", "platforms": ["windows"], "level": "profi", "note": "Verändert Windows-Einstellungen. Vorher einen Wiederherstellungspunkt setzen." }
+        { "repo": "ChrisTitusTech/winutil", "summary": { "en": "Clean up Windows, install programs and optimize settings.", "de": "Windows aufräumen, Programme installieren und Einstellungen optimieren.", "es": "Limpia Windows, instala programas y optimiza la configuración." }, "platforms": ["windows"], "level": "profi", "note": { "en": "Changes Windows settings. Create a restore point first.", "de": "Verändert Windows-Einstellungen. Vorher einen Wiederherstellungspunkt setzen.", "es": "Cambia la configuración de Windows. Crea antes un punto de restauración." } }
       ]
     },
     {
       "id": "parsec-warp",
       "name": "Parsec Warp",
-      "aliases": ["parsec", "game streaming", "spiele streamen", "steam link"],
+      "aliases": ["parsec", "game streaming", "spiele streamen", "steam link", "stream games", "streaming de juegos", "jugar en remoto"],
       "category": "gaming-pc-tools",
-      "note": "Sunshine auf dem Gaming-PC, Moonlight auf dem Gerät, auf dem du spielen willst.",
+      "note": { "en": "Sunshine goes on your gaming PC, Moonlight on the device you want to play on.", "de": "Sunshine auf dem Gaming-PC, Moonlight auf dem Gerät, auf dem du spielen willst.", "es": "Sunshine va en tu PC para juegos y Moonlight en el dispositivo donde quieres jugar." },
       "alternatives": [
-        { "repo": "LizardByte/Sunshine", "summary": "Streamt Spiele von deinem Gaming-PC zu anderen Geräten.", "platforms": ["windows", "mac", "linux"], "level": "mittel" },
-        { "repo": "moonlight-stream/moonlight-qt", "summary": "Empfängt das Spiel-Streaming von Sunshine auf Laptop, TV oder Handy.", "platforms": ["windows", "mac", "linux"], "level": "einfach" }
+        { "repo": "LizardByte/Sunshine", "summary": { "en": "Streams games from your gaming PC to other devices.", "de": "Streamt Spiele von deinem Gaming-PC zu anderen Geräten.", "es": "Transmite juegos desde tu PC para juegos a otros dispositivos." }, "platforms": ["windows", "mac", "linux"], "level": "mittel" },
+        { "repo": "moonlight-stream/moonlight-qt", "summary": { "en": "Receives the game stream from Sunshine on your laptop, TV or phone.", "de": "Empfängt das Spiel-Streaming von Sunshine auf Laptop, TV oder Handy.", "es": "Recibe el streaming de juegos de Sunshine en tu laptop, TV o teléfono." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" }
       ]
     },
     {
       "id": "autocad",
       "name": "AutoCAD",
-      "aliases": ["cad", "2d zeichnung", "technisches zeichnen", "dwg", "dxf"],
+      "aliases": ["cad", "2d zeichnung", "technisches zeichnen", "dwg", "dxf", "2d drawing", "technical drawing", "dibujo técnico", "dibujo 2d"],
       "category": "cad-3d-gis",
       "alternatives": [
-        { "repo": "LibreCAD/LibreCAD", "summary": "2D-CAD für technische Zeichnungen, liest und schreibt DXF-Dateien.", "platforms": ["windows", "mac", "linux"], "level": "einfach" },
-        { "repo": "FreeCAD/FreeCAD", "summary": "3D-Konstruktion mit Bauteilen und technischen Zeichnungen.", "platforms": ["windows", "mac", "linux"], "level": "mittel" }
+        { "repo": "LibreCAD/LibreCAD", "summary": { "en": "2D CAD for technical drawings. Opens and saves DXF files.", "de": "2D-CAD für technische Zeichnungen, liest und schreibt DXF-Dateien.", "es": "CAD 2D para dibujos técnicos. Abre y guarda archivos DXF." }, "platforms": ["windows", "mac", "linux"], "level": "einfach" },
+        { "repo": "FreeCAD/FreeCAD", "summary": { "en": "3D design with parts and technical drawings.", "de": "3D-Konstruktion mit Bauteilen und technischen Zeichnungen.", "es": "Diseño 3D con piezas y dibujos técnicos." }, "platforms": ["windows", "mac", "linux"], "level": "mittel" }
       ]
     },
     {
       "id": "solidworks",
       "name": "SolidWorks / Fusion 360",
-      "aliases": ["solidworks", "fusion 360", "fusion", "3d konstruktion", "3d druck", "inventor"],
+      "aliases": ["solidworks", "fusion 360", "fusion", "3d konstruktion", "3d druck", "inventor", "3d design", "3d printing", "diseño 3d", "impresión 3d"],
       "category": "cad-3d-gis",
       "alternatives": [
-        { "repo": "FreeCAD/FreeCAD", "summary": "Parametrische 3D-Konstruktion für Maschinenbau und 3D-Druck.", "platforms": ["windows", "mac", "linux"], "level": "mittel" }
+        { "repo": "FreeCAD/FreeCAD", "summary": { "en": "Parametric 3D design for mechanical engineering and 3D printing.", "de": "Parametrische 3D-Konstruktion für Maschinenbau und 3D-Druck.", "es": "Diseño 3D paramétrico para ingeniería mecánica e impresión 3D." }, "platforms": ["windows", "mac", "linux"], "level": "mittel" }
       ]
     },
     {
       "id": "3ds-max",
       "name": "3ds Max / Maya / Cinema 4D",
-      "aliases": ["3ds max", "maya", "cinema 4d", "c4d", "3d animation", "3d modellieren"],
+      "aliases": ["3ds max", "maya", "cinema 4d", "c4d", "3d animation", "3d modellieren", "3d modeling", "modelado 3d", "animación 3d"],
       "category": "cad-3d-gis",
       "alternatives": [
-        { "repo": "blender/blender", "summary": "Profi-Software für 3D-Modelle, Animation, Rendering und Videoschnitt.", "platforms": ["windows", "mac", "linux"], "level": "mittel", "website": "https://www.blender.org/download/" }
+        { "repo": "blender/blender", "summary": { "en": "Professional software for 3D models, animation, rendering and video editing.", "de": "Profi-Software für 3D-Modelle, Animation, Rendering und Videoschnitt.", "es": "Software profesional para modelos 3D, animación, renderizado y edición de video." }, "platforms": ["windows", "mac", "linux"], "level": "mittel", "website": "https://www.blender.org/download/" }
       ]
     },
     {
       "id": "arcgis",
       "name": "ArcGIS",
-      "aliases": ["gis", "karten", "geodaten", "kartografie"],
+      "aliases": ["gis", "karten", "geodaten", "kartografie", "maps", "geodata", "mapas", "cartografía"],
       "category": "cad-3d-gis",
       "alternatives": [
-        { "repo": "qgis/QGIS", "summary": "Karten erstellen und Geodaten analysieren, der Standard für freie GIS-Software.", "platforms": ["windows", "mac", "linux"], "level": "mittel", "website": "https://qgis.org/download/" }
+        { "repo": "qgis/QGIS", "summary": { "en": "Create maps and analyze geodata. The standard for free GIS software.", "de": "Karten erstellen und Geodaten analysieren, der Standard für freie GIS-Software.", "es": "Crea mapas y analiza datos geográficos. El estándar del software SIG libre." }, "platforms": ["windows", "mac", "linux"], "level": "mittel", "website": "https://qgis.org/download/" }
       ]
     }
   ]
