@@ -1,4 +1,4 @@
-# GratisStatt
+# Maotly
 
 Desktop app for Windows with a **local database of GitHub projects** (about 230,000). You type in what you are
 paying for – the curated free alternatives appear at the top, and below them all matching projects from the database.
