@@ -1,6 +1,7 @@
 import { app, safeStorage } from 'electron';
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { isLang, type Lang } from '../shared/i18n';
 import type { ThemeSetting } from '../shared/types';
 import type { Secrets } from './network';
 
@@ -31,12 +32,15 @@ function readJson<T>(name: string, fallback: T): T {
 export interface Settings {
   theme: ThemeSetting;
   autoUpdate: boolean;
+  /** Chosen language; unset = follow the system (English if it isn't German or Spanish). */
+  language?: Lang;
 }
 
 export function loadSettings(): Settings {
   const s = readJson<Settings>('settings.json', { theme: 'system', autoUpdate: true });
   if (!['system', 'light', 'dark'].includes(s.theme)) s.theme = 'system';
   s.autoUpdate = s.autoUpdate !== false;
+  if (!isLang(s.language)) delete s.language;
   return s;
 }
 
@@ -89,7 +93,7 @@ export function getSecret(name: SecretName): string | null {
 }
 
 export function setSecret(name: SecretName, value: string) {
-  if (!safeStorage.isEncryptionAvailable()) throw new Error('Verschlüsselung ist auf diesem System nicht verfügbar.');
+  if (!safeStorage.isEncryptionAvailable()) throw new Error('Encryption is not available on this system.');
   writeFileSync(userFile(`${name}.bin`), safeStorage.encryptString(value));
   cache.set(name, value);
 }

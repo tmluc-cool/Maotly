@@ -18,7 +18,7 @@ Zielgruppe: normale Leute, keine Entwickler. Alles muss in einfacher Sprache erk
 
 ## Regeln
 
-- UI-Sprache: Deutsch, Schweizer Schreibweise (immer "ss", nie "ß"). Code, Variablen und Commit-Messages auf Englisch. Projektbeschreibungen von GitHub bleiben im Original (meist Englisch).
+- UI-Sprachen: **Englisch (Hauptsprache und Fallback)**, dazu **Deutsch** (Schweizer Schreibweise, immer "ss", nie "ß") und **Spanisch** (neutral, "tú"). Beim ersten Start gilt die Systemsprache, sonst Englisch; umschaltbar unter Einstellungen → Sprache. Alle Texte stehen in `src/shared/i18n/` (en.ts, de.ts, es.ts mit denselben Schlüsseln). Code, Variablen und Commit-Messages auf Englisch. Projektbeschreibungen von GitHub bleiben im Original (meist Englisch). Das Admin-Dashboard bleibt Deutsch.
 - **Lokal zuerst:**
   - **Ohne Netzwerk** spricht die App nur mit GitHub (API und Release-Downloads). Keine Tracker, keine Analytics, keine Absturzberichte.
   - **Mit Netzwerk** spricht sie zusätzlich mit dem eigenen Server, aber nur mit genau den Daten, die im Abschnitt "Netzwerk" beschrieben sind.
@@ -267,7 +267,7 @@ Regeln:
 - Einfach und schlicht. Muss am Handy lesbar sein.
 
 ### Datenschutzerklärung
-- `docs/PRIVACY.md` und dieselbe Version in der App unter Einstellungen → Netzwerk.
+- `docs/PRIVACY.md` (Englisch), `docs/PRIVACY.de.md`, `docs/PRIVACY.es.md`; in der App in der gewählten Sprache unter Einstellungen → Netzwerk.
 - Inhalt: wer verantwortlich ist (Platzhalter für Name und Kontakt), welche Daten, wofür, wo gespeichert (Cloudflare), wie lange (bis Austritt oder 12 Monate Inaktivität), wie man sie einsieht und löscht. Was ohne Netzwerk passiert (nur GitHub).
 
 ## Kuratierte Liste
@@ -276,31 +276,32 @@ Regeln:
 
 ```ts
 type Platform = 'windows' | 'mac' | 'linux' | 'android' | 'ios' | 'web' | 'server';
-type Level = 'einfach' | 'mittel' | 'profi';
+type Level = 'einfach' | 'mittel' | 'profi';   // interne Werte; angezeigt als Easy/Medium/Expert usw.
+type Text = { en: string; de: string; es: string };
 // einfach = normale App mit Installer
 // mittel  = braucht etwas Einrichtung (z.B. Docker auf NAS, Browser-Erweiterung)
 // profi   = Kommandozeile oder eigener Server
 
 interface Alternative {
   repo: string;          // "owner/name" auf GitHub
-  summary: string;       // Deutsch, max. 120 Zeichen, einfache Sprache
+  summary: Text;         // { en, de, es }, je max. 120 Zeichen, einfache Sprache
   platforms: Platform[];
   level: Level;
   website?: string;      // offizielle Download-Seite, falls besser als GitHub
-  note?: string;         // Hinweis, z.B. "nur eigene Musikdateien"
+  note?: Text;           // Hinweis, z.B. "nur eigene Musikdateien"
 }
 
 interface PaidProduct {
   id: string;            // slug, z.B. "adobe-photoshop"
   name: string;          // "Adobe Photoshop"
-  aliases: string[];     // ["photoshop", "ps", "bildbearbeitung"]
+  aliases: string[];     // Suchbegriffe in allen Sprachen: ["photoshop", "ps", "bildbearbeitung", "photo editing"]
   category: string;      // eine der Kategorien unten
-  note?: string;
+  note?: Text;
   alternatives: Alternative[];
 }
 ```
 
-- `scripts/validate-data.ts` prüft: keine doppelten IDs, nur gültige Werte, `summary` max. 120 Zeichen, **jedes Repo existiert in `base.db`**. Fehlende Repos meldet es mit Namen. Mit `--fix` holt es fehlende Repos von GitHub nach und speichert sie in `base.db`.
+- `scripts/validate-data.ts` prüft: keine doppelten IDs, nur gültige Werte, alle Texte in en/de/es, `summary` je max. 120 Zeichen, **jedes Repo existiert in `base.db`**. Fehlende Repos meldet es mit Namen. Mit `--fix` holt es fehlende Repos von GitHub nach und speichert sie in `base.db`.
 
 ## Kategorien und Plattformen aus Topics
 

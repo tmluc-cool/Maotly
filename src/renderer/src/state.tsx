@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import type { AppInfo, AppUpdateInfo, DbStats, NetworkState, ThemeSetting, UpdateStatus } from '@shared/types';
+import { setLang as setI18nLang } from '@shared/i18n';
+import type { AppInfo, AppUpdateInfo, DbStats, Lang, NetworkState, ThemeSetting, UpdateStatus } from '@shared/types';
 
 interface AppState {
   ready: boolean;
@@ -9,9 +10,11 @@ interface AppState {
   network: NetworkState | null;
   appUpdate: AppUpdateInfo | null;
   theme: ThemeSetting;
+  lang: Lang;
   /** Increases whenever new data arrived, so lists can reload. */
   dataVersion: number;
   setTheme(theme: ThemeSetting): void;
+  setLang(lang: Lang): void;
   refreshStats(): Promise<void>;
   bumpData(): void;
 }
@@ -22,6 +25,11 @@ export function useApp(): AppState {
   const ctx = useContext(Ctx);
   if (!ctx) throw new Error('useApp outside provider');
   return ctx;
+}
+
+function applyLang(lang: Lang) {
+  setI18nLang(lang);
+  document.documentElement.lang = lang;
 }
 
 function applyThemeClass(theme: ThemeSetting) {
@@ -37,6 +45,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [network, setNetwork] = useState<NetworkState | null>(null);
   const [appUpdate, setAppUpdate] = useState<AppUpdateInfo | null>(null);
   const [theme, setThemeState] = useState<ThemeSetting>('system');
+  const [lang, setLangState] = useState<Lang>('en');
   const [dataVersion, setDataVersion] = useState(0);
 
   const refreshStats = useCallback(async () => setStats(await window.api.stats()), []);
@@ -59,6 +68,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setUpdate(u);
       setNetwork(n);
       setThemeState(settings.theme);
+      applyLang(settings.language);
+      setLangState(settings.language);
       setReady(true);
     })();
     const offs = [
@@ -87,9 +98,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     void window.api.setTheme(t);
   }, []);
 
+  // The whole UI is rendered again in the new language (App uses the language as key).
+  const setLang = useCallback((l: Lang) => {
+    applyLang(l);
+    setLangState(l);
+    void window.api.setLanguage(l);
+  }, []);
+
   const value = useMemo<AppState>(
-    () => ({ ready, info, stats, update, network, appUpdate, theme, dataVersion, setTheme, refreshStats, bumpData }),
-    [ready, info, stats, update, network, appUpdate, theme, dataVersion, setTheme, refreshStats, bumpData],
+    () => ({ ready, info, stats, update, network, appUpdate, theme, lang, dataVersion, setTheme, setLang, refreshStats, bumpData }),
+    [ready, info, stats, update, network, appUpdate, theme, lang, dataVersion, setTheme, setLang, refreshStats, bumpData],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

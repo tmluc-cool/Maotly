@@ -6,6 +6,7 @@ import { config } from '../src/main/config';
 import { AppDatabase } from '../src/main/database';
 import { Network, type Secrets } from '../src/main/network';
 import { toRepoRow } from '../src/shared/crawler';
+import { setLang } from '../src/shared/i18n';
 import { makeRepos } from './helpers/fake-github';
 
 interface Call { url: string; method: string; body?: unknown; auth?: string | null }
@@ -217,5 +218,17 @@ describe('network (opt-in)', () => {
     expect(d.reviews.map((r) => r.id)).toEqual([5]);
     expect(d.reviews[0]).toMatchObject({ votes: 1, voted: false, reply_text: null });
   });
-});
 
+  it('explains server refusals in the app language, not with the server text', async () => {
+    const s = setup();
+    await s.network.join();
+    s.store.set('network-github', 'gho_someone_else');
+    expect(await s.network.reply(5, 'Danke')).toEqual({ ok: false, message: 'Only the owner of the project can reply.' });
+    setLang('de');
+    try {
+      expect(await s.network.reply(5, 'Danke')).toEqual({ ok: false, message: 'Nur der Owner des Projekts kann antworten.' });
+    } finally {
+      setLang('en');
+    }
+  });
+});

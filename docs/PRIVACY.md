@@ -1,65 +1,61 @@
-# Datenschutzerklärung GratisStatt
+# GratisStatt Privacy Policy
 
-Stand: 12.10.2026 (Version 2: Bewertungen)
+Last updated: October 12, 2026 (version 2: reviews)
 
-## Wer ist verantwortlich?
+## Who is responsible?
 
-GratisStatt ist ein **privates Spass-Projekt** von [@tmluc-cool](https://github.com/tmluc-cool) – kein Unternehmen und kein kommerzielles Angebot.
-Kontakt: über die [Issues im Projekt-Repo](https://github.com/tmluc-cool/githuub-appstore/issues).
+GratisStatt is a **private fun project** by [@tmluc-cool](https://github.com/tmluc-cool) – not a company and not a commercial service.
+Contact: through the [issues in the project repo](https://github.com/tmluc-cool/githuub-appstore/issues).
 
-Die Nutzung erfolgt auf eigene Gefahr. Es wird keinerlei Haftung übernommen.
+You use the app at your own risk. No liability whatsoever is accepted.
 
-## Kurz gesagt
+## In short
 
-- GratisStatt funktioniert **ohne Anmeldung** und speichert alles **lokal auf deinem Computer**.
-- Ohne Netzwerk spricht die App **nur mit GitHub**. Es gibt keine Werbung, keine Tracker, keine Analytics und keine Absturzberichte.
-- Das **GratisStatt-Netzwerk ist freiwillig** und standardmässig aus. Erst wenn du «Mitmachen» wählst und dich mit GitHub anmeldest, sendet die App Daten an unseren Server.
+- GratisStatt works **without signing in** and stores everything **locally on your computer**.
+- Without the network, the app **only talks to GitHub**. There are no ads, no trackers, no analytics and no crash reports.
+- The **GratisStatt network is optional** and turned off by default. Only when you choose "Join" and sign in with GitHub does the app send data to our server.
 
-## Was passiert ohne Netzwerk?
+## What happens without the network?
 
-Die App lädt einmal pro Woche ein Update-Paket von GitHub (github.com, öffentliches Repository «gratisstatt-data»). Bei der Live-Suche und beim manuellen Update spricht die App direkt mit GitHub. Projekte öffnet sie in deinem Browser. Dabei gelten die Datenschutzbestimmungen von GitHub. Wir erhalten davon nichts.
+Once a week, the app downloads an update package from GitHub (github.com, public repository "gratisstatt-data"). For the live search and the manual update, the app talks directly to GitHub. It opens projects in your browser. GitHub's privacy policy applies to all of this. We receive nothing from it.
 
-Auf deinem Computer speichert die App eine Datenbank mit öffentlichen Angaben zu GitHub-Projekten (Name, Beschreibung, Sterne usw.), deine Einstellungen und – falls du einen eingibst – deinen GitHub-Token verschlüsselt.
+On your computer, the app stores a database with public information about GitHub projects (name, description, stars, etc.), your settings and – if you enter one – your GitHub token in encrypted form.
 
-## Welche Daten speichern wir, wenn du beim Netzwerk mitmachst?
+## What data do we store if you join the network?
 
-| Daten | Wofür |
+| Data | What for |
 | --- | --- |
-| GitHub-ID und GitHub-Benutzername | um dich als Mitglied zu erkennen |
-| App-Version | um zu sehen, welche Versionen noch benutzt werden |
-| Tag des Beitritts und letzter aktiver Tag (nur Datum, keine Uhrzeit) | um inaktive Mitglieder automatisch zu löschen |
-| Anzahl Beiträge und die IDs der vorgeschlagenen GitHub-Projekte | um die Vorschläge zu prüfen und ins nächste Update aufzunehmen |
-| Deine Bewertungen (Sterne, Text, Datum) und Antworten als Projekt-Owner | damit andere sie lesen können – **öffentlich mit deinem GitHub-Benutzernamen** |
-| Welche Bewertungen du hochgewählt hast | damit jede Person nur einmal wählen kann – veröffentlicht wird nur die Anzahl, nicht wer gewählt hat |
+| GitHub ID and GitHub username | to recognize you as a member |
+| App version | to see which versions are still in use |
+| Day you joined and last active day (date only, no time) | to delete inactive members automatically |
+| Number of contributions and the IDs of the GitHub projects you suggested | to check the suggestions and add them to the next update |
+| Your reviews (stars, text, date) and replies as a project owner | so that others can read them – **public, with your GitHub username** |
+| Which reviews you upvoted | so that each person can vote only once – only the number of votes is published, not who voted |
 
-**Nicht gespeichert werden:** E-Mail-Adresse, IP-Adresse, Suchbegriffe, Geräte-IDs, Dateien auf deinem Computer. Deinen GitHub-Token prüfen wir bei der Anmeldung ein einziges Mal und speichern ihn nicht.
+**Not stored:** email address, IP address, search terms, device IDs, files on your computer. We check your GitHub token one single time when you sign in and do not store it.
 
-## Bewertungen
+## Reviews
 
-- Bewertungen schreiben, hochwählen und beantworten kann nur, wer beim Netzwerk mitmacht. **Lesen kann jeder.**
-- Einmal pro Woche werden alle Bewertungen mit deinem GitHub-Benutzernamen in das öffentliche Update-Paket auf GitHub
-  (Repository «gratisstatt-data», neuestes Release) geschrieben. So bekommen alle Nutzer sie, ohne mit unserem Server
-  zu sprechen. Ältere Kopien entfernen wir aus früheren Releases.
-- Ob du der Owner eines Projekts bist, prüft der Server beim Antworten einmalig bei GitHub mit deinem GitHub-Token.
-  Den Token speichert er nicht.
-- Deine eigene Bewertung kannst du jederzeit ändern oder löschen. Gelöschte Bewertungen verschwinden mit dem nächsten
-  wöchentlichen Update auch bei allen anderen.
-- Wir können Bewertungen ausblenden oder löschen, z.B. bei Spam oder Beleidigungen.
+- Only network members can write, upvote and reply to reviews. **Anyone can read them.**
+- Once a week, all reviews are written, together with your GitHub username, into the public update package on GitHub (repository "gratisstatt-data", latest release). This way all users get them without talking to our server. We remove older copies from earlier releases.
+- When you reply, the server checks one single time with GitHub, using your GitHub token, whether you are the owner of the project. It does not store the token.
+- You can change or delete your own review at any time. Deleted reviews also disappear for everyone else with the next weekly update.
+- We can hide or delete reviews, for example in case of spam or insults.
 
-## Wo werden die Daten gespeichert?
+## Where is the data stored?
 
-Bei Cloudflare (Cloudflare Workers und Cloudflare D1). Wir haben dauerhafte Protokolle (Logs) ausgeschaltet.
+At Cloudflare (Cloudflare Workers and Cloudflare D1). We have turned off permanent logs.
 
-## Wie lange?
+## For how long?
 
-Bis du das Netzwerk verlässt – oder automatisch nach **12 Monaten ohne Aktivität**.
+Until you leave the network – or automatically after **12 months without activity**.
 
-## Deine Rechte: einsehen und löschen
+## Your rights: view and delete
 
-- **Einsehen:** Einstellungen → Netzwerk → «Meine gespeicherten Daten anzeigen» zeigt genau, was der Server über dich weiss.
-- **Löschen:** Einstellungen → Netzwerk → Schalter «Mitmachen» ausschalten → «Verlassen und Daten löschen». Dein Konto, deine noch offenen Vorschläge, deine Bewertungen, Upvotes und Antworten werden sofort auf dem Server gelöscht und verschwinden mit dem nächsten wöchentlichen Update auch aus den Apps der anderen.
-- Für alle anderen Fragen kannst du dich an die oben genannte Kontaktadresse wenden.
+- **View:** Settings → Network → "Show my stored data" shows exactly what the server knows about you.
+- **Delete:** Settings → Network → turn off the "Join" switch → "Leave and delete data". Your account, your open suggestions, your reviews, upvotes and replies are deleted from the server immediately and, with the next weekly update, also disappear from everyone else's app.
+- For any other questions, please use the contact address above.
 
-## Änderungen
+## Changes
 
-Ändert sich diese Erklärung wesentlich, fragt die App alle Mitglieder des Netzwerks erneut um ihr Einverständnis.
+If this policy changes significantly, the app asks all network members for their consent again.

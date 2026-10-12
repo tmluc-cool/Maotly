@@ -138,6 +138,6 @@ describe('reviews in the weekly package', () => {
     // A manipulated file is refused.
     const bad = { ...entry, sha256: 'a'.repeat(64) };
     const fetchBad = fakeFileFetch({ [MANIFEST]: JSON.stringify({ version: 1, generated_at: '', deltas: [], reviews: bad }), [url]: buf });
-    await expect(applyPackages({ db: d, fetch: fetchBad, manifestUrl: MANIFEST, tmpDir: join(dir, 'tmp'), maxMissing: 12 })).rejects.toThrow(/Prüfsumme/);
+    await expect(applyPackages({ db: d, fetch: fetchBad, manifestUrl: MANIFEST, tmpDir: join(dir, 'tmp'), maxMissing: 12 })).rejects.toThrow(/Checksum mismatch/);
   });
 });

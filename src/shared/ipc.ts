@@ -1,5 +1,6 @@
 import type {
   ActionResult,
+  Lang,
   AppInfo,
   RepoDetails,
   AppUpdateInfo,
@@ -36,6 +37,7 @@ export const IPC = {
   dataChanged: 'data:changed',
   settingsGet: 'settings:get',
   themeSet: 'settings:theme',
+  languageSet: 'settings:language',
   autoUpdateSet: 'settings:autoUpdate',
   tokenSet: 'token:set',
   tokenClear: 'token:clear',
@@ -80,6 +82,7 @@ export interface GratisStattApi {
 
   getSettings(): Promise<SettingsState>;
   setTheme(theme: ThemeSetting): Promise<void>;
+  setLanguage(lang: Lang): Promise<void>;
   setAutoUpdate(on: boolean): Promise<void>;
   setToken(token: string): Promise<TokenResult>;
   clearToken(): Promise<SettingsState>;

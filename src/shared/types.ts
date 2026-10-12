@@ -1,30 +1,37 @@
+import type { Lang, Text } from './i18n';
+
 export type Platform = 'windows' | 'mac' | 'linux' | 'android' | 'ios' | 'web' | 'server';
 export type Level = 'einfach' | 'mittel' | 'profi';
 
 export const PLATFORMS: Platform[] = ['windows', 'mac', 'linux', 'android', 'ios', 'web', 'server'];
 export const LEVELS: Level[] = ['einfach', 'mittel', 'profi'];
 
+export type { Lang, Text } from './i18n';
+
 export interface Alternative {
   repo: string;
-  summary: string;
+  /** Max. 120 characters per language, plain language. */
+  summary: Text;
   platforms: Platform[];
   level: Level;
   website?: string;
-  note?: string;
+  note?: Text;
 }
 
 export interface PaidProduct {
   id: string;
+  /** Brand name(s), not translated. */
   name: string;
+  /** Search terms in all languages. */
   aliases: string[];
   category: string;
-  note?: string;
+  note?: Text;
   alternatives: Alternative[];
 }
 
 export interface Category {
   id: string;
-  name: string;
+  name: Text;
 }
 
 export interface AlternativesData {
@@ -56,10 +63,16 @@ export interface DbStats {
   pending: number;
 }
 
+/** What an update is doing right now; the renderer turns it into text. */
+export type ProgressPhase = 'starting' | 'checking' | 'packages' | 'github' | 'merge-base' | 'vacuum';
+
 export interface UpdateStatus {
   running: boolean;
   job: 'packages' | 'manual' | 'merge-base' | 'vacuum' | null;
-  text: string;
+  phase: ProgressPhase | null;
+  /** Package number and count while several packages are applied. */
+  index?: number;
+  of?: number;
   added: number;
   updated: number;
   /** A manual update was interrupted and can continue. */
@@ -89,6 +102,7 @@ export interface AppInfo {
 
 export interface SettingsState {
   theme: ThemeSetting;
+  language: Lang;
   autoUpdate: boolean;
   hasOwnToken: boolean;
   encryptionAvailable: boolean;

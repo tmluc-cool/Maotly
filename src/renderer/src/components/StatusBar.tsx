@@ -1,5 +1,26 @@
+import type { UpdateStatus } from '@shared/types';
 import { formatCount, formatDate } from '../lib/format';
+import { t } from '../lib/i18n';
 import { useApp } from '../state';
+
+/** Status bar text for a running update. */
+export function progressText(u: UpdateStatus): string {
+  const counts = { added: formatCount(u.added), updated: formatCount(u.updated) };
+  switch (u.phase) {
+    case 'checking':
+      return t('progress.checking');
+    case 'packages':
+      return u.of ? t('progress.packagesOf', { ...counts, index: u.index ?? 1, of: u.of }) : t('progress.packages', counts);
+    case 'github':
+      return t('progress.github', counts);
+    case 'merge-base':
+      return t('progress.mergeBase');
+    case 'vacuum':
+      return t('progress.vacuum');
+    default:
+      return t('status.updating');
+  }
+}
 
 /** Bottom bar: update progress or database size and date. */
 export function StatusBar() {
@@ -8,8 +29,8 @@ export function StatusBar() {
   const manual = update?.job === 'manual';
 
   let text: string;
-  if (running) text = update!.text || 'Aktualisiere …';
-  else if (stats) text = `Datenbank: ${formatCount(stats.count)} Projekte · Stand ${formatDate(stats.dataDate)}`;
+  if (running) text = progressText(update!);
+  else if (stats) text = t('status.db', { count: formatCount(stats.count), date: formatDate(stats.dataDate) });
   else text = '';
 
   return (
@@ -19,25 +40,25 @@ export function StatusBar() {
         <span role="status" aria-live="polite" className="truncate">
           {text}
         </span>
-        {!running && update?.error && <span className="truncate text-rose-600 dark:text-rose-400">Update fehlgeschlagen: {update.error}</span>}
+        {!running && update?.error && <span className="truncate text-rose-600 dark:text-rose-400">{t('status.failed', { error: update.error })}</span>}
         <span className="ml-auto flex shrink-0 items-center gap-3">
           {appUpdate && (
             <button
               type="button"
               className="rounded-full bg-brand-600 px-2.5 py-0.5 font-semibold text-white hover:bg-brand-700"
               onClick={() => void window.api.openExternal(appUpdate.url)}
-              title="Öffnet die Download-Seite auf GitHub"
+              title={t('status.newVersionTitle')}
             >
-              Neue Version {appUpdate.version} herunterladen
+              {t('status.newVersion', { version: appUpdate.version })}
             </button>
           )}
           {running && manual ? (
             <button type="button" className="btn-link" onClick={() => void window.api.updatePause()}>
-              Pausieren
+              {t('status.pause')}
             </button>
           ) : running ? null : (
             <button type="button" className="btn-link" onClick={() => void window.api.updateNow()}>
-              {update?.paused ? 'Update fortsetzen' : 'Jetzt aktualisieren'}
+              {t(update?.paused ? 'status.resume' : 'status.updateNow')}
             </button>
           )}
         </span>

@@ -1,4 +1,5 @@
 import { EventEmitter } from 'node:events';
+import { t, type MessageKey } from '../shared/i18n';
 import type { ActionResult, DeviceFlowInfo, MyDataResult, NetworkState, ServerUserData } from '../shared/types';
 import { config, networkConfigured } from './config';
 import type { AppDatabase } from './database';
@@ -131,7 +132,7 @@ export class Network extends EventEmitter {
       while (!githubToken) {
         await this.sleep(interval);
         if (cancelled) throw new CancelledError();
-        if (this.now() > Date.parse(info.expiresAt)) throw new Error('Der Code ist abgelaufen. Bitte nochmals versuchen.');
+        if (this.now() > Date.parse(info.expiresAt)) throw new Error(t('netMsg.codeExpired'));
         const r = await this.post<{ access_token?: string; error?: string; interval?: number }>(
           'https://github.com/login/oauth/access_token',
           { client_id: config.oauthClientId, device_code: code.device_code, grant_type: 'urn:ietf:params:oauth:grant-type:device_code' },
@@ -139,7 +140,7 @@ export class Network extends EventEmitter {
         if (r.access_token) githubToken = r.access_token;
         else if (r.error === 'slow_down') interval = (r.interval ?? interval / 1000 + 5) * 1000;
         else if (r.error === 'access_denied') throw new CancelledError();
-        else if (r.error && r.error !== 'authorization_pending') throw new Error('Die Anmeldung bei GitHub hat nicht geklappt.');
+        else if (r.error && r.error !== 'authorization_pending') throw new Error(t('netMsg.signInFailed'));
       }
       if (cancelled) throw new CancelledError();
 
@@ -162,7 +163,7 @@ export class Network extends EventEmitter {
         if (!this.isMember()) this.saveConsent('no');
         this.forceConsentDialog = false;
       } else {
-        this.signIn = { state: 'error', message: (err as Error).message || 'Anmeldung fehlgeschlagen' };
+        this.signIn = { state: 'error', message: err instanceof ServerError ? serverMessage(err) : (err as Error).message || t('netMsg.signInFailed') };
       }
       this.changed();
     } finally {
@@ -187,7 +188,7 @@ export class Network extends EventEmitter {
         await this.server('DELETE', '/v1/me');
       } catch (err) {
         if (!(err instanceof ServerError && err.status === 401)) {
-          return { ok: false, message: 'Der Server ist gerade nicht erreichbar. Deine Daten wurden noch nicht gelöscht – bitte später nochmals versuchen.' };
+          return { ok: false, message: t('netMsg.leaveFailed') };
         }
       }
     }
@@ -206,23 +207,23 @@ export class Network extends EventEmitter {
   }
 
   async myData(): Promise<MyDataResult> {
-    if (!this.isMember()) return { ok: false, message: 'Du machst beim Netzwerk nicht mit.' };
+    if (!this.isMember()) return { ok: false, message: t('netMsg.notMember') };
     try {
       return { ok: true, data: await this.server<ServerUserData>('GET', '/v1/me') };
     } catch (err) {
-      return { ok: false, message: err instanceof ServerError ? err.message : 'Der Server ist gerade nicht erreichbar.' };
+      return { ok: false, message: serverMessage(err) };
     }
   }
 
   // --- Reviews -------------------------------------------------------------
 
-  private async act(task: () => Promise<void>): Promise<ActionResult> {
-    if (!this.isMember()) return { ok: false, message: 'Dafür musst du beim Netzwerk mitmachen (GitHub-Konto verknüpfen).' };
+  private async act(task: () => Promise<void>, forbidden: MessageKey = 'netMsg.rejected'): Promise<ActionResult> {
+    if (!this.isMember()) return { ok: false, message: t('netMsg.needMember') };
     try {
       await task();
       return { ok: true };
     } catch (err) {
-      return { ok: false, message: err instanceof ServerError ? err.message : 'Der Server ist gerade nicht erreichbar. Bitte später nochmals versuchen.' };
+      return { ok: false, message: serverMessage(err, forbidden) };
     }
   }
 
@@ -255,17 +256,17 @@ export class Network extends EventEmitter {
     return this.act(async () => {
       await this.server(on ? 'POST' : 'DELETE', `/v1/reviews/${reviewId}/vote`);
       this.db.setMyVote(reviewId, on);
-    });
+    }, 'netMsg.cantVoteOwn');
   }
 
   /** Only the owner of the GitHub project may answer; the server checks it at GitHub with the member's token. */
   reply(reviewId: number, text: string): Promise<ActionResult> {
     return this.act(async () => {
       const githubToken = this.deps.secrets.get('network-github');
-      if (!githubToken) throw new ServerError(401, 'Bitte melde dich erneut beim Netzwerk an.');
+      if (!githubToken) throw new ServerError(401, 'missing GitHub token');
       const r = await this.server<{ replyDay: string }>('POST', `/v1/reviews/${reviewId}/reply`, { text, githubToken });
       this.db.setLocalReply(reviewId, text.trim(), this.db.getMeta('network_login'), r.replyDay ?? null);
-    });
+    }, 'netMsg.ownerOnly');
   }
 
   deleteReply(reviewId: number): Promise<ActionResult> {
@@ -333,7 +334,7 @@ export class Network extends EventEmitter {
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-    if (!res.ok) throw new Error(`GitHub antwortete mit ${res.status}`);
+    if (!res.ok) throw new Error(`GitHub answered with ${res.status}`);
     return (await res.json()) as T;
   }
 
@@ -353,9 +354,22 @@ export class Network extends EventEmitter {
     } catch {
       /* empty body */
     }
-    if (!res.ok) throw new ServerError(res.status, (json as { error?: string })?.error ?? `Server antwortete mit ${res.status}`);
+    if (!res.ok) throw new ServerError(res.status, (json as { error?: string })?.error ?? `Server answered with ${res.status}`);
     return json as T;
   }
+}
+
+/**
+ * Message for the user in the app's language. The server's own texts are not shown,
+ * the HTTP status says enough. `forbidden` explains a 400/403 for the action at hand.
+ */
+function serverMessage(err: unknown, forbidden: MessageKey = 'netMsg.rejected'): string {
+  if (!(err instanceof ServerError)) return t('netMsg.serverUnreachable');
+  if (err.status === 401) return t('netMsg.signInAgain');
+  if (err.status === 400 || err.status === 403) return t(forbidden);
+  if (err.status === 404) return t('netMsg.notFound');
+  if (err.status === 429) return t('netMsg.dailyLimit');
+  return t('netMsg.serverUnreachable');
 }
 
 export class ServerError extends Error {

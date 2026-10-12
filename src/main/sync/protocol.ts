@@ -1,5 +1,7 @@
 /** Messages between the main process and the sync worker. */
 
+import type { ProgressPhase } from '../../shared/types';
+
 export type JobKind = 'packages' | 'manual' | 'merge-base' | 'vacuum';
 
 export type WorkerRequest =
@@ -11,8 +13,9 @@ export type WorkerRequest =
 
 export interface WorkerProgress {
   job: JobKind;
-  /** Short German text for the status bar. */
-  text: string;
+  phase: ProgressPhase;
+  index?: number;
+  of?: number;
   added: number;
   updated: number;
 }

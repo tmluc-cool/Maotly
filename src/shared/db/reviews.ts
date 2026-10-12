@@ -55,7 +55,7 @@ const optText = (v: unknown, max: number) => (typeof v === 'string' && v.length 
 /** Validates the reviews file of an update package. Anything malformed is dropped. */
 export function sanitizeReviews(json: unknown): Review[] {
   const list = (json as { reviews?: unknown })?.reviews;
-  if (!Array.isArray(list)) throw new Error('Ungültige Bewertungsdatei');
+  if (!Array.isArray(list)) throw new Error('Invalid reviews file');
   const out: Review[] = [];
   for (const r of list as Record<string, unknown>[]) {
     if (!r || typeof r !== 'object') continue;

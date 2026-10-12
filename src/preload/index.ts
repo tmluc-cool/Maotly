@@ -29,6 +29,7 @@ const api: GratisStattApi = {
 
   getSettings: () => ipcRenderer.invoke(IPC.settingsGet),
   setTheme: (theme) => ipcRenderer.invoke(IPC.themeSet, theme),
+  setLanguage: (lang) => ipcRenderer.invoke(IPC.languageSet, lang),
   setAutoUpdate: (on) => ipcRenderer.invoke(IPC.autoUpdateSet, on),
   setToken: (token) => ipcRenderer.invoke(IPC.tokenSet, token),
   clearToken: () => ipcRenderer.invoke(IPC.tokenClear),

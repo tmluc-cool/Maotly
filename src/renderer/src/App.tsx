@@ -4,6 +4,7 @@ import { ConsentDialog } from './components/ConsentDialog';
 import { StatusBar } from './components/StatusBar';
 import { GearIcon, InfoIcon } from './components/icons';
 import { Logo } from './components/Logo';
+import { t } from './lib/i18n';
 import { href, navigate, useRoute, type Route } from './lib/router';
 import { AboutPage } from './pages/AboutPage';
 import { CategoryPage } from './pages/CategoryPage';
@@ -47,7 +48,7 @@ function Page({ route }: { route: Route }) {
 
 export function App() {
   const route = useRoute();
-  const { ready } = useApp();
+  const { ready, lang } = useApp();
 
   // Ctrl+K (Cmd+K on Mac) jumps into the search field.
   useEffect(() => {
@@ -73,7 +74,8 @@ export function App() {
     }`;
 
   return (
-    <div className="flex min-h-screen flex-col">
+    // Keyed by language: switching it renders everything again with the new texts.
+    <div key={lang} className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-slate-50/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
           <a href={href.home()} className="flex shrink-0 items-center gap-2 text-lg font-extrabold tracking-tight">
@@ -83,10 +85,10 @@ export function App() {
           <div className="flex-1">{showHeaderSearch && <div className="max-w-sm">{ready && <SearchBox size="small" />}</div>}</div>
           <nav className="flex shrink-0 gap-1">
             <a href={href.settings()} className={navLink(route.name === 'settings')}>
-              <GearIcon /> Einstellungen
+              <GearIcon /> {t('nav.settings')}
             </a>
             <a href={href.about()} className={navLink(route.name === 'about')}>
-              <InfoIcon /> Über
+              <InfoIcon /> {t('nav.about')}
             </a>
           </nav>
         </div>

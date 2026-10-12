@@ -38,7 +38,12 @@ export function Markdown({ source }: { source: string }) {
     }
     if (/^\s*-\s+/.test(line)) {
       const items: string[] = [];
-      while (i < lines.length && /^\s*-\s+/.test(lines[i])) items.push(lines[i++].replace(/^\s*-\s+/, ''));
+      while (i < lines.length && /^\s*-\s+/.test(lines[i])) {
+        let item = lines[i++].replace(/^\s*-\s+/, '');
+        // Indented lines continue the item (wrapped long bullets).
+        while (i < lines.length && /^\s{2,}\S/.test(lines[i]) && !/^\s*-\s+/.test(lines[i])) item += ` ${lines[i++].trim()}`;
+        items.push(item);
+      }
       blocks.push(
         <ul key={i} className="list-disc space-y-1 pl-6">
           {items.map((t, k) => (

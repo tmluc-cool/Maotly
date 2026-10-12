@@ -12,14 +12,14 @@ describe('curated list', () => {
 
   it('catches typical mistakes', () => {
     const bad = {
-      categories: [{ id: 'c', name: 'C' }],
+      categories: [{ id: 'c', name: { en: 'C', de: 'C', es: 'C' } }],
       products: [
-        { id: 'p', name: 'P', aliases: [], category: 'nope', alternatives: [{ repo: 'a/b', summary: 'x'.repeat(121), platforms: ['dos'], level: 'leicht' }] },
-        { id: 'p', name: 'Grosse Straße', aliases: [], category: 'c', alternatives: [{ repo: 'a', summary: 'ok', platforms: ['web'], level: 'einfach' }] },
+        { id: 'p', name: 'P', aliases: [], category: 'nope', alternatives: [{ repo: 'a/b', summary: { en: 'x'.repeat(121), de: 'ok', es: 'ok' }, platforms: ['dos'], level: 'leicht' }] },
+        { id: 'p', name: 'Grosse Straße', aliases: [], category: 'c', note: { en: 'n', de: 'n' }, alternatives: [{ repo: 'a', summary: 'nur Deutsch', platforms: ['web'], level: 'einfach' }] },
       ],
     } as unknown as AlternativesData;
     const text = validateCurated(bad).errors.join('\n');
-    for (const re of [/Doppelte Produkt-ID/, /unbekannte Kategorie/, /max\. 120/, /ungültige Plattform/, /ungültiges Level/, /ß/, /owner\/name/]) {
+    for (const re of [/Doppelte Produkt-ID/, /unbekannte Kategorie/, /max\. 120/, /ungültige Plattform/, /ungültiges Level/, /ß/, /owner\/name/, /note: Sprache "es" fehlt/, /summary: muss \{ en, de, es \}/]) {
       expect(text).toMatch(re);
     }
   });

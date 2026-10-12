@@ -18,7 +18,7 @@ export class Updater extends EventEmitter {
   private timer: NodeJS.Timeout | null = null;
   private queue: WorkerRequest[] = [];
   private busy = false;
-  status: UpdateStatus = { running: false, job: null, text: '', added: 0, updated: 0, paused: false, error: null, offline: false };
+  status: UpdateStatus = { running: false, job: null, phase: null, added: 0, updated: 0, paused: false, error: null, offline: false };
 
   constructor(
     private db: AppDatabase,
@@ -112,25 +112,26 @@ export class Updater extends EventEmitter {
     }
     this.busy = true;
     const job = req.type === 'pause' ? null : req.type;
-    this.set({ running: true, job, text: 'Aktualisiere …', added: 0, updated: 0, error: null, offline: false });
+    this.set({ running: true, job, phase: 'starting', index: undefined, of: undefined, added: 0, updated: 0, error: null, offline: false });
     this.worker.postMessage(req);
   }
 
   private onMessage(m: WorkerMessage) {
     if (m.type === 'progress') {
-      this.set({ text: m.progress.text, added: m.progress.added, updated: m.progress.updated });
+      const { phase, index, of, added, updated } = m.progress;
+      this.set({ phase, index, of, added, updated });
       return;
     }
     this.busy = false;
     if (m.type === 'done') {
-      this.set({ running: false, job: null, text: '', added: m.added, updated: m.updated, paused: this.db.pausedManualRun() !== null });
+      this.set({ running: false, job: null, phase: null, added: m.added, updated: m.updated, paused: this.db.pausedManualRun() !== null });
       this.emit('changed');
     } else {
       // Offline: skip silently, the hourly check tries again.
       this.set({
         running: false,
         job: null,
-        text: '',
+        phase: null,
         error: m.offline ? null : m.message,
         offline: m.offline,
         paused: this.db.pausedManualRun() !== null,

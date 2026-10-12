@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import { LANG_NAMES, LANGS, isLang } from '@shared/i18n';
+import { rich, t } from '../lib/i18n';
 import { href, navigate } from '../lib/router';
 import { useApp } from '../state';
 
@@ -7,7 +9,7 @@ import { useApp } from '../state';
  * Both buttons look exactly the same – nothing is preselected.
  */
 export function ConsentDialog() {
-  const { network } = useApp();
+  const { network, lang, setLang } = useApp();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const open = !!network?.askConsent && window.location.hash !== href.privacy();
 
@@ -31,64 +33,72 @@ export function ConsentDialog() {
     >
       <div className="space-y-4 p-7">
         {/* Focus starts on the title, so neither answer looks preselected. */}
-        <h2 id="consent-title" className="text-2xl font-extrabold outline-none focus-visible:ring-0" tabIndex={-1} autoFocus>
-          Willkommen bei GratisStatt!
-        </h2>
+        <div className="flex items-start justify-between gap-4">
+          <h2 id="consent-title" className="text-2xl font-extrabold outline-none focus-visible:ring-0" tabIndex={-1} autoFocus>
+            {t('consent.title')}
+          </h2>
+          <select
+            aria-label={t('common.language')}
+            value={lang}
+            onChange={(e) => isLang(e.target.value) && setLang(e.target.value)}
+            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-800"
+          >
+            {LANGS.map((l) => (
+              <option key={l} value={l}>
+                {LANG_NAMES[l]}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {s.state === 'waiting' ? (
           <div className="space-y-4">
-            <p>1. Öffne GitHub und gib diesen Code ein:</p>
+            <p>{t('consent.step1')}</p>
             <p className="select-all rounded-xl bg-slate-100 py-4 text-center font-mono text-3xl font-bold tracking-widest dark:bg-slate-800">
               {s.info.userCode}
             </p>
             <button type="button" className={answerButton} onClick={() => void window.api.openExternal(s.info.verificationUri)}>
-              GitHub öffnen
+              {t('consent.openGitHub')}
             </button>
-            <p className="text-sm text-slate-600 dark:text-slate-400">2. Bestätige dort die Anmeldung. Diese Seite merkt es automatisch …</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">{t('consent.step2')}</p>
             <button type="button" className="text-sm underline" onClick={() => void window.api.cancelJoin()}>
-              Abbrechen (dann gilt «Nein danke»)
+              {t('consent.cancel')}
             </button>
           </div>
         ) : s.state === 'registering' ? (
-          <p>Anmeldung bestätigt. Einen Moment …</p>
+          <p>{t('consent.registering')}</p>
         ) : (
           <>
-            <p>Die App funktioniert komplett ohne Anmeldung.</p>
+            <p>{t('consent.p1')}</p>
+            <p>{rich('consent.p2', { network: <strong>{t('consent.networkName')}</strong> })}</p>
             <p>
-              Wenn du willst, kannst du beim <strong>GratisStatt-Netzwerk</strong> mitmachen. Projekte, die du über die
-              Live-Suche findest, landen dann nach einer Prüfung beim nächsten Update bei allen Nutzern. Ausserdem kannst du
-              Projekte bewerten und hilfreiche Bewertungen hochwählen.
-            </p>
-            <p>
-              <strong>Gespeichert wird:</strong> dein GitHub-Benutzername, die App-Version, an welchem Tag du die App zuletzt
-              benutzt hast, wie viele Projekte du beigetragen hast, deine Bewertungen und welche Bewertungen du hochgewählt hast.
+              <strong>{t('consent.storedLabel')}</strong> {t('consent.stored')}
               <br />
-              <strong>Öffentlich sichtbar:</strong> deine Bewertungen mit deinem GitHub-Benutzernamen. Bei Upvotes nur die Anzahl,
-              nicht wer gewählt hat.
+              <strong>{t('consent.publicLabel')}</strong> {t('consent.public')}
               <br />
-              <strong>Nicht gespeichert wird:</strong> E-Mail, IP-Adresse, Suchbegriffe, Dateien auf deinem Computer.
+              <strong>{t('consent.notStoredLabel')}</strong> {t('consent.notStored')}
             </p>
-            <p>Du kannst das jederzeit in den Einstellungen ändern und deine Daten löschen.</p>
+            <p>{t('consent.change')}</p>
             {s.state === 'error' && (
               <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-800 dark:bg-rose-950/50 dark:text-rose-200">{s.message}</p>
             )}
             <div className="grid gap-3 pt-2 sm:grid-cols-2">
               <button type="button" className={answerButton} onClick={() => void window.api.joinNetwork()}>
-                Mitmachen – mit GitHub anmelden
+                {t('consent.join')}
               </button>
               <button
                 type="button"
                 className={answerButton}
                 onClick={() => void (s.state === 'error' ? window.api.cancelJoin() : window.api.declineNetwork())}
               >
-                Nein danke, nur lokal
+                {t('consent.decline')}
               </button>
             </div>
             <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
               <button type="button" className="underline" onClick={() => navigate(href.privacy())}>
-                Datenschutzerklärung lesen
+                {t('consent.readPrivacy')}
               </button>
-              <span className="text-xs text-slate-500 dark:text-slate-400">Ein Spass-Projekt – ohne Gewähr und ohne Haftung.</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">{t('consent.fun')}</span>
             </div>
           </>
         )}

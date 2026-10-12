@@ -5,6 +5,7 @@ import { CodeIcon, StarIcon } from '../components/icons';
 import { updatedText } from '../components/RepoCard';
 import { StarInput, Stars } from '../components/Stars';
 import { formatDate, formatStars, maintenance } from '../lib/format';
+import { formatDecimal, t, tn } from '../lib/i18n';
 import { useApp } from '../state';
 import { NotFoundPage } from './NotFoundPage';
 
@@ -23,7 +24,7 @@ function Distribution({ summary }: { summary: RepoDetails['summary'] }) {
         const pct = summary.count ? Math.round((n / summary.count) * 100) : 0;
         return (
           <div key={star} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-            <span className="w-14">{star} {star === 1 ? 'Stern' : 'Sterne'}</span>
+            <span className="w-20">{tn('stars.n', star)}</span>
             <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
               <div className="h-full rounded-full bg-amber-400" style={{ width: `${pct}%` }} />
             </div>
@@ -42,12 +43,12 @@ function ReviewForm({ repoId, own, onDone }: { repoId: number; own: ReviewWithSt
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const submit = async () => {
-    if (!rating) return setMsg({ ok: false, text: 'Bitte wähle 1 bis 5 Sterne.' });
-    if (text.trim().length < 3) return setMsg({ ok: false, text: 'Bitte schreib ein paar Worte dazu.' });
+    if (!rating) return setMsg({ ok: false, text: t('review.chooseStars') });
+    if (text.trim().length < 3) return setMsg({ ok: false, text: t('review.writeSomething') });
     setBusy(true);
     try {
       const r = await window.api.writeReview(repoId, rating, text);
-      setMsg(r.ok ? { ok: true, text: 'Danke! Andere sehen deine Bewertung mit dem nächsten wöchentlichen Update.' } : { ok: false, text: r.message });
+      setMsg(r.ok ? { ok: true, text: t('review.thanks') } : { ok: false, text: r.message });
       if (r.ok) onDone();
     } finally {
       setBusy(false);
@@ -55,11 +56,11 @@ function ReviewForm({ repoId, own, onDone }: { repoId: number; own: ReviewWithSt
   };
 
   const remove = async () => {
-    if (!confirm('Deine Bewertung löschen?')) return;
+    if (!confirm(t('review.confirmDelete'))) return;
     setBusy(true);
     try {
       const r = await window.api.deleteReview(repoId);
-      setMsg(r.ok ? { ok: true, text: 'Bewertung gelöscht.' } : { ok: false, text: r.message });
+      setMsg(r.ok ? { ok: true, text: t('review.deleted') } : { ok: false, text: r.message });
       if (r.ok) {
         setRating(0);
         setText('');
@@ -78,30 +79,30 @@ function ReviewForm({ repoId, own, onDone }: { repoId: number; own: ReviewWithSt
         void submit();
       }}
     >
-      <h2 className="text-lg font-bold">{own ? 'Deine Bewertung bearbeiten' : 'Bewertung schreiben'}</h2>
+      <h2 className="text-lg font-bold">{t(own ? 'review.editTitle' : 'review.writeTitle')}</h2>
       <StarInput value={rating} onChange={setRating} />
       <label className="block">
-        <span className="text-sm text-slate-600 dark:text-slate-400">Deine Erfahrung oder dein Problem</span>
+        <span className="text-sm text-slate-600 dark:text-slate-400">{t('review.textLabel')}</span>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value.slice(0, MAX_TEXT))}
           rows={3}
           maxLength={MAX_TEXT}
-          placeholder="Was war gut? Was hat nicht funktioniert?"
+          placeholder={t('review.placeholder')}
           className="mt-1 w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
         />
         <span className="text-xs text-slate-500">{text.length} / {MAX_TEXT}</span>
       </label>
       <p className="text-xs text-slate-500 dark:text-slate-400">
-        Bewertungen sind öffentlich und zeigen deinen GitHub-Benutzernamen. Bitte keine persönlichen Daten hineinschreiben.
+        {t('review.publicHint')}
       </p>
       <div className="flex flex-wrap gap-2">
         <button type="submit" className="btn-primary" disabled={busy}>
-          {busy ? 'Sende …' : own ? 'Änderung speichern' : 'Bewertung abschicken'}
+          {t(busy ? 'review.sending' : own ? 'review.saveChange' : 'review.submit')}
         </button>
         {own && (
           <button type="button" className="btn-secondary" disabled={busy} onClick={() => void remove()}>
-            Löschen
+            {t('common.delete')}
           </button>
         )}
       </div>
@@ -122,9 +123,7 @@ function ReviewItem({ r, me, canJoin, onChange }: { r: ReviewWithState; me: stri
     if (!me)
       return setMsg({
         ok: false,
-        text: canJoin
-          ? 'Zum Hochwählen musst du beim Netzwerk mitmachen (Einstellungen).'
-          : 'Hochwählen ist möglich, sobald das GratisStatt-Netzwerk eingerichtet ist.',
+        text: t(canJoin ? 'review.needJoin' : 'review.voteNotAvailable'),
       });
     setBusy(true);
     try {
@@ -151,7 +150,7 @@ function ReviewItem({ r, me, canJoin, onChange }: { r: ReviewWithState; me: stri
   };
 
   const removeReply = async () => {
-    if (!confirm('Deine Antwort löschen?')) return;
+    if (!confirm(t('review.confirmDeleteReply'))) return;
     const res = await window.api.deleteReply(r.id);
     if (!res.ok) setMsg({ ok: false, text: res.message });
     onChange();
@@ -165,7 +164,7 @@ function ReviewItem({ r, me, canJoin, onChange }: { r: ReviewWithState; me: stri
           disabled={busy || own}
           onClick={() => void vote()}
           aria-pressed={r.voted}
-          title={own ? 'Die eigene Bewertung kann man nicht hochwählen' : r.voted ? 'Upvote zurücknehmen' : 'Hilfreich – hochwählen'}
+          title={t(own ? 'review.cantVoteOwn' : r.voted ? 'review.unvote' : 'review.vote')}
           className={`grid h-9 w-9 place-items-center rounded-lg border text-lg transition ${
             r.voted
               ? 'border-brand-600 bg-brand-600 text-white'
@@ -174,7 +173,7 @@ function ReviewItem({ r, me, canJoin, onChange }: { r: ReviewWithState; me: stri
         >
           ▲
         </button>
-        <span className="mt-1 text-sm font-semibold" aria-label={`${r.votes} Upvotes`}>
+        <span className="mt-1 text-sm font-semibold" aria-label={t('review.votes', { count: r.votes })}>
           {r.votes}
         </span>
       </div>
@@ -184,11 +183,11 @@ function ReviewItem({ r, me, canJoin, onChange }: { r: ReviewWithState; me: stri
           <span className="font-semibold">@{r.author}</span>
           <span className="text-xs text-slate-500 dark:text-slate-400">
             {formatDate(r.updated_day ?? r.created_day)}
-            {r.created_day && r.updated_day && r.updated_day !== r.created_day && ' (bearbeitet)'}
+            {r.created_day && r.updated_day && r.updated_day !== r.created_day && ` ${t('review.edited')}`}
           </span>
           {r.local === 1 && (
             <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-              Nur bei dir sichtbar bis zum nächsten Update
+              {t('review.localOnly')}
             </span>
           )}
         </div>
@@ -197,16 +196,16 @@ function ReviewItem({ r, me, canJoin, onChange }: { r: ReviewWithState; me: stri
         {r.reply_text && !replying && (
           <div className="mt-3 rounded-lg border-l-4 border-brand-500 bg-brand-50 px-3 py-2 dark:bg-brand-900/20">
             <p className="text-xs font-semibold text-brand-800 dark:text-brand-200">
-              Antwort vom Projekt-Owner @{r.reply_author} · {formatDate(r.reply_day)}
+              {t('review.replyFrom', { author: r.reply_author ?? '', date: formatDate(r.reply_day) })}
             </p>
             <p className="mt-1 whitespace-pre-line break-words text-sm text-slate-800 dark:text-slate-200">{r.reply_text}</p>
             {ownReply && (
               <div className="mt-1 flex gap-3 text-xs">
                 <button type="button" className="underline" onClick={() => setReplying(true)}>
-                  Bearbeiten
+                  {t('common.edit')}
                 </button>
                 <button type="button" className="underline" onClick={() => void removeReply()}>
-                  Löschen
+                  {t('common.delete')}
                 </button>
               </div>
             )}
@@ -215,7 +214,7 @@ function ReviewItem({ r, me, canJoin, onChange }: { r: ReviewWithState; me: stri
 
         {me && !own && !r.reply_text && !replying && (
           <button type="button" className="mt-2 text-xs text-slate-500 underline hover:text-slate-800 dark:hover:text-slate-200" onClick={() => setReplying(true)}>
-            Als Projekt-Owner antworten
+            {t('review.replyAsOwner')}
           </button>
         )}
 
@@ -226,16 +225,16 @@ function ReviewItem({ r, me, canJoin, onChange }: { r: ReviewWithState; me: stri
               onChange={(e) => setReplyText(e.target.value.slice(0, MAX_TEXT))}
               rows={2}
               maxLength={MAX_TEXT}
-              placeholder="Antwort an die Person, die bewertet hat"
+              placeholder={t('review.replyPlaceholder')}
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800"
             />
-            <p className="text-xs text-slate-500">Nur wer das Projekt auf GitHub besitzt (oder Admin ist), kann antworten. Das wird bei GitHub geprüft.</p>
+            <p className="text-xs text-slate-500">{t('review.replyHint')}</p>
             <div className="flex gap-2">
               <button type="button" className="btn-primary" disabled={busy || replyText.trim().length < 3} onClick={() => void sendReply()}>
-                {busy ? 'Prüfe …' : 'Antwort senden'}
+                {t(busy ? 'common.checking' : 'review.sendReply')}
               </button>
               <button type="button" className="btn-secondary" onClick={() => setReplying(false)}>
-                Abbrechen
+                {t('common.cancel')}
               </button>
             </div>
           </div>
@@ -270,38 +269,38 @@ export function ProjectPage({ id }: { id: number }) {
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-6 pb-20 pt-8">
       <button type="button" className="text-sm text-slate-600 hover:underline dark:text-slate-400" onClick={() => history.back()}>
-        ← Zurück
+        ← {t('common.back')}
       </button>
 
       <section className="card">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
             <h1 className="text-2xl font-extrabold tracking-tight">{repo.name}</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">von {repo.owner}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{t('common.byOwner', { owner: repo.owner })}</p>
           </div>
           <button type="button" className="btn-primary" onClick={() => void window.api.openExternal(repo.html_url)}>
-            <CodeIcon /> Auf GitHub öffnen
+            <CodeIcon /> {t('common.openOnGitHub')}
           </button>
         </div>
         {repo.description && <p className="mt-3 text-slate-700 dark:text-slate-300">{repo.description}</p>}
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-600 dark:text-slate-400">
           <span className="inline-flex items-center gap-1 font-semibold text-slate-800 dark:text-slate-200">
-            <StarIcon className="text-amber-500" width={14} height={14} /> {formatStars(repo.stars)} auf GitHub
+            <StarIcon className="text-amber-500" width={14} height={14} /> {t('project.starsOnGitHub', { stars: formatStars(repo.stars) })}
           </span>
           <span className="inline-flex items-center gap-1.5">
             <MaintenanceLight value={maintenance(repo)} /> {updatedText(repo)}
           </span>
-          {repo.license && <span>Lizenz: {repo.license}</span>}
+          {repo.license && <span>{t('common.license', { license: repo.license })}</span>}
           {repo.language && <span>{repo.language}</span>}
         </div>
       </section>
 
       <section className="card grid gap-6 sm:grid-cols-[auto,1fr]">
         <div className="text-center">
-          <div className="text-5xl font-extrabold">{summary.count ? summary.avg.toLocaleString('de-CH', { minimumFractionDigits: 1 }) : '–'}</div>
+          <div className="text-5xl font-extrabold">{summary.count ? formatDecimal(summary.avg) : '–'}</div>
           <Stars value={summary.avg} size={20} />
           <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {summary.count} {summary.count === 1 ? 'Bewertung' : 'Bewertungen'}
+            {tn('project.reviews', summary.count)}
           </div>
         </div>
         <Distribution summary={summary} />
@@ -311,37 +310,37 @@ export function ProjectPage({ id }: { id: number }) {
         <ReviewForm key={own?.id ?? 'new'} repoId={repo.id} own={own} onDone={load} />
       ) : (
         <section className="card text-sm text-slate-700 dark:text-slate-300">
-          <p className="font-semibold">Eigene Bewertung schreiben</p>
+          <p className="font-semibold">{t('project.writeOwn')}</p>
           {network?.available ? (
             <>
-              <p className="mt-1">Zum Bewerten, Hochwählen und Antworten verknüpfst du dein GitHub-Konto (GratisStatt-Netzwerk). Lesen kann jeder.</p>
+              <p className="mt-1">{t('project.linkHint')}</p>
               <button type="button" className="btn-primary mt-3" onClick={() => void window.api.askNetwork()}>
-                GitHub-Konto verknüpfen
+                {t('project.link')}
               </button>
             </>
           ) : (
-            <p className="mt-1">Bewertungen schreiben ist möglich, sobald das GratisStatt-Netzwerk eingerichtet ist. Lesen kann jeder.</p>
+            <p className="mt-1">{t('project.notAvailable')}</p>
           )}
         </section>
       )}
 
       <section>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-xl font-bold">Bewertungen</h2>
+          <h2 className="text-xl font-bold">{t('project.reviewsTitle')}</h2>
           {reviews.length > 1 && (
-            <div className="flex gap-2" role="radiogroup" aria-label="Sortierung">
+            <div className="flex gap-2" role="radiogroup" aria-label={t('project.sortAria')}>
               <button type="button" role="radio" aria-checked={sort === 'top'} aria-pressed={sort === 'top'} className="chip-toggle" onClick={() => setSort('top')}>
-                Hilfreichste
+                {t('project.top')}
               </button>
               <button type="button" role="radio" aria-checked={sort === 'new'} aria-pressed={sort === 'new'} className="chip-toggle" onClick={() => setSort('new')}>
-                Neueste
+                {t('project.newest')}
               </button>
             </div>
           )}
         </div>
         {reviews.length === 0 ? (
           <p className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-slate-600 dark:border-slate-700 dark:text-slate-400">
-            Noch keine Bewertungen. Neue Bewertungen kommen jede Woche mit dem Update.
+            {t('project.noReviews')}
           </p>
         ) : (
           <ul className="space-y-3">

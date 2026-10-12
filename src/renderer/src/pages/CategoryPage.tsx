@@ -3,6 +3,7 @@ import { FilterBar } from '../components/FilterBar';
 import { ResultList } from '../components/ResultList';
 import { categoryById, productsInCategory } from '../lib/data';
 import { prettyRepoName } from '../lib/format';
+import { t, tx } from '../lib/i18n';
 import { href, navigate, type Filters } from '../lib/router';
 import { NotFoundPage } from './NotFoundPage';
 
@@ -28,14 +29,14 @@ export function CategoryPage({ id, filters }: { id: string; filters: Filters }) 
     <div className="mx-auto max-w-6xl px-6 pb-20 pt-8">
       <nav className="text-sm text-slate-500 dark:text-slate-400">
         <a href={href.home()} className="hover:underline">
-          Start
+          {t('common.home')}
         </a>
       </nav>
-      <h1 className="mt-2 text-3xl font-extrabold tracking-tight">{category.name}</h1>
+      <h1 className="mt-2 text-3xl font-extrabold tracking-tight">{tx(category.name)}</h1>
 
       {products.length > 0 && (
         <>
-          <p className="mt-1 text-slate-600 dark:text-slate-400">Wofür zahlst du? Wähle das Produkt aus.</p>
+          <p className="mt-1 text-slate-600 dark:text-slate-400">{t('category.pick')}</p>
           <ul className="mt-4 grid gap-2 md:grid-cols-2">
             {products.map((p) => (
               <li key={p.id}>
@@ -46,7 +47,7 @@ export function CategoryPage({ id, filters }: { id: string; filters: Filters }) 
                   <span className="min-w-0">
                     <span className="block font-semibold">{p.name}</span>
                     <span className="block truncate text-sm text-slate-500 dark:text-slate-400">
-                      Gratis: {p.alternatives.map((a) => prettyRepoName(a.repo)).join(', ')}
+                      {t('category.free', { list: p.alternatives.map((a) => prettyRepoName(a.repo)).join(', ') })}
                     </span>
                   </span>
                   <span className="shrink-0 rounded-full bg-brand-50 px-2.5 py-0.5 text-sm font-medium text-brand-800 dark:bg-brand-900/40 dark:text-brand-200">
@@ -60,8 +61,8 @@ export function CategoryPage({ id, filters }: { id: string; filters: Filters }) 
       )}
 
       <section className="mt-10">
-        <h2 className="mb-1 text-xl font-bold">Top-Projekte in {category.name}</h2>
-        <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">Zugeordnet über die GitHub-Themen der Projekte.</p>
+        <h2 className="mb-1 text-xl font-bold">{t('category.top', { category: tx(category.name) })}</h2>
+        <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">{t('category.topLead')}</p>
         <FilterBar filters={filters} showCategory={false} hasText={false} onChange={(f) => navigate(href.category(id, f), true)} />
         <div className="mt-4">
           <ResultList params={params} />

@@ -6,6 +6,7 @@ import { CodeIcon } from '../components/icons';
 import { ResultList, type ListInfo } from '../components/ResultList';
 import { SearchBox } from '../components/SearchBox';
 import { productSearch } from '../lib/data';
+import { rich, t } from '../lib/i18n';
 import { href, navigate, type Filters } from '../lib/router';
 import { useApp } from '../state';
 
@@ -66,12 +67,12 @@ export function SearchPage({ q, filters }: { q: string; filters: Filters }) {
       {product && (
         <section className="mt-8">
           <h2 className="text-2xl font-extrabold tracking-tight">
-            Gratis statt <span className="text-brand-600 dark:text-brand-400">{product.name}</span>
+            {rich('curated.title', { product: <span className="text-brand-600 dark:text-brand-400">{product.name}</span> })}
           </h2>
           <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
-            Von uns ausgewählt.{' '}
+            {t('curated.picked')}{' '}
             <a className="underline" href={href.product(product.id)}>
-              Mehr dazu
+              {t('curated.more')}
             </a>
           </p>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -83,17 +84,16 @@ export function SearchPage({ q, filters }: { q: string; filters: Filters }) {
       )}
 
       <section className="mt-10">
-        <h2 className="mb-3 text-xl font-bold">{product ? 'Weitere Projekte' : q ? `Projekte zu „${q}“` : 'Alle Projekte'}</h2>
+        <h2 className="mb-3 text-xl font-bold">{product ? t('search.moreProjects') : q ? t('search.projectsFor', { q }) : t('search.allProjects')}</h2>
         <FilterBar filters={filters} hasText={!!q.trim()} onChange={(f) => navigate(href.search(q, f), true)} />
 
         {showLive && (
           <div className="mt-4 rounded-xl border border-dashed border-slate-300 p-4 dark:border-slate-700">
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              {info.total === 0 ? 'In der Datenbank ist dazu noch nichts.' : 'Nur wenige Treffer in der Datenbank.'} Auf GitHub gibt es
-              vielleicht neuere Projekte.
+              {t(info.total === 0 ? 'search.nothingInDb' : 'search.fewInDb')} {t('search.maybeNewer')}
             </p>
             <button type="button" className="btn-primary mt-3" disabled={liveBusy} onClick={() => void runLive()}>
-              <CodeIcon /> {liveBusy ? 'Suche auf GitHub …' : 'Auf GitHub nach neuen Projekten suchen'}
+              <CodeIcon /> {t(liveBusy ? 'search.liveBusy' : 'search.liveButton')}
             </button>
             {live && <LiveMessage result={live} member={!!network?.member} />}
           </div>
@@ -113,18 +113,18 @@ function LiveMessage({ result, member }: { result: LiveSearchResult; member: boo
     return (
       <p className="mt-3 text-sm text-emerald-700 dark:text-emerald-300">
         {result.found === 0
-          ? 'Auch GitHub hat nichts Passendes gefunden.'
-          : `${result.found} Projekte gefunden, davon ${result.fresh} neu. Sie sind jetzt lokal gespeichert${member && result.fresh ? ' und werden fürs Netzwerk vorgeschlagen' : ''}.`}
+          ? t('live.nothing')
+          : t(member && result.fresh ? 'live.foundNetwork' : 'live.found', { found: result.found, fresh: result.fresh })}
       </p>
     );
   }
   return (
     <p className="mt-3 text-sm text-amber-800 dark:text-amber-200">
       {result.reason === 'offline'
-        ? 'Du bist offline. Die Live-Suche braucht eine Internetverbindung.'
+        ? t('live.offline')
         : result.reason === 'ratelimited'
-          ? `GitHub macht gerade eine kurze Pause: ${result.withToken ? '30' : '10'} Suchen pro Minute sind erlaubt. Bitte in einer Minute nochmals versuchen.`
-          : `Die Suche hat nicht geklappt. ${result.message ?? ''}`}
+          ? t('live.ratelimited', { n: result.withToken ? 30 : 10 })
+          : t('live.error', { message: result.message ?? '' })}
     </p>
   );
 }

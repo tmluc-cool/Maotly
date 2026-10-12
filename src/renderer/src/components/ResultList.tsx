@@ -2,6 +2,7 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { RepoResult, SearchParams } from '@shared/types';
 import { formatCount } from '../lib/format';
+import { t, tn } from '../lib/i18n';
 import { useApp } from '../state';
 import { RepoCard } from './RepoCard';
 
@@ -78,10 +79,10 @@ export function ResultList({ params, onInfo, reloadKey = 0 }: Props) {
     <div>
       <p className="mb-3 text-sm text-slate-500 dark:text-slate-400" aria-live="polite">
         {loading && items.length === 0
-          ? 'Suche …'
+          ? t('results.searching')
           : total === 0
-            ? 'Keine Projekte gefunden.'
-            : `${capped ? 'Über ' : ''}${formatCount(total)} ${total === 1 ? 'Projekt' : 'Projekte'}${tookMs !== null ? ` · ${tookMs} ms` : ''}`}
+            ? t('results.none')
+            : `${capped ? t('results.capped', { count: formatCount(total) }) : tn('common.projects', total)}${tookMs !== null ? ` · ${tookMs} ms` : ''}`}
       </p>
       <div ref={listRef} style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
         {virtualItems.map((v) => (
@@ -94,7 +95,7 @@ export function ResultList({ params, onInfo, reloadKey = 0 }: Props) {
             {v.index < items.length ? (
               <RepoCard repo={items[v.index]} />
             ) : (
-              <div className="py-4 text-center text-sm text-slate-500">Lade weitere …</div>
+              <div className="py-4 text-center text-sm text-slate-500">{t('results.loadingMore')}</div>
             )}
           </div>
         ))}

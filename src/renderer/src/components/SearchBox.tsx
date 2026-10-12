@@ -1,5 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { categoryById, productSearch } from '../lib/data';
+import { t, tn, tx } from '../lib/i18n';
 import { href, navigate } from '../lib/router';
 import { SearchIcon } from './icons';
 
@@ -79,8 +80,8 @@ export function SearchBox({ size = 'large', autoFocus = false, initialValue = ''
           aria-controls={listId}
           aria-autocomplete="list"
           aria-activedescendant={showList && active >= 0 ? `${listId}-${active}` : undefined}
-          aria-label="Wofür zahlst du gerade?"
-          placeholder={large ? 'Wofür zahlst du gerade?' : 'Suchen …  (Ctrl+K)'}
+          aria-label={t('searchBox.placeholder')}
+          placeholder={large ? t('searchBox.placeholder') : t('searchBox.placeholderSmall')}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -120,8 +121,7 @@ export function SearchBox({ size = 'large', autoFocus = false, initialValue = ''
             >
               <span className="font-medium">{p.name}</span>
               <span className="text-xs text-slate-500 dark:text-slate-400">
-                {categoryById.get(p.category)?.name} · {p.alternatives.length}{' '}
-                {p.alternatives.length === 1 ? 'Alternative' : 'Alternativen'}
+                {tx(categoryById.get(p.category)?.name)} · {tn('searchBox.alternatives', p.alternatives.length)}
               </span>
             </li>
           ))}
@@ -136,7 +136,7 @@ export function SearchBox({ size = 'large', autoFocus = false, initialValue = ''
               active === results.length ? 'bg-brand-50 dark:bg-brand-900/40' : ''
             }`}
           >
-            <span className="font-medium text-brand-700 dark:text-brand-300">Alle Projekte durchsuchen nach „{trimmed}“</span>
+            <span className="font-medium text-brand-700 dark:text-brand-300">{t('searchBox.searchAll', { q: trimmed })}</span>
             <span className="ml-2 text-xs text-slate-400">Enter</span>
           </li>
         </ul>

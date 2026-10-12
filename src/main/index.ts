@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, nativeTheme, net, screen, session, shell }
 import { join } from 'node:path';
 import icon from '../../build/icon.png?asset';
 import alternatives from '../../data/alternatives.json';
+import { detectLang, isLang, setLang, t } from '../shared/i18n';
 import { IPC } from '../shared/ipc';
 import type { AlternativesData, AppUpdateInfo, SearchParams, SettingsState, ThemeSetting } from '../shared/types';
 import { GitHubClient } from '../shared/crawler/client';
@@ -130,9 +131,15 @@ function createWindow() {
   else void mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
 }
 
+/** Language: chosen in the settings, else the system language (English if not German or Spanish). */
+function applyLanguage() {
+  setLang(settings.language ?? detectLang(app.getPreferredSystemLanguages()));
+}
+
 function settingsState(): SettingsState {
   return {
     theme: settings.theme,
+    language: settings.language ?? detectLang(app.getPreferredSystemLanguages()),
     autoUpdate: settings.autoUpdate,
     hasOwnToken: !!getSecret('own-github'),
     encryptionAvailable: encryptionAvailable(),
@@ -167,27 +174,27 @@ function registerIpc() {
   ipcMain.handle(IPC.newly, () => database.newlyDiscovered(12));
   ipcMain.handle(IPC.stats, () => database.stats());
   const id = (v: unknown) => (Number.isSafeInteger(v) && (v as number) > 0 ? (v as number) : null);
-  const bad = { ok: false, message: 'Ungültige Eingabe.' } as const;
+  const bad = () => ({ ok: false, message: t('main.invalidInput') }) as const;
   ipcMain.handle(IPC.repoDetails, (_e, repoId: unknown) => {
     const rid = id(repoId);
     return rid ? database.repoDetails(rid) : { repo: null, reviews: [], summary: { avg: 0, count: 0, distribution: [0, 0, 0, 0, 0] } };
   });
   ipcMain.handle(IPC.reviewWrite, (_e, repoId: unknown, rating: unknown, text: unknown) => {
     const rid = id(repoId);
-    if (!rid || !Number.isInteger(rating) || (rating as number) < 1 || (rating as number) > 5 || typeof text !== 'string') return bad;
-    const t = text.trim();
-    if (t.length < 3 || t.length > 500) return { ok: false, message: 'Der Text muss zwischen 3 und 500 Zeichen lang sein.' };
-    return network.writeReview(rid, rating as number, t);
+    if (!rid || !Number.isInteger(rating) || (rating as number) < 1 || (rating as number) > 5 || typeof text !== 'string') return bad();
+    const trimmed = text.trim();
+    if (trimmed.length < 3 || trimmed.length > 500) return { ok: false, message: t('main.textLength') };
+    return network.writeReview(rid, rating as number, trimmed);
   });
-  ipcMain.handle(IPC.reviewDelete, (_e, repoId: unknown) => (id(repoId) ? network.deleteReview(id(repoId)!) : bad));
-  ipcMain.handle(IPC.reviewVote, (_e, reviewId: unknown, on: unknown) => (id(reviewId) ? network.vote(id(reviewId)!, on === true) : bad));
+  ipcMain.handle(IPC.reviewDelete, (_e, repoId: unknown) => (id(repoId) ? network.deleteReview(id(repoId)!) : bad()));
+  ipcMain.handle(IPC.reviewVote, (_e, reviewId: unknown, on: unknown) => (id(reviewId) ? network.vote(id(reviewId)!, on === true) : bad()));
   ipcMain.handle(IPC.reviewReply, (_e, reviewId: unknown, text: unknown) => {
-    if (!id(reviewId) || typeof text !== 'string') return bad;
-    const t = text.trim();
-    if (t.length < 3 || t.length > 500) return { ok: false, message: 'Die Antwort muss zwischen 3 und 500 Zeichen lang sein.' };
-    return network.reply(id(reviewId)!, t);
+    if (!id(reviewId) || typeof text !== 'string') return bad();
+    const trimmed = text.trim();
+    if (trimmed.length < 3 || trimmed.length > 500) return { ok: false, message: t('main.replyLength') };
+    return network.reply(id(reviewId)!, trimmed);
   });
-  ipcMain.handle(IPC.reviewDeleteReply, (_e, reviewId: unknown) => (id(reviewId) ? network.deleteReply(id(reviewId)!) : bad));
+  ipcMain.handle(IPC.reviewDeleteReply, (_e, reviewId: unknown) => (id(reviewId) ? network.deleteReply(id(reviewId)!) : bad()));
   ipcMain.handle(IPC.vacuum, () => updater.vacuum());
 
   ipcMain.handle(IPC.liveSearch, async (_e, term: unknown) => {
@@ -211,6 +218,12 @@ function registerIpc() {
     saveSettings(settings);
     nativeTheme.themeSource = theme;
   });
+  ipcMain.handle(IPC.languageSet, (_e, lang: unknown) => {
+    if (!isLang(lang)) return;
+    settings = { ...settings, language: lang };
+    saveSettings(settings);
+    applyLanguage();
+  });
   ipcMain.handle(IPC.autoUpdateSet, (_e, on: unknown) => {
     settings = { ...settings, autoUpdate: on === true };
     saveSettings(settings);
@@ -218,14 +231,14 @@ function registerIpc() {
   });
   ipcMain.handle(IPC.tokenSet, async (_e, token: unknown) => {
     const value = typeof token === 'string' ? token.trim() : '';
-    if (!/^[A-Za-z0-9_]{20,255}$/.test(value)) return { ok: false, message: 'Das sieht nicht wie ein GitHub-Token aus.' };
-    if (!encryptionAvailable()) return { ok: false, message: 'Dein System kann den Token nicht sicher speichern.' };
+    if (!/^[A-Za-z0-9_]{20,255}$/.test(value)) return { ok: false, message: t('main.tokenFormat') };
+    if (!encryptionAvailable()) return { ok: false, message: t('main.tokenNoEncryption') };
     try {
       const client = new GitHubClient({ token: value, maxRetries: 0, fetch: (i, init) => net.fetch(i as string, init) });
       await client.getRepo('octocat/Hello-World');
     } catch (err) {
       const status = (err as { status?: number }).status;
-      return { ok: false, message: status === 401 ? 'Der Token ist ungültig oder abgelaufen.' : 'GitHub ist gerade nicht erreichbar.' };
+      return { ok: false, message: t(status === 401 ? 'main.tokenInvalid' : 'main.githubUnreachable') };
     }
     setSecret('own-github', value);
     return { ok: true };
@@ -271,6 +284,7 @@ app.whenReady().then(() => {
   app.setAppUserModelId('ch.gratisstatt.app');
   settings = loadSettings();
   nativeTheme.themeSource = settings.theme;
+  applyLanguage();
 
   const opened = AppDatabase.open(app.getPath('userData'), bundledBasePath());
   database = opened.db;

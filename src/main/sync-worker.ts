@@ -35,7 +35,6 @@ let controller: AbortController | null = null;
 let busy = false;
 
 const post = (m: WorkerMessage) => parentPort!.postMessage(m);
-const fmt = (n: number) => n.toLocaleString('de-CH');
 const nowIso = () => new Date().toISOString();
 
 interface ManualProgress {
@@ -79,10 +78,9 @@ async function runPackages(manifestUrl: string, maxMissing: number, job: JobKind
           type: 'progress',
           progress: {
             job,
-            text:
-              p.phase === 'manifest'
-                ? 'Suche nach Updates …'
-                : `Aktualisiere${p.of ? ` (Paket ${p.index} von ${p.of})` : ''} … ${fmt(p.added)} neu, ${fmt(p.updated)} aktualisiert`,
+            phase: p.phase === 'manifest' ? 'checking' : 'packages',
+            index: p.index,
+            of: p.of,
             added: p.added,
             updated: p.updated,
           },
@@ -133,7 +131,7 @@ async function runManual(req: Extract<WorkerRequest, { type: 'manual' }>) {
       type: 'progress',
       progress: {
         job: 'manual',
-        text: `Suche bei GitHub … ${fmt(progress.added)} neu, ${fmt(progress.updated)} aktualisiert`,
+        phase: 'github',
         added: progress.added,
         updated: progress.updated,
       },
@@ -205,12 +203,12 @@ parentPort!.on('message', async (req: WorkerRequest) => {
       const r = await runManual(req);
       post({ type: 'done', job, ...r });
     } else if (req.type === 'merge-base') {
-      post({ type: 'progress', progress: { job, text: 'Mische neue Basis-Datenbank ein …', added: 0, updated: 0 } });
+      post({ type: 'progress', progress: { job, phase: 'merge-base', added: 0, updated: 0 } });
       const r = mergeDatabase(db, req.file, 'base');
       setMeta(db, 'base_version', req.baseVersion);
       post({ type: 'done', job, ...r });
     } else if (req.type === 'vacuum') {
-      post({ type: 'progress', progress: { job, text: 'Optimiere Datenbank …', added: 0, updated: 0 } });
+      post({ type: 'progress', progress: { job, phase: 'vacuum', added: 0, updated: 0 } });
       db.prepare("INSERT INTO repos_fts(repos_fts) VALUES ('optimize')").run();
       db.exec('VACUUM');
       post({ type: 'done', job, added: 0, updated: 0 });

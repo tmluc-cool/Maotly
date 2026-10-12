@@ -131,13 +131,14 @@ jobs:
             --target "${{ github.sha }}" \
             --title "GratisStatt ${VERSION}" \
             --latest \
-            --notes "Windows-Programm für GratisStatt.
+            --notes "GratisStatt for Windows – in English, German and Spanish.
 
-          - **GratisStatt-Setup-${VERSION}.exe** – Installer (empfohlen)
-          - **GratisStatt-${VERSION}-portable.exe** – startet ohne Installation
+          - **GratisStatt-Setup-${VERSION}.exe** – installer (recommended)
+          - **GratisStatt-${VERSION}-portable.exe** – runs without installation
 
-          Windows warnt beim ersten Start, weil das Programm nicht signiert ist: «Weitere Informationen» → «Trotzdem ausführen».
+          Windows shows a warning on the first start because the program is not signed: \"More info\" → \"Run anyway\".
 
-          > GratisStatt ist ein privates Spass-Projekt. Die Nutzung erfolgt auf eigene Gefahr – es wird keinerlei Haftung übernommen.
+          > GratisStatt is a private fun project. Use at your own risk – no liability whatsoever is accepted.
+          > Ein privates Spass-Projekt, ohne Haftung. · Un proyecto privado hecho por diversión, sin responsabilidad.
 
-          Gebaut aus Commit ${{ github.sha }} (${{ github.ref_name }})."
+          Built from commit ${{ github.sha }} (${{ github.ref_name }})."

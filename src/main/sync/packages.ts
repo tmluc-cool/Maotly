@@ -56,7 +56,7 @@ export function isAllowedPackageUrl(url: string): boolean {
 
 export function parseManifest(json: unknown): Manifest {
   const m = json as Manifest;
-  if (!m || m.version !== 1 || !Array.isArray(m.deltas)) throw new Error('Ungültiges Manifest');
+  if (!m || m.version !== 1 || !Array.isArray(m.deltas)) throw new Error('Invalid manifest');
   const ok = (e: PackageEntry) =>
     /^\d{4}-\d{2}-\d{2}$/.test(e.date) && /^[a-f0-9]{64}$/.test(e.sha256) && isAllowedPackageUrl(e.url);
   return {
@@ -87,7 +87,7 @@ export function missingDeltas(manifest: Manifest, applied: string[], baseVersion
 export async function downloadVerified(fetchFn: typeof fetch, entry: PackageEntry, file: string, signal?: AbortSignal) {
   if (!isAllowedPackageUrl(entry.url)) throw new Error(`Unerlaubte Adresse: ${entry.url}`);
   const res = await fetchFn(entry.url, { redirect: 'follow', signal });
-  if (!res.ok || !res.body) throw new Error(`Download fehlgeschlagen (${res.status})`);
+  if (!res.ok || !res.body) throw new Error(`Download failed (${res.status})`);
   const hash = createHash('sha256');
   const out = createWriteStream(file);
   // A write error (e.g. disk full) must end up as a normal error, not crash the worker.
@@ -117,7 +117,7 @@ export async function downloadVerified(fetchFn: typeof fetch, entry: PackageEntr
   const digest = hash.digest('hex');
   if (digest !== entry.sha256) {
     rmSync(file, { force: true });
-    throw new ChecksumError(`Prüfsumme stimmt nicht für ${entry.file}`);
+    throw new ChecksumError(`Checksum mismatch for ${entry.file}`);
   }
 }
 
@@ -143,7 +143,7 @@ export async function applyPackages(o: ApplyOptions): Promise<ApplyResult> {
 
   const res = await o.fetch(o.manifestUrl, { redirect: 'follow', signal: o.signal });
   if (res.status === 404) return { applied: [], usedBase: null, added: 0, updated: 0, reviews: null }; // nothing published yet
-  if (!res.ok) throw new Error(`Manifest nicht erreichbar (${res.status})`);
+  if (!res.ok) throw new Error(`Manifest not reachable (${res.status})`);
   const manifest = parseManifest(await res.json());
 
   if (!existsSync(o.tmpDir)) mkdirSync(o.tmpDir, { recursive: true });

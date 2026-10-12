@@ -1,115 +1,119 @@
 # GratisStatt
 
-Desktop-App für Windows mit einer **lokalen Datenbank von GitHub-Projekten** (ca. 100'000). Du gibst ein, wofür du
-zahlst – oben erscheinen die kuratierten Gratis-Alternativen, darunter alle passenden Projekte aus der Datenbank.
-Alles lässt sich offline durchsuchen. Ein Klick öffnet das Projekt auf GitHub.
+Desktop app for Windows with a **local database of GitHub projects** (about 100,000). You type in what you are
+paying for – the curated free alternatives appear at the top, and below them all matching projects from the database.
+Everything can be searched offline. One click opens the project on GitHub.
 
-- Einmal pro Woche lädt die App ein **Update-Paket** (von GitHub Releases, per SHA-256 geprüft).
-- **Live-Suche** auf GitHub bei wenigen Treffern; Funde werden lokal gespeichert.
-- **GratisStatt-Netzwerk** (freiwillig, standardmässig aus): Live-Funde gehen nach einer Prüfung an alle.
+The app is available in English, German and Spanish (Settings → Language).
 
-> **Hinweis:** GratisStatt ist ein privates Spass-Projekt. Die Nutzung erfolgt auf eigene Gefahr – es wird keinerlei
-> Haftung übernommen, weder für die App noch für die angezeigten Programme, Daten, Links oder Downloads.
+- Once a week, the app downloads an **update package** (from GitHub Releases, verified with SHA-256).
+- **Live search** on GitHub when there are only a few results; finds are saved locally.
+- **GratisStatt network** (optional, off by default): after a review, live finds are shared with everyone.
 
-## Herunterladen
+> **Note:** GratisStatt is a private fun project. Use at your own risk – no liability whatsoever is accepted,
+> neither for the app nor for the listed programs, data, links or downloads.
 
-Das fertige Windows-Programm gibt es unter **[Releases](https://github.com/tmluc-cool/githuub-appstore/releases/latest)**:
+## Download
 
-- `GratisStatt-Setup-<version>.exe` – Installer (empfohlen)
-- `GratisStatt-<version>-portable.exe` – startet ohne Installation
+The ready-to-use Windows program is available under **[Releases](https://github.com/tmluc-cool/githuub-appstore/releases/latest)**:
 
-Windows warnt beim ersten Start, weil das Programm nicht signiert ist: «Weitere Informationen» → «Trotzdem ausführen».
+- `GratisStatt-Setup-<version>.exe` – installer (recommended)
+- `GratisStatt-<version>-portable.exe` – runs without installation
 
-Gebaut wird automatisch von der GitHub Action `.github/workflows/build-windows.yml` bei jedem Push auf `main`
-(oder von Hand unter *Actions → Windows-Programm bauen → Run workflow*). Die Datenbank wird dabei einmal pro Woche
-neu gecrawlt (ca. 1 Stunde), sonst aus dem Cache genommen.
+Windows shows a warning on the first start because the program is not signed: "More info" → "Run anyway".
 
-## Schnellstart (Entwicklung)
+It is built automatically by the GitHub Action `.github/workflows/build-windows.yml` on every push to `main`
+(or manually under *Actions → Windows-Programm bauen → Run workflow*). The database is crawled again once a week
+(about 1 hour); otherwise it is taken from the cache.
+
+## Quick start (development)
 
 ```bash
 npm install
-npm run fetch-base          # neueste Basis-Datenbank herunterladen (sobald gratisstatt-data Releases hat)
-# oder: npm run build-base-db  (selbst crawlen, ca. 1 Stunde mit Token in .env)
+npm run fetch-base          # download the latest base database (once gratisstatt-data has releases)
+# or: npm run build-base-db  (crawl it yourself, about 1 hour with a token in .env)
 npm run dev
-npm test                    # Crawler, Datenbank, Suche (<100 ms bei 100'000 Projekten), Pakete, Netzwerk, Server
+npm test                    # crawler, database, search (<100 ms with 100,000 projects), packages, network, server
 npm run typecheck
 ```
 
-Für einen schnellen Test reicht eine kleine Datenbank:
-`npm run build-base-db -- --filter "stars:>=20000"` (ca. 2'000 Projekte, ein paar Minuten auch ohne Token).
+For a quick test, a small database is enough:
+`npm run build-base-db -- --filter "stars:>=20000"` (about 2,000 projects, a few minutes even without a token).
 
-## Windows-Programm bauen
+## Building the Windows program
 
-1. `resources/base.db` bereitstellen (`npm run fetch-base` oder `npm run build-base-db`).
-2. Auf **Windows**: `npm run dist` (oder einfach die GitHub Action machen lassen, siehe «Herunterladen»)
-   – prüft, dass `base.db` existiert, führt `validate` aus (kuratierte Liste gegen `base.db`) und baut mit
-   electron-builder. Ergebnis in `release/`: `GratisStatt-Setup-<version>.exe` und `GratisStatt-<version>-portable.exe`.
+1. Provide `resources/base.db` (`npm run fetch-base` or `npm run build-base-db`).
+2. On **Windows**: `npm run dist` (or simply let the GitHub Action do it, see "Download")
+   – checks that `base.db` exists, runs `validate` (curated list against `base.db`) and builds with
+   electron-builder. Output in `release/`: `GratisStatt-Setup-<version>.exe` and `GratisStatt-<version>-portable.exe`.
 
-`npm run validate -- --fix` holt Repos der kuratierten Liste, die in `base.db` fehlen, von GitHub nach.
+`npm run validate -- --fix` fetches repos from the curated list that are missing in `base.db` from GitHub.
 
-## Einrichtung (einmalig)
+## Setup (one-time)
 
-Schritt für Schritt in einfacher Sprache: **[docs/EINRICHTUNG.md](docs/EINRICHTUNG.md)**.
+Step by step in plain language: **[docs/EINRICHTUNG.md](docs/EINRICHTUNG.md)** (German).
 
-### 1. Daten-Repo `gratisstatt-data`
-1. Öffentliches Repo `<owner>/gratisstatt-data` anlegen.
-2. `.github/workflows/weekly-delta.yml` aus diesem Repo dorthin kopieren.
-3. Dort unter *Settings → Secrets and variables → Actions*:
+### 1. Data repo `gratisstatt-data`
+1. Create the public repo `<owner>/gratisstatt-data`.
+2. Copy `.github/workflows/weekly-delta.yml` from this repo into it.
+3. There, under *Settings → Secrets and variables → Actions*:
    - Variable `APP_REPO` = `<owner>/githuub-appstore`
-   - Variable `SERVER_URL` = URL des Workers (nur fürs Netzwerk)
-   - Secret `ADMIN_SECRET` = derselbe Wert wie auf dem Server (nur fürs Netzwerk)
-4. Action einmal manuell starten mit «Also build a fresh base database». Danach läuft sie jeden Montag.
+   - Variable `SERVER_URL` = URL of the Worker (only for the network)
+   - Secret `ADMIN_SECRET` = the same value as on the server (only for the network)
+4. Start the action once manually with "Also build a fresh base database". After that, it runs every Monday.
 
-Jedes Release enthält `delta-YYYY-MM-DD.db`, `manifest.json` (alle Pakete mit Datum, Anzahl, Grösse, SHA-256 und
-`latest_base`) und einmal im Monat `base-YYYY-MM-DD.db`. Die App lädt
+Every release contains `delta-YYYY-MM-DD.db`, `manifest.json` (all packages with date, count, size, SHA-256 and
+`latest_base`) and, once a month, `base-YYYY-MM-DD.db`. The app loads
 `https://github.com/<owner>/gratisstatt-data/releases/latest/download/manifest.json`.
 
 ### 2. GitHub OAuth Apps
-- **App-Anmeldung (Device Flow):** neue OAuth App, «Enable Device Flow» an. Client-ID in `src/main/config.ts`
-  (`oauthClientId`) eintragen. Keine Scopes, kein Secret in der App.
-- **Admin-Dashboard (Web Flow):** zweite OAuth App mit Callback `https://<worker>/admin/callback`.
+- **App sign-in (Device Flow):** new OAuth App with "Enable Device Flow" turned on. Enter the Client ID in `src/main/config.ts`
+  (`oauthClientId`). No scopes, no secret in the app.
+- **Admin dashboard (Web Flow):** a second OAuth App with the callback `https://<worker>/admin/callback`.
 
 ### 3. Server (Cloudflare Worker + D1)
 ```bash
 cd server && npm install
-npx wrangler d1 create gratisstatt         # database_id in wrangler.toml eintragen
-npx wrangler secret put ADMIN_SECRET        # langer Zufallswert
-npx wrangler secret put ADMIN_GITHUB_ID     # deine numerische GitHub-ID
+npx wrangler d1 create gratisstatt         # enter the database_id in wrangler.toml
+npx wrangler secret put ADMIN_SECRET        # long random value
+npx wrangler secret put ADMIN_GITHUB_ID     # your numeric GitHub ID
 npx wrangler secret put ADMIN_OAUTH_CLIENT_ID
 npx wrangler secret put ADMIN_OAUTH_CLIENT_SECRET
-npx wrangler secret put SESSION_SECRET      # langer Zufallswert
+npx wrangler secret put SESSION_SECRET      # long random value
 cd .. && npm run server:deploy
 ```
-Danach die Worker-URL in `src/main/config.ts` (`serverUrl`) eintragen. Lokal: `npm run server:dev`.
+Then enter the Worker URL in `src/main/config.ts` (`serverUrl`). Locally: `npm run server:dev`.
 
-Endpunkte unter `/v1`: `POST /register`, `POST /heartbeat`, `POST /submissions`, `GET /me`, `DELETE /me`,
-`GET /admin/submissions`, `POST /admin/submissions/result`. Dashboard unter `/admin`.
+Endpoints under `/v1`: `POST /register`, `POST /heartbeat`, `POST /submissions`, `GET /me`, `DELETE /me`,
+`GET /admin/submissions`, `POST /admin/submissions/result`. Dashboard under `/admin`.
 
-## Aufbau
+## Structure
 
 ```
-src/shared/crawler/   Ein Crawler für Basis-Script, GitHub Action und App (Suche, Halbieren, Rate-Limits, Upsert)
-src/shared/db/        Volltextsuche (FTS5, bm25 + Sterne-Bonus), Filter
-src/main/             Fenster, IPC, Datenbank, Update-Planung, Live-Suche, Netzwerk-Client
-src/main/sync-worker  Update-Pakete einmischen, manuelles Update (eigener Thread, eigene DB-Verbindung)
-src/preload/          Kleines, typisiertes IPC-API
-src/renderer/         Oberfläche (React, Tailwind, virtualisierte Liste)
-server/               Cloudflare Worker, D1-Schema, Admin-Dashboard
+src/shared/crawler/   One crawler for the base script, GitHub Action and app (search, splitting, rate limits, upsert)
+src/shared/db/        Full-text search (FTS5, bm25 + star bonus), filters
+src/main/             Window, IPC, database, update scheduling, live search, network client
+src/main/sync-worker  Merging update packages, manual update (own thread, own DB connection)
+src/preload/          Small, typed IPC API
+src/renderer/         User interface (React, Tailwind, virtualized list)
+server/               Cloudflare Worker, D1 schema, admin dashboard
 scripts/              build-base-db, build-delta, validate-data, fetch-base, make-icon
-data/                 alternatives.json (kuratiert), topic-map.json (Kategorien/Plattformen aus Topics)
-docs/PRIVACY.md       Datenschutzerklärung (auch in der App)
+data/                 alternatives.json (curated), topic-map.json (categories/platforms from topics)
+docs/PRIVACY.md       Privacy policy (also in the app); German: PRIVACY.de.md, Spanish: PRIVACY.es.md
 ```
 
-## Sicherheit und Datenschutz
+## Security and privacy
 
-- `contextIsolation`, `sandbox`, kein `nodeIntegration`, strenge CSP. Der Renderer hat keinen Netz-, Datei- oder DB-Zugriff.
-- Externe Links nur `https://github.com/…` und die `website`-URLs der kuratierten Liste.
-- Alle SQL-Abfragen mit Parametern, Sucheingaben für FTS5 escaped.
-- Update-Pakete werden vor dem Einmischen per SHA-256 geprüft.
-- Tokens nur mit Electron `safeStorage`, nie im Klartext, nie im Renderer.
-- Ohne Netzwerk spricht die App nur mit GitHub. Das Netzwerk ist Opt-in; vorher wird nichts an den Server gesendet.
-- Server: Eingaben mit zod geprüft, Limits pro Nutzer, keine IP-Adressen, keine Logs, Inaktive nach 12 Monaten gelöscht.
+- `contextIsolation`, `sandbox`, no `nodeIntegration`, strict CSP. The renderer has no network, file or DB access.
+- External links only to `https://github.com/…` and the `website` URLs of the curated list.
+- All SQL queries use parameters; search input for FTS5 is escaped.
+- Update packages are verified with SHA-256 before they are merged.
+- Tokens only with Electron `safeStorage`, never in plain text, never in the renderer.
+- Without the network, the app only talks to GitHub. The network is opt-in; nothing is sent to the server before that.
+- Server: input validated with zod, limits per user, no IP addresses, no logs, inactive users deleted after 12 months.
+
+Full privacy policy: [docs/PRIVACY.md](docs/PRIVACY.md) (also in [German](docs/PRIVACY.de.md) and [Spanish](docs/PRIVACY.es.md)).
 
 ---
 
-Keine Verbindung zu den genannten Firmen. Produktnamen gehören den jeweiligen Inhabern.
+No affiliation with the companies mentioned. Product names belong to their respective owners.
