@@ -1,0 +1,29 @@
+appId: ch.gratisstatt.app
+productName: GratisStatt
+copyright: GratisStatt
+directories:
+  output: release
+  buildResources: build
+files:
+  - out/**/*
+  - package.json
+  - '!**/*.map'
+asar: true
+win:
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: GratisStatt
+  artifactName: ${productName}-Setup-${version}.exe
+  installerLanguages: [de_DE]
+  language: '1031'
+portable:
+  artifactName: ${productName}-${version}-portable.exe

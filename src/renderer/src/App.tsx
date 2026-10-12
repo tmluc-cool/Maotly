@@ -1,0 +1,92 @@
+import { useEffect } from 'react';
+import { SearchBox } from './components/SearchBox';
+import { StatusBanner } from './components/StatusBanner';
+import { GearIcon, InfoIcon } from './components/icons';
+import { href, navigate, useRoute, type Route } from './lib/router';
+import { AboutPage } from './pages/AboutPage';
+import { CategoryPage } from './pages/CategoryPage';
+import { HomePage } from './pages/HomePage';
+import { NotFoundPage } from './pages/NotFoundPage';
+import { ProductPage } from './pages/ProductPage';
+import { SearchPage } from './pages/SearchPage';
+import { SettingsPage } from './pages/SettingsPage';
+import { useApp } from './state';
+
+function focusSearch() {
+  const input = document.querySelector<HTMLInputElement>('[data-search-input]');
+  input?.focus();
+  input?.select();
+}
+
+function Page({ route }: { route: Route }) {
+  switch (route.name) {
+    case 'home':
+      return <HomePage />;
+    case 'product':
+      return <ProductPage id={route.id} />;
+    case 'category':
+      return <CategoryPage id={route.id} />;
+    case 'search':
+      return <SearchPage query={route.query} />;
+    case 'settings':
+      return <SettingsPage />;
+    case 'about':
+      return <AboutPage />;
+    default:
+      return <NotFoundPage />;
+  }
+}
+
+export function App() {
+  const route = useRoute();
+  const { ready } = useApp();
+
+  // Ctrl+K (Cmd+K on Mac) jumps into the search field.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if (!document.querySelector('[data-search-input]')) {
+          navigate(href.home());
+          setTimeout(focusSearch, 50);
+        } else {
+          focusSearch();
+        }
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  const showHeaderSearch = route.name !== 'home' && route.name !== 'search';
+  const navLink = (active: boolean) =>
+    `inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+      active ? 'bg-slate-200 dark:bg-slate-800' : 'hover:bg-slate-200/70 dark:hover:bg-slate-800/70'
+    }`;
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <header className="sticky top-0 z-20 border-b border-slate-200 bg-slate-50/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
+          <a href={href.home()} className="flex shrink-0 items-center gap-2 text-lg font-extrabold tracking-tight">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-brand-500 to-teal-600 text-sm text-white">
+              0
+            </span>
+            GratisStatt
+          </a>
+          <div className="flex-1">{showHeaderSearch && <div className="max-w-sm">{ready && <SearchBox size="small" />}</div>}</div>
+          <StatusBanner />
+          <nav className="flex shrink-0 gap-1">
+            <a href={href.settings()} className={navLink(route.name === 'settings')}>
+              <GearIcon /> Einstellungen
+            </a>
+            <a href={href.about()} className={navLink(route.name === 'about')}>
+              <InfoIcon /> Über
+            </a>
+          </nav>
+        </div>
+      </header>
+      <main className="flex-1">{ready ? <Page route={route} /> : null}</main>
+    </div>
+  );
+}
