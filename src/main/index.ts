@@ -10,6 +10,7 @@ import { checkAppUpdate } from './app-update';
 import { config, releasesApiUrl, sponsorUrl } from './config';
 import { AppDatabase } from './database';
 import { liveSearch } from './live-search';
+import { adoptLegacyUserData } from './legacy';
 import { Network } from './network';
 import {
   clearSecret,
@@ -95,7 +96,7 @@ function createWindow() {
     minWidth: MIN_WIDTH,
     minHeight: MIN_HEIGHT,
     show: false,
-    title: 'GratisStatt',
+    title: 'Moatly',
     autoHideMenuBar: true,
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#020617' : '#f8fafc',
     icon,
@@ -282,7 +283,8 @@ function bundledBasePath(): string {
 }
 
 app.whenReady().then(() => {
-  app.setAppUserModelId('ch.gratisstatt.app');
+  app.setAppUserModelId('ch.gratisstatt.app'); // same ID as the installer (kept from the first name)
+  adoptLegacyUserData(app.getPath('userData'), join(app.getPath('appData'), 'GratisStatt'));
   settings = loadSettings();
   nativeTheme.themeSource = settings.theme;
   applyLanguage();

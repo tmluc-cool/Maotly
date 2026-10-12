@@ -23,7 +23,7 @@ export async function liveSearch(
   const q = liveQuery(term);
   if (!q) return { ok: true, found: 0, fresh: 0, ids: [] };
   // One user-triggered request: no automatic retries, the user decides when to try again.
-  const client = new GitHubClient({ token: opts.token, fetch: opts.fetch, maxRetries: 0, userAgent: 'GratisStatt' });
+  const client = new GitHubClient({ token: opts.token, fetch: opts.fetch, maxRetries: 0, userAgent: 'Moatly' });
   try {
     const page = await client.searchRepos(q, { perPage: MAX_HITS, sort: 'stars', order: 'desc' });
     const rows = page.items.filter((r) => !r.private).map(toRepoRow);

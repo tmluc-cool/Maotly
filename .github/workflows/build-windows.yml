@@ -115,10 +115,10 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: GratisStatt-Windows
+          name: Moatly-Windows
           path: |
-            release/GratisStatt-Setup-*.exe
-            release/GratisStatt-*-portable.exe
+            release/Moatly-Setup-*.exe
+            release/Moatly-*-portable.exe
           retention-days: 30
 
       - name: Publish release
@@ -127,20 +127,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          gh release create "v${VERSION}" release/GratisStatt-Setup-*.exe release/GratisStatt-*-portable.exe \
+          gh release create "v${VERSION}" release/Moatly-Setup-*.exe release/Moatly-*-portable.exe \
             --target "${{ github.sha }}" \
-            --title "GratisStatt ${VERSION}" \
+            --title "Moatly ${VERSION}" \
             --latest \
-            --notes "GratisStatt for Windows – in English, German and Spanish.
+            --notes "Moatly for Windows – in English, German and Spanish.
 
-          - **GratisStatt-Setup-${VERSION}.exe** – installer (recommended)
-          - **GratisStatt-${VERSION}-portable.exe** – runs without installation
+          - **Moatly-Setup-${VERSION}.exe** – installer (recommended)
+          - **Moatly-${VERSION}-portable.exe** – runs without installation
 
           Windows shows a warning on the first start because the program is not signed: \"More info\" → \"Run anyway\".
 
-          > GratisStatt is a private fun project. Use at your own risk – no liability whatsoever is accepted.
+          > Moatly is a private fun project. Use at your own risk – no liability whatsoever is accepted.
           > Ein privates Spass-Projekt, ohne Haftung. · Un proyecto privado hecho por diversión, sin responsabilidad.
 
-          ❤ Like GratisStatt? Support it on GitHub Sponsors: https://github.com/sponsors/tmluc-cool
+          ❤ Like Moatly? Support it on GitHub Sponsors: https://github.com/sponsors/tmluc-cool
 
           Built from commit ${{ github.sha }} (${{ github.ref_name }})."

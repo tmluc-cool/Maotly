@@ -1,4 +1,4 @@
-# GratisStatt
+# Moatly
 
 Desktop app for Windows with a **local database of GitHub projects** (about 230,000). You type in what you are
 paying for – the curated free alternatives appear at the top, and below them all matching projects from the database.
@@ -8,17 +8,17 @@ The app is available in English, German and Spanish (Settings → Language).
 
 - Once a week, the app downloads an **update package** (from GitHub Releases, verified with SHA-256).
 - **Live search** on GitHub when there are only a few results; finds are saved locally.
-- **GratisStatt network** (optional, off by default): after a review, live finds are shared with everyone.
+- **Moatly network** (optional, off by default): after a review, live finds are shared with everyone.
 
-> **Note:** GratisStatt is a private fun project. Use at your own risk – no liability whatsoever is accepted,
+> **Note:** Moatly is a private fun project. Use at your own risk – no liability whatsoever is accepted,
 > neither for the app nor for the listed programs, data, links or downloads.
 
 ## Download
 
 The ready-to-use Windows program is available under **[Releases](https://github.com/tmluc-cool/githuub-appstore/releases/latest)**:
 
-- `GratisStatt-Setup-<version>.exe` – installer (recommended)
-- `GratisStatt-<version>-portable.exe` – runs without installation
+- `Moatly-Setup-<version>.exe` – installer (recommended)
+- `Moatly-<version>-portable.exe` – runs without installation
 
 Windows shows a warning on the first start because the program is not signed: "More info" → "Run anyway".
 
@@ -28,7 +28,7 @@ It is built automatically by the GitHub Action `.github/workflows/build-windows.
 
 ## Support
 
-GratisStatt is free and stays free – without ads or tracking. If it saves you money, you can support it on
+Moatly is free and stays free – without ads or tracking. If it saves you money, you can support it on
 **[GitHub Sponsors](https://github.com/sponsors/tmluc-cool)** ❤ (also via the coffee cup ☕ at the bottom right of the app).
 Completely voluntary.
 
@@ -36,7 +36,7 @@ Completely voluntary.
 
 ```bash
 npm install
-npm run fetch-base          # download the latest base database (once gratisstatt-data has releases)
+npm run fetch-base          # download the latest base database (once moatly-data has releases)
 # or: npm run build-base-db  (crawl it yourself, about 2 hours with a token in .env)
 npm run dev
 npm test                    # crawler, database, search (<100 ms with 100,000 projects), packages, network, server
@@ -51,7 +51,7 @@ For a quick test, a small database is enough:
 1. Provide `resources/base.db` (`npm run fetch-base` or `npm run build-base-db`).
 2. On **Windows**: `npm run dist` (or simply let the GitHub Action do it, see "Download")
    – checks that `base.db` exists, runs `validate` (curated list against `base.db`) and builds with
-   electron-builder. Output in `release/`: `GratisStatt-Setup-<version>.exe` and `GratisStatt-<version>-portable.exe`.
+   electron-builder. Output in `release/`: `Moatly-Setup-<version>.exe` and `Moatly-<version>-portable.exe`.
 
 `npm run validate -- --fix` fetches repos from the curated list that are missing in `base.db` from GitHub.
 
@@ -59,8 +59,8 @@ For a quick test, a small database is enough:
 
 Step by step in plain language: **[docs/EINRICHTUNG.md](docs/EINRICHTUNG.md)** (German).
 
-### 1. Data repo `gratisstatt-data`
-1. Create the public repo `<owner>/gratisstatt-data`.
+### 1. Data repo `moatly-data`
+1. Create the public repo `<owner>/moatly-data`.
 2. Copy `.github/workflows/weekly-delta.yml` from this repo into it.
 3. There, under *Settings → Secrets and variables → Actions*:
    - Variable `APP_REPO` = `<owner>/githuub-appstore`
@@ -70,7 +70,7 @@ Step by step in plain language: **[docs/EINRICHTUNG.md](docs/EINRICHTUNG.md)** (
 
 Every release contains `delta-YYYY-MM-DD.db`, `manifest.json` (all packages with date, count, size, SHA-256 and
 `latest_base`) and, once a month, `base-YYYY-MM-DD.db`. The app loads
-`https://github.com/<owner>/gratisstatt-data/releases/latest/download/manifest.json`.
+`https://github.com/<owner>/moatly-data/releases/latest/download/manifest.json`.
 
 ### 2. GitHub OAuth Apps
 - **App sign-in (Device Flow):** new OAuth App with "Enable Device Flow" turned on. Enter the Client ID in `src/main/config.ts`
@@ -80,7 +80,7 @@ Every release contains `delta-YYYY-MM-DD.db`, `manifest.json` (all packages with
 ### 3. Server (Cloudflare Worker + D1)
 ```bash
 cd server && npm install
-npx wrangler d1 create gratisstatt         # enter the database_id in wrangler.toml
+npx wrangler d1 create moatly         # enter the database_id in wrangler.toml
 npx wrangler secret put ADMIN_SECRET        # long random value
 npx wrangler secret put ADMIN_GITHUB_ID     # your numeric GitHub ID
 npx wrangler secret put ADMIN_OAUTH_CLIENT_ID

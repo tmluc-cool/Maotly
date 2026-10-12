@@ -78,7 +78,7 @@ process.on('SIGINT', () => {
 const client = new GitHubClient({
   token,
   signal: controller.signal,
-  userAgent: 'GratisStatt-base-builder',
+  userAgent: 'Moatly-base-builder',
   onWait: (ms, reason) => {
     if (ms > 10_000) console.log(`   … warte ${formatDuration(ms)} (${reason})`);
   },

@@ -6,7 +6,7 @@ import { existsSync, mkdirSync, renameSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { downloadVerified, parseManifest } from '../src/main/sync/packages';
 
-const DATA_REPO = process.env.DATA_REPO ?? 'tmluc-cool/gratisstatt-data';
+const DATA_REPO = process.env.DATA_REPO ?? 'tmluc-cool/moatly-data';
 
 async function main() {
   const res = await fetch(`https://github.com/${DATA_REPO}/releases/latest/download/manifest.json`, { redirect: 'follow' });

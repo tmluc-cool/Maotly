@@ -56,7 +56,7 @@ async function callback(req: Request, env: Env, deps: Deps): Promise<Response> {
   const token = ((await tokenRes.json()) as { access_token?: string }).access_token;
   if (!token) return error(401, 'Anmeldung fehlgeschlagen');
   const userRes = await deps.fetch('https://api.github.com/user', {
-    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'User-Agent': 'GratisStatt-Admin' },
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'User-Agent': 'Moatly-Admin' },
   });
   const user = (await userRes.json()) as { id?: number };
   if (!user.id || String(user.id) !== String(env.ADMIN_GITHUB_ID)) return error(403, 'Kein Zugang');

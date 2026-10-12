@@ -1,4 +1,4 @@
-name = "gratisstatt"
+name = "moatly"
 main = "src/index.ts"
 compatibility_date = "2026-09-01"
 
@@ -8,19 +8,19 @@ enabled = false
 
 [[d1_databases]]
 binding = "DB"
-database_name = "gratisstatt"
+database_name = "moatly"
 database_id = "REPLACE_WITH_D1_DATABASE_ID"
 migrations_dir = "migrations"
 
 [vars]
-DATA_REPO = "tmluc-cool/gratisstatt-data"
+DATA_REPO = "tmluc-cool/moatly-data"
 
 # Daily at 03:17 UTC: delete members inactive for 12 months.
 [triggers]
 crons = ["17 3 * * *"]
 
 # Secrets (never in this file), set with "npx wrangler secret put <NAME>":
-#   ADMIN_SECRET               long random string, also stored as secret in the gratisstatt-data repo
+#   ADMIN_SECRET               long random string, also stored as secret in the moatly-data repo
 #   ADMIN_GITHUB_ID            your numeric GitHub id
 #   ADMIN_OAUTH_CLIENT_ID      OAuth App for the dashboard login
 #   ADMIN_OAUTH_CLIENT_SECRET

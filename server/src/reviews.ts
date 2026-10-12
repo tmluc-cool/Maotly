@@ -126,7 +126,7 @@ async function reply(req: Request, env: Env, deps: Deps, user: ReviewUser, revie
 
   const gh = (path: string) =>
     deps.fetch(`https://api.github.com${path}`, {
-      headers: { Authorization: `Bearer ${body.githubToken}`, Accept: 'application/vnd.github+json', 'User-Agent': 'GratisStatt-Server' },
+      headers: { Authorization: `Bearer ${body.githubToken}`, Accept: 'application/vnd.github+json', 'User-Agent': 'Moatly-Server' },
     });
   const me = await gh('/user');
   if (!me.ok) return error(401, 'GitHub-Anmeldung ungültig');

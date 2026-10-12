@@ -80,7 +80,7 @@ export function App() {
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
           <a href={href.home()} className="flex shrink-0 items-center gap-2 text-lg font-extrabold tracking-tight">
             <Logo size={32} />
-            GratisStatt
+            Moatly
           </a>
           <div className="flex-1">{showHeaderSearch && <div className="max-w-sm">{ready && <SearchBox size="small" />}</div>}</div>
           <nav className="flex shrink-0 gap-1">

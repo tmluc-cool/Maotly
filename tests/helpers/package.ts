@@ -24,7 +24,7 @@ export function writePackage(dir: string, date: string, from: number, to: number
     date,
     file,
     path,
-    url: `https://github.com/o/gratisstatt-data/releases/download/${kind}-${date}/${file}`,
+    url: `https://github.com/o/moatly-data/releases/download/${kind}-${date}/${file}`,
     count: rows.length,
     size: buf.length,
     sha256: createHash('sha256').update(buf).digest('hex'),

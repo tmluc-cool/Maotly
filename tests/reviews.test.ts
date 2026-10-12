@@ -119,9 +119,9 @@ describe('reviews in the weekly package', () => {
     const file = join(dir, 'reviews.json');
     writeFileSync(file, JSON.stringify({ reviews: [review({ id: 1 }), review({ id: 2, author: 'bob' })] }));
     const buf = readFileSync(file);
-    const url = 'https://github.com/o/gratisstatt-data/releases/download/delta-2026-10-12/reviews.json';
+    const url = 'https://github.com/o/moatly-data/releases/download/delta-2026-10-12/reviews.json';
     const entry = { date: '2026-10-12', file: 'reviews.json', url, count: 2, size: buf.length, sha256: createHash('sha256').update(buf).digest('hex') };
-    const MANIFEST = 'https://github.com/o/gratisstatt-data/releases/latest/download/manifest.json';
+    const MANIFEST = 'https://github.com/o/moatly-data/releases/latest/download/manifest.json';
     const log: string[] = [];
     const fetchFn = fakeFileFetch({ [MANIFEST]: JSON.stringify({ version: 1, generated_at: '', deltas: [], reviews: entry }), [url]: buf }, log);
 

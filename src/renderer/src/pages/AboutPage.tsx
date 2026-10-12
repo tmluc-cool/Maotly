@@ -18,9 +18,7 @@ export function AboutPage() {
     <div className="mx-auto max-w-3xl space-y-6 px-6 pb-20 pt-8">
       <h1 className="text-3xl font-extrabold tracking-tight">{t('about.title')}</h1>
       <section className="card space-y-3">
-        <p>
-          {t('about.intro')} {t('about.name')}
-        </p>
+        <p>{t('about.intro')}</p>
         <dl className="grid grid-cols-[auto,1fr] gap-x-6 gap-y-1 text-sm">
           <dt className="text-slate-500 dark:text-slate-400">{t('about.version')}</dt>
           <dd>{info?.version ?? '…'}</dd>

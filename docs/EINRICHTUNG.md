@@ -5,7 +5,7 @@ Die App funktioniert auch ohne diese Schritte (Suche, Filter, Live-Suche). Was f
 
 | Schritt | Ohne diesen Schritt … | Aufwand |
 | --- | --- | --- |
-| 1. Daten-Repo `gratisstatt-data` | … gibt es keine wöchentlichen Updates der Datenbank | 2 Minuten |
+| 1. Daten-Repo `moatly-data` | … gibt es keine wöchentlichen Updates der Datenbank | 2 Minuten |
 | 2. OAuth App für die Anmeldung | … kann niemand beim Netzwerk mitmachen | 3 Minuten |
 | 3. Server auf Cloudflare | … kann niemand beim Netzwerk mitmachen, kein Admin-Dashboard | 20 Minuten, freiwillig |
 
@@ -14,13 +14,13 @@ Die App funktioniert auch ohne diese Schritte (Suche, Filter, Live-Suche). Was f
 ## 1. Daten-Repo für die wöchentlichen Updates
 
 1. Öffne **https://github.com/new**
-2. *Repository name:* `gratisstatt-data`
+2. *Repository name:* `moatly-data`
 3. **Public** auswählen (muss öffentlich sein, damit die App die Updates ohne Anmeldung laden kann)
 4. Häkchen bei **Add a README file**
 5. **Create repository** klicken
 6. Claude Bescheid geben → Claude legt dort die Update-Action an.
 
-Danach einmal von Hand starten: im Repo `gratisstatt-data` → **Actions** → **Weekly update package** →
+Danach einmal von Hand starten: im Repo `moatly-data` → **Actions** → **Weekly update package** →
 **Run workflow** → Häkchen bei «Also build a fresh base database» → **Run workflow**.
 Das erste Mal dauert es etwa 1 Stunde, danach läuft es jeden Montag von selbst.
 
@@ -31,7 +31,7 @@ Das erste Mal dauert es etwa 1 Stunde, danach läuft es jeden Montag von selbst.
 
 1. Öffne **https://github.com/settings/applications/new**
 2. Ausfüllen:
-   - *Application name:* `GratisStatt`
+   - *Application name:* `Moatly`
    - *Homepage URL:* `https://github.com/tmluc-cool/githuub-appstore`
    - *Authorization callback URL:* `https://github.com/tmluc-cool/githuub-appstore` (wird für die App nicht gebraucht, das Feld ist aber Pflicht)
 3. **Register application** klicken
@@ -49,7 +49,7 @@ git clone https://github.com/tmluc-cool/githuub-appstore.git
 cd githuub-appstore/server
 npm install
 npx wrangler login                     # öffnet den Browser, mit Cloudflare anmelden
-npx wrangler d1 create gratisstatt     # zeigt eine database_id an
+npx wrangler d1 create moatly     # zeigt eine database_id an
 ```
 
 Die angezeigte `database_id` in `server/wrangler.toml` eintragen (oder an Claude schicken). Dann die Geheimnisse setzen
@@ -70,8 +70,8 @@ npx wrangler secret put ADMIN_OAUTH_CLIENT_SECRET
 npm run deploy
 ```
 
-Die angezeigte Worker-Adresse (`https://gratisstatt.<name>.workers.dev`) an Claude schicken. Claude trägt sie zusammen
-mit der Client ID aus Schritt 2 in der App ein. Im Repo `gratisstatt-data` unter *Settings → Secrets and variables →
+Die angezeigte Worker-Adresse (`https://moatly.<name>.workers.dev`) an Claude schicken. Claude trägt sie zusammen
+mit der Client ID aus Schritt 2 in der App ein. Im Repo `moatly-data` unter *Settings → Secrets and variables →
 Actions* noch eintragen:
 
 - Variable `SERVER_URL` = die Worker-Adresse
@@ -81,4 +81,4 @@ Dashboard: `https://<dein-worker>.workers.dev/admin`
 
 ---
 
-GratisStatt ist ein privates Spass-Projekt. Die Nutzung erfolgt auf eigene Gefahr – es wird keinerlei Haftung übernommen.
+Moatly ist ein privates Spass-Projekt. Die Nutzung erfolgt auf eigene Gefahr – es wird keinerlei Haftung übernommen.

@@ -130,10 +130,9 @@ export const de: Messages = {
   'category.top': 'Top-Projekte in {category}',
   'category.topLead': 'Zugeordnet über die GitHub-Themen der Projekte.',
 
-  'about.title': 'Über GratisStatt',
+  'about.title': 'Über Moatly',
   'about.intro':
-    'GratisStatt zeigt dir kostenlose Open-Source-Projekte von GitHub, die bezahlte Software ersetzen können. Die Datenbank liegt auf deinem Computer – du kannst alles offline durchsuchen. Ohne Konto, ohne Werbung, ohne Tracking.',
-  'about.name': '',
+    'Moatly zeigt dir kostenlose Open-Source-Projekte von GitHub, die bezahlte Software ersetzen können. Die Datenbank liegt auf deinem Computer – du kannst alles offline durchsuchen. Ohne Konto, ohne Werbung, ohne Tracking.',
   'about.version': 'Version',
   'about.baseVersion': 'Basis-Version',
   'about.dataDate': 'Datenstand',
@@ -143,16 +142,16 @@ export const de: Messages = {
     '**Für welches bezahlte Produkt?**\n\n**Welche Open-Source-Alternative (GitHub-Link)?**\n\n**Läuft auf (Windows, Mac, Linux, Android, iOS, Web, Server)?**\n\n**Wie schwierig ist die Installation (einfach, mittel, profi)?**\n',
   'about.disclaimerTitle': 'Haftungsausschluss',
   'about.disclaimer':
-    'GratisStatt ist ein privates Spass-Projekt. Die Nutzung erfolgt auf eigene Gefahr. Es wird keinerlei Haftung übernommen – weder für die App selbst noch für die angezeigten Programme, Daten, Links oder Downloads.',
+    'Moatly ist ein privates Spass-Projekt. Die Nutzung erfolgt auf eigene Gefahr. Es wird keinerlei Haftung übernommen – weder für die App selbst noch für die angezeigten Programme, Daten, Links oder Downloads.',
   'about.disclaimerMore':
     'Die Angaben werden sorgfältig gepflegt, aber ohne Gewähr. Ob ein Projekt für dich passt, musst du selbst prüfen. Programme lädst du direkt bei GitHub oder auf der offiziellen Website herunter. Für Inhalt und Sicherheit der Programme sind deren Entwicklerinnen und Entwickler verantwortlich. Projekte ausserhalb der kuratierten Liste sind nicht von uns geprüft.',
   'about.noAffiliation': 'Keine Verbindung zu den genannten Firmen. Produktnamen gehören den jeweiligen Inhabern.',
 
-  'sponsor.title': 'GratisStatt unterstützen',
+  'sponsor.title': 'Moatly unterstützen',
   'sponsor.text':
-    'GratisStatt ist gratis und bleibt gratis – ohne Werbung und ohne Tracking. Wenn dir die App Geld spart, kannst du das Projekt mit einem kleinen Betrag über GitHub Sponsors unterstützen. Ganz freiwillig: Die App funktioniert ohne genau gleich.',
+    'Moatly ist gratis und bleibt gratis – ohne Werbung und ohne Tracking. Wenn dir die App Geld spart, kannst du das Projekt mit einem kleinen Betrag über GitHub Sponsors unterstützen. Ganz freiwillig: Die App funktioniert ohne genau gleich.',
   'sponsor.button': 'Auf GitHub sponsern',
-  'sponsor.coffeeTitle': 'Spendier mir einen Kaffee – GratisStatt über GitHub Sponsors unterstützen',
+  'sponsor.coffeeTitle': 'Spendier mir einen Kaffee – Moatly über GitHub Sponsors unterstützen',
 
   'notFound.title': 'Diese Seite gibt es nicht',
   'notFound.lead': 'Vielleicht wurde der Eintrag umbenannt.',
@@ -184,7 +183,7 @@ export const de: Messages = {
   'progress.mergeBase': 'Mische neue Basis-Datenbank ein …',
   'progress.vacuum': 'Optimiere Datenbank …',
 
-  'consent.title': 'Willkommen bei GratisStatt!',
+  'consent.title': 'Willkommen bei Moatly!',
   'consent.step1': '1. Öffne GitHub und gib diesen Code ein:',
   'consent.openGitHub': 'GitHub öffnen',
   'consent.step2': '2. Bestätige dort die Anmeldung. Dieses Fenster merkt es automatisch …',
@@ -193,7 +192,7 @@ export const de: Messages = {
   'consent.p1': 'Die App funktioniert komplett ohne Anmeldung.',
   'consent.p2':
     'Wenn du willst, kannst du beim {network} mitmachen. Projekte, die du über die Live-Suche findest, landen dann nach einer Prüfung beim nächsten Update bei allen Nutzern. Ausserdem kannst du Projekte bewerten und hilfreiche Bewertungen hochwählen.',
-  'consent.networkName': 'GratisStatt-Netzwerk',
+  'consent.networkName': 'Moatly-Netzwerk',
   'consent.storedLabel': 'Gespeichert wird:',
   'consent.stored':
     'dein GitHub-Benutzername, die App-Version, an welchem Tag du die App zuletzt benutzt hast, wie viele Projekte du beigetragen hast, deine Bewertungen und welche Bewertungen du hochgewählt hast.',
@@ -208,7 +207,7 @@ export const de: Messages = {
   'consent.fun': 'Ein Spass-Projekt – ohne Gewähr und ohne Haftung.',
 
   'settings.title': 'Einstellungen',
-  'net.title': 'GratisStatt-Netzwerk',
+  'net.title': 'Moatly-Netzwerk',
   'net.lead':
     'Freiwillig. Wer mitmacht, schlägt Projekte aus der Live-Suche für alle vor und kann Projekte bewerten. Gespeichert werden nur GitHub-Benutzername, App-Version, letzter aktiver Tag, Anzahl Beiträge sowie deine Bewertungen und Upvotes. Bewertungen sind öffentlich mit deinem GitHub-Benutzernamen.',
   'net.memberSince': 'Dabei als @{login} seit {date}',
@@ -268,9 +267,9 @@ export const de: Messages = {
   'project.reviews_one': '{count} Bewertung',
   'project.reviews_other': '{count} Bewertungen',
   'project.writeOwn': 'Eigene Bewertung schreiben',
-  'project.linkHint': 'Zum Bewerten, Hochwählen und Antworten verknüpfst du dein GitHub-Konto (GratisStatt-Netzwerk). Lesen kann jeder.',
+  'project.linkHint': 'Zum Bewerten, Hochwählen und Antworten verknüpfst du dein GitHub-Konto (Moatly-Netzwerk). Lesen kann jeder.',
   'project.link': 'GitHub-Konto verknüpfen',
-  'project.notAvailable': 'Bewertungen schreiben ist möglich, sobald das GratisStatt-Netzwerk eingerichtet ist. Lesen kann jeder.',
+  'project.notAvailable': 'Bewertungen schreiben ist möglich, sobald das Moatly-Netzwerk eingerichtet ist. Lesen kann jeder.',
   'project.reviewsTitle': 'Bewertungen',
   'project.sortAria': 'Sortierung',
   'project.top': 'Hilfreichste',
@@ -290,7 +289,7 @@ export const de: Messages = {
   'review.saveChange': 'Änderung speichern',
   'review.submit': 'Bewertung abschicken',
   'review.needJoin': 'Zum Hochwählen musst du beim Netzwerk mitmachen (Einstellungen).',
-  'review.voteNotAvailable': 'Hochwählen ist möglich, sobald das GratisStatt-Netzwerk eingerichtet ist.',
+  'review.voteNotAvailable': 'Hochwählen ist möglich, sobald das Moatly-Netzwerk eingerichtet ist.',
   'review.confirmDeleteReply': 'Deine Antwort löschen?',
   'review.cantVoteOwn': 'Die eigene Bewertung kann man nicht hochwählen',
   'review.unvote': 'Upvote zurücknehmen',

@@ -7,9 +7,9 @@ export const config = {
   /** GitHub account with GitHub Sponsors (button "Sponsor" in the app). */
   sponsorUser: 'tmluc-cool',
   /** Public repo whose releases carry the weekly update packages. */
-  dataRepo: 'tmluc-cool/gratisstatt-data',
-  /** GratisStatt network server (Cloudflare Worker). */
-  serverUrl: 'https://gratisstatt.example.workers.dev',
+  dataRepo: 'tmluc-cool/moatly-data',
+  /** Moatly network server (Cloudflare Worker). */
+  serverUrl: 'https://moatly.example.workers.dev',
   /** GitHub OAuth App (device flow enabled, no scopes). Client IDs are public. */
   oauthClientId: 'REPLACE_WITH_OAUTH_CLIENT_ID',
   /** Increase when the consent text changes substantially; members are asked again. */

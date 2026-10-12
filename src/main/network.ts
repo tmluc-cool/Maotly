@@ -27,7 +27,7 @@ const today = (now: number) => new Date(now).toISOString().slice(0, 10);
 class CancelledError extends Error {}
 
 /**
- * The optional GratisStatt network. Strictly opt-in: before the user chose
+ * The optional Moatly network. Strictly opt-in: before the user chose
  * "Mitmachen" and signed in with GitHub, nothing is sent to our server.
  */
 export class Network extends EventEmitter {

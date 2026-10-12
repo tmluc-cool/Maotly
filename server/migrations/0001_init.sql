@@ -1,4 +1,4 @@
--- GratisStatt network. Only what the privacy policy names: no e-mail, no IP, no search terms.
+-- Moatly network. Only what the privacy policy names: no e-mail, no IP, no search terms.
 
 CREATE TABLE users (
   github_id        INTEGER PRIMARY KEY,

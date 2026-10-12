@@ -1,10 +1,10 @@
-# Weekly update package for all GratisStatt users.
+# Weekly update package for all Moatly users.
 #
-# This file belongs into the public repo "gratisstatt-data" (copy it to
+# This file belongs into the public repo "moatly-data" (copy it to
 # .github/workflows/weekly-delta.yml there). The code comes from the app repo.
-# It only runs in a repo whose name ends with "/gratisstatt-data".
+# It only runs in a repo whose name ends with "/moatly-data".
 #
-# Settings in gratisstatt-data:
+# Settings in moatly-data:
 #   Variables: APP_REPO (e.g. tmluc-cool/githuub-appstore), SERVER_URL (network server, optional)
 #   Secrets:   ADMIN_SECRET (same value as on the server, optional)
 
@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   package:
-    if: endsWith(github.repository, '/gratisstatt-data')
+    if: endsWith(github.repository, '/moatly-data')
     runs-on: ubuntu-latest
     timeout-minutes: 330
     env:
@@ -94,7 +94,7 @@ jobs:
           gh release create "delta-$DATE" out/* \
             --repo "$GITHUB_REPOSITORY" \
             --title "Update package $DATE" \
-            --notes "Weekly update package for GratisStatt. Checksums are in manifest.json." \
+            --notes "Weekly update package for Moatly. Checksums are in manifest.json." \
             --latest
 
       - name: Remove old review copies

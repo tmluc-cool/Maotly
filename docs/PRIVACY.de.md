@@ -1,23 +1,23 @@
-# Datenschutzerklärung GratisStatt
+# Datenschutzerklärung Moatly
 
 Stand: 12.10.2026 (Version 2: Bewertungen)
 
 ## Wer ist verantwortlich?
 
-GratisStatt ist ein **privates Spass-Projekt** von [@tmluc-cool](https://github.com/tmluc-cool) – kein Unternehmen und kein kommerzielles Angebot.
+Moatly ist ein **privates Spass-Projekt** von [@tmluc-cool](https://github.com/tmluc-cool) – kein Unternehmen und kein kommerzielles Angebot.
 Kontakt: über die [Issues im Projekt-Repo](https://github.com/tmluc-cool/githuub-appstore/issues).
 
 Die Nutzung erfolgt auf eigene Gefahr. Es wird keinerlei Haftung übernommen.
 
 ## Kurz gesagt
 
-- GratisStatt funktioniert **ohne Anmeldung** und speichert alles **lokal auf deinem Computer**.
+- Moatly funktioniert **ohne Anmeldung** und speichert alles **lokal auf deinem Computer**.
 - Ohne Netzwerk spricht die App **nur mit GitHub**. Es gibt keine Werbung, keine Tracker, keine Analytics und keine Absturzberichte.
-- Das **GratisStatt-Netzwerk ist freiwillig** und standardmässig aus. Erst wenn du «Mitmachen» wählst und dich mit GitHub anmeldest, sendet die App Daten an unseren Server.
+- Das **Moatly-Netzwerk ist freiwillig** und standardmässig aus. Erst wenn du «Mitmachen» wählst und dich mit GitHub anmeldest, sendet die App Daten an unseren Server.
 
 ## Was passiert ohne Netzwerk?
 
-Die App lädt einmal pro Woche ein Update-Paket von GitHub (github.com, öffentliches Repository «gratisstatt-data»). Bei der Live-Suche und beim manuellen Update spricht die App direkt mit GitHub. Projekte öffnet sie in deinem Browser. Dabei gelten die Datenschutzbestimmungen von GitHub. Wir erhalten davon nichts.
+Die App lädt einmal pro Woche ein Update-Paket von GitHub (github.com, öffentliches Repository «moatly-data»). Bei der Live-Suche und beim manuellen Update spricht die App direkt mit GitHub. Projekte öffnet sie in deinem Browser. Dabei gelten die Datenschutzbestimmungen von GitHub. Wir erhalten davon nichts.
 
 Auf deinem Computer speichert die App eine Datenbank mit öffentlichen Angaben zu GitHub-Projekten (Name, Beschreibung, Sterne usw.), deine Einstellungen und – falls du einen eingibst – deinen GitHub-Token verschlüsselt.
 
@@ -38,7 +38,7 @@ Auf deinem Computer speichert die App eine Datenbank mit öffentlichen Angaben z
 
 - Bewertungen schreiben, hochwählen und beantworten kann nur, wer beim Netzwerk mitmacht. **Lesen kann jeder.**
 - Einmal pro Woche werden alle Bewertungen mit deinem GitHub-Benutzernamen in das öffentliche Update-Paket auf GitHub
-  (Repository «gratisstatt-data», neuestes Release) geschrieben. So bekommen alle Nutzer sie, ohne mit unserem Server
+  (Repository «moatly-data», neuestes Release) geschrieben. So bekommen alle Nutzer sie, ohne mit unserem Server
   zu sprechen. Ältere Kopien entfernen wir aus früheren Releases.
 - Ob du der Owner eines Projekts bist, prüft der Server beim Antworten einmalig bei GitHub mit deinem GitHub-Token.
   Den Token speichert er nicht.

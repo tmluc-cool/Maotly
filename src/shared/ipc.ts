@@ -58,7 +58,7 @@ export const IPC = {
 } as const;
 
 /** The API the preload script exposes as window.api. */
-export interface GratisStattApi {
+export interface MoatlyApi {
   search(params: SearchParams): Promise<SearchResult>;
   curated(repos: string[]): Promise<Record<string, RepoResult>>;
   newlyDiscovered(): Promise<RepoResult[]>;

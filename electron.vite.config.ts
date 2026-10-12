@@ -12,7 +12,7 @@ const DEV_CSP =
 function cspPlugin(): Plugin {
   let isDev = false;
   return {
-    name: 'gratisstatt-csp',
+    name: 'moatly-csp',
     configResolved(config) {
       isDev = config.command === 'serve';
     },

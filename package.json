@@ -1,9 +1,9 @@
 {
-  "name": "gratisstatt",
-  "productName": "GratisStatt",
+  "name": "moatly",
+  "productName": "Moatly",
   "version": "0.1.0",
   "description": "Find free open-source alternatives to paid software.",
-  "author": "GratisStatt",
+  "author": "Moatly",
   "license": "MIT",
   "private": true,
   "main": "./out/main/index.js",

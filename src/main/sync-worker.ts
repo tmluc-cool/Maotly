@@ -122,7 +122,7 @@ async function runManual(req: Extract<WorkerRequest, { type: 'manual' }>) {
   }
 
   // 2. Crawl GitHub for projects that are new or changed since the last package.
-  const client = new GitHubClient({ token: req.token, signal: controller!.signal, userAgent: 'GratisStatt' });
+  const client = new GitHubClient({ token: req.token, signal: controller!.signal, userAgent: 'Moatly' });
   const save = () => db.prepare('UPDATE sync_runs SET progress = ?, added = ?, updated = ? WHERE id = ?').run(JSON.stringify(progress), progress.added, progress.updated, runId);
   const today = isoDay(Date.now());
 
