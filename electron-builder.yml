@@ -1,6 +1,7 @@
+# Kept from the first name (GratisStatt), so a new installer replaces an existing installation.
 appId: ch.gratisstatt.app
-productName: GratisStatt
-copyright: GratisStatt
+productName: Moatly
+copyright: Moatly
 directories:
   output: release
   buildResources: build
@@ -28,9 +29,10 @@ nsis:
   perMachine: false
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
-  shortcutName: GratisStatt
+  shortcutName: Moatly
   artifactName: ${productName}-Setup-${version}.exe
-  installerLanguages: [de_DE]
-  language: '1031'
+  # Follows the Windows language (English if it is neither German nor Spanish).
+  installerLanguages: [en_US, de_DE, es_ES]
+  multiLanguageInstaller: true
 portable:
   artifactName: ${productName}-${version}-portable.exe

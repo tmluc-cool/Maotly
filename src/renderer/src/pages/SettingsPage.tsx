@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LANG_NAMES, LANGS } from '@shared/i18n';
 import type { MyDataResult, SettingsState, ThemeSetting } from '@shared/types';
 import { progressText } from '../components/StatusBar';
+import { UserIcon } from '../components/icons';
 import { formatBytes, formatCount, formatDate, formatDateTime } from '../lib/format';
 import { t } from '../lib/i18n';
 import { href } from '../lib/router';
@@ -19,6 +20,37 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange(v: bo
       </span>
       <span className="font-medium">{label}</span>
     </label>
+  );
+}
+
+/** "Sign in with GitHub": faster searches, works without the network. */
+function AccountSection() {
+  const { account, network, setSignInOpen } = useApp();
+  if (!account) return null;
+  return (
+    <section className="card space-y-3">
+      <h2 className="text-lg font-bold">{t('account.title')}</h2>
+      {!account.available ? (
+        <p className="text-sm text-slate-600 dark:text-slate-400">{t('account.notAvailable')}</p>
+      ) : account.login ? (
+        <>
+          <p className="flex items-center gap-2 font-medium">
+            <UserIcon /> {t('account.signedInAs', { login: account.login })}
+          </p>
+          <button type="button" className="btn-secondary" disabled={!!network?.member} onClick={() => void window.api.githubSignOut()}>
+            {t('account.signOut')}
+          </button>
+          {network?.member && <p className="text-xs text-slate-500 dark:text-slate-400">{t('account.signOutMember')}</p>}
+        </>
+      ) : (
+        <>
+          <p className="text-sm text-slate-600 dark:text-slate-400">{t('account.lead')}</p>
+          <button type="button" className="btn-primary" onClick={() => setSignInOpen(true)}>
+            <UserIcon /> {t('account.signIn')}
+          </button>
+        </>
+      )}
+    </section>
   );
 }
 
@@ -125,7 +157,7 @@ function NetworkSection() {
 }
 
 export function SettingsPage() {
-  const { theme, setTheme, lang, setLang, stats, update, network, info, refreshStats } = useApp();
+  const { theme, setTheme, lang, setLang, stats, update, account, info, refreshStats } = useApp();
   const [settings, setSettings] = useState<SettingsState | null>(null);
   const [token, setToken] = useState('');
   const [tokenMsg, setTokenMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -161,9 +193,12 @@ export function SettingsPage() {
     <div className="mx-auto max-w-3xl space-y-6 px-6 pb-20 pt-8">
       <h1 className="text-3xl font-extrabold tracking-tight">{t('settings.title')}</h1>
 
+      <AccountSection />
+
       <NetworkSection />
 
-      {!network?.member && (
+      {/* An own token is only needed while "Sign in with GitHub" isn't available. */}
+      {!account?.login && (!account?.available || settings?.hasOwnToken) && (
         <section className="card">
           <h2 className="text-lg font-bold">{t('token.title')}</h2>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">

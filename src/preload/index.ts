@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron';
-import { IPC, type GratisStattApi } from '../shared/ipc';
+import { IPC, type MoatlyApi } from '../shared/ipc';
 
 function subscribe<T>(channel: string, listener: (value: T) => void): () => void {
   const handler = (_e: IpcRendererEvent, value: T) => listener(value);
@@ -7,7 +7,7 @@ function subscribe<T>(channel: string, listener: (value: T) => void): () => void
   return () => ipcRenderer.removeListener(channel, handler);
 }
 
-const api: GratisStattApi = {
+const api: MoatlyApi = {
   search: (params) => ipcRenderer.invoke(IPC.search, params),
   curated: (repos) => ipcRenderer.invoke(IPC.curated, repos),
   newlyDiscovered: () => ipcRenderer.invoke(IPC.newly),
@@ -33,6 +33,12 @@ const api: GratisStattApi = {
   setAutoUpdate: (on) => ipcRenderer.invoke(IPC.autoUpdateSet, on),
   setToken: (token) => ipcRenderer.invoke(IPC.tokenSet, token),
   clearToken: () => ipcRenderer.invoke(IPC.tokenClear),
+
+  githubState: () => ipcRenderer.invoke(IPC.githubGet),
+  onGitHubState: (l) => subscribe(IPC.githubEvent, l),
+  githubSignIn: () => ipcRenderer.invoke(IPC.githubSignIn),
+  githubCancel: () => ipcRenderer.invoke(IPC.githubCancel),
+  githubSignOut: () => ipcRenderer.invoke(IPC.githubSignOut),
 
   networkState: () => ipcRenderer.invoke(IPC.networkGet),
   onNetworkState: (l) => subscribe(IPC.networkEvent, l),

@@ -1,25 +1,27 @@
-# Política de privacidad de GratisStatt
+# Política de privacidad de Moatly
 
 Última actualización: 12 de octubre de 2026 (versión 2: reseñas)
 
 ## ¿Quién es el responsable?
 
-GratisStatt es un **proyecto personal hecho por diversión** de [@tmluc-cool](https://github.com/tmluc-cool): no es una empresa ni un servicio comercial.
+Moatly es un **proyecto personal hecho por diversión** de [@tmluc-cool](https://github.com/tmluc-cool): no es una empresa ni un servicio comercial.
 Contacto: a través de los [issues del repositorio del proyecto](https://github.com/tmluc-cool/githuub-appstore/issues).
 
 Usas la app bajo tu propio riesgo. No se asume ninguna responsabilidad de ningún tipo.
 
 ## En resumen
 
-- GratisStatt funciona **sin iniciar sesión** y guarda todo **localmente en tu computadora**.
+- Moatly funciona **sin iniciar sesión** y guarda todo **localmente en tu computadora**.
 - Sin la red, la app **solo se comunica con GitHub**. No hay publicidad, ni rastreadores, ni analíticas, ni informes de errores.
-- La **red GratisStatt es voluntaria** y está desactivada por defecto. Solo cuando eliges «Participar» e inicias sesión con GitHub, la app envía datos a nuestro servidor.
+- La **red Moatly es voluntaria** y está desactivada por defecto. Solo cuando eliges «Participar» e inicias sesión con GitHub, la app envía datos a nuestro servidor.
 
 ## ¿Qué pasa sin la red?
 
-Una vez por semana, la app descarga un paquete de actualización desde GitHub (github.com, repositorio público «gratisstatt-data»). En la búsqueda en vivo y en la actualización manual, la app se comunica directamente con GitHub. Los proyectos se abren en tu navegador. En todo esto se aplica la política de privacidad de GitHub. Nosotros no recibimos nada de ello.
+Una vez por semana, la app descarga un paquete de actualización desde GitHub (github.com, repositorio público «moatly-data»). En la búsqueda en vivo y en la actualización manual, la app se comunica directamente con GitHub. Los proyectos se abren en tu navegador. En todo esto se aplica la política de privacidad de GitHub. Nosotros no recibimos nada de ello.
 
 En tu computadora, la app guarda una base de datos con información pública sobre proyectos de GitHub (nombre, descripción, estrellas, etc.), tu configuración y, si agregas uno, tu token de GitHub cifrado.
+
+**Iniciar sesión con GitHub (opcional):** Si inicias sesión con tu cuenta de GitHub, GitHub le da a la app una clave de acceso sin permisos especiales. La app la guarda cifrada en tu computadora, junto con tu nombre de usuario de GitHub, y la usa solo para búsquedas en GitHub (30 en lugar de 10 por minuto). Nosotros no recibimos nada. Puedes cerrar sesión en cualquier momento en la configuración; entonces la clave se borra de tu computadora.
 
 ## ¿Qué datos guardamos si participas en la red?
 
@@ -37,7 +39,7 @@ En tu computadora, la app guarda una base de datos con información pública sob
 ## Reseñas
 
 - Solo quien participa en la red puede escribir reseñas, darles votos positivos y responderlas. **Cualquiera puede leerlas.**
-- Una vez por semana, todas las reseñas se escriben, junto con tu nombre de usuario de GitHub, en el paquete de actualización público en GitHub (repositorio «gratisstatt-data», versión publicada más reciente). Así, todos los usuarios las reciben sin comunicarse con nuestro servidor. Eliminamos las copias antiguas de las versiones publicadas anteriores.
+- Una vez por semana, todas las reseñas se escriben, junto con tu nombre de usuario de GitHub, en el paquete de actualización público en GitHub (repositorio «moatly-data», versión publicada más reciente). Así, todos los usuarios las reciben sin comunicarse con nuestro servidor. Eliminamos las copias antiguas de las versiones publicadas anteriores.
 - Cuando respondes, el servidor comprueba una sola vez en GitHub, con tu token de GitHub, si eres el propietario del proyecto. No guarda el token.
 - Puedes cambiar o borrar tu propia reseña en cualquier momento. Las reseñas borradas también desaparecen para todos los demás con la siguiente actualización semanal.
 - Podemos ocultar o borrar reseñas, por ejemplo, en caso de spam o insultos.

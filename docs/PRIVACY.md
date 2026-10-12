@@ -1,25 +1,27 @@
-# GratisStatt Privacy Policy
+# Moatly Privacy Policy
 
 Last updated: October 12, 2026 (version 2: reviews)
 
 ## Who is responsible?
 
-GratisStatt is a **private fun project** by [@tmluc-cool](https://github.com/tmluc-cool) – not a company and not a commercial service.
+Moatly is a **private fun project** by [@tmluc-cool](https://github.com/tmluc-cool) – not a company and not a commercial service.
 Contact: through the [issues in the project repo](https://github.com/tmluc-cool/githuub-appstore/issues).
 
 You use the app at your own risk. No liability whatsoever is accepted.
 
 ## In short
 
-- GratisStatt works **without signing in** and stores everything **locally on your computer**.
+- Moatly works **without signing in** and stores everything **locally on your computer**.
 - Without the network, the app **only talks to GitHub**. There are no ads, no trackers, no analytics and no crash reports.
-- The **GratisStatt network is optional** and turned off by default. Only when you choose "Join" and sign in with GitHub does the app send data to our server.
+- The **Moatly network is optional** and turned off by default. Only when you choose "Join" and sign in with GitHub does the app send data to our server.
 
 ## What happens without the network?
 
-Once a week, the app downloads an update package from GitHub (github.com, public repository "gratisstatt-data"). For the live search and the manual update, the app talks directly to GitHub. It opens projects in your browser. GitHub's privacy policy applies to all of this. We receive nothing from it.
+Once a week, the app downloads an update package from GitHub (github.com, public repository "moatly-data"). For the live search and the manual update, the app talks directly to GitHub. It opens projects in your browser. GitHub's privacy policy applies to all of this. We receive nothing from it.
 
 On your computer, the app stores a database with public information about GitHub projects (name, description, stars, etc.), your settings and – if you enter one – your GitHub token in encrypted form.
+
+**Sign in with GitHub (optional):** If you sign in with your GitHub account, GitHub gives the app a sign-in key without special permissions. The app stores it encrypted on your computer, together with your GitHub username, and uses it only for searches at GitHub (30 instead of 10 per minute). We receive nothing. You can sign out at any time in the settings; then the key is deleted from your computer.
 
 ## What data do we store if you join the network?
 
@@ -37,7 +39,7 @@ On your computer, the app stores a database with public information about GitHub
 ## Reviews
 
 - Only network members can write, upvote and reply to reviews. **Anyone can read them.**
-- Once a week, all reviews are written, together with your GitHub username, into the public update package on GitHub (repository "gratisstatt-data", latest release). This way all users get them without talking to our server. We remove older copies from earlier releases.
+- Once a week, all reviews are written, together with your GitHub username, into the public update package on GitHub (repository "moatly-data", latest release). This way all users get them without talking to our server. We remove older copies from earlier releases.
 - When you reply, the server checks one single time with GitHub, using your GitHub token, whether you are the owner of the project. It does not store the token.
 - You can change or delete your own review at any time. Deleted reviews also disappear for everyone else with the next weekly update.
 - We can hide or delete reviews, for example in case of spam or insults.

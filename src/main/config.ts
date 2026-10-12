@@ -7,9 +7,9 @@ export const config = {
   /** GitHub account with GitHub Sponsors (button "Sponsor" in the app). */
   sponsorUser: 'tmluc-cool',
   /** Public repo whose releases carry the weekly update packages. */
-  dataRepo: 'tmluc-cool/gratisstatt-data',
-  /** GratisStatt network server (Cloudflare Worker). */
-  serverUrl: 'https://gratisstatt.example.workers.dev',
+  dataRepo: 'tmluc-cool/moatly-data',
+  /** Moatly network server (Cloudflare Worker). */
+  serverUrl: 'https://moatly.example.workers.dev',
   /** GitHub OAuth App (device flow enabled, no scopes). Client IDs are public. */
   oauthClientId: 'REPLACE_WITH_OAUTH_CLIENT_ID',
   /** Increase when the consent text changes substantially; members are asked again. */
@@ -22,9 +22,14 @@ export const config = {
 
 export const manifestUrl = () => `https://github.com/${config.dataRepo}/releases/latest/download/manifest.json`;
 
-/** The network only works once server and OAuth App are set up (see docs/EINRICHTUNG.md). */
+/** "Sign in with GitHub" works once the OAuth App is set up (see docs/EINRICHTUNG.md). */
+export function signInConfigured(): boolean {
+  return !config.oauthClientId.startsWith('REPLACE');
+}
+
+/** The network also needs the server. */
 export function networkConfigured(): boolean {
-  return !config.oauthClientId.startsWith('REPLACE') && !config.serverUrl.includes('.example.');
+  return signInConfigured() && !config.serverUrl.includes('.example.');
 }
 
 export const sponsorUrl = () => `https://github.com/sponsors/${config.sponsorUser}`;

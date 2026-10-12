@@ -24,13 +24,13 @@ a { color:var(--brand); }
 `;
 
 export const LOGIN_HTML = `<!doctype html><html lang="de-CH"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GratisStatt Admin</title><style>${STYLE}</style></head><body><main>
-<h1>GratisStatt Admin</h1><div class="card"><p>Nur für den Betreiber.</p><a class="btn" href="/admin/login">Mit GitHub anmelden</a></div>
+<title>Moatly Admin</title><style>${STYLE}</style></head><body><main>
+<h1>Moatly Admin</h1><div class="card"><p>Nur für den Betreiber.</p><a class="btn" href="/admin/login">Mit GitHub anmelden</a></div>
 </main></body></html>`;
 
 export const DASHBOARD_HTML = `<!doctype html><html lang="de-CH"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GratisStatt Admin</title><style>${STYLE}</style></head><body><main>
-<header><h1>GratisStatt Netzwerk</h1><a class="btn" href="/admin/logout">Abmelden</a></header>
+<title>Moatly Admin</title><style>${STYLE}</style></head><body><main>
+<header><h1>Moatly Netzwerk</h1><a class="btn" href="/admin/logout">Abmelden</a></header>
 <div class="cards">
   <div class="card"><div class="num" id="active7">–</div><div class="muted">aktiv (7 Tage)</div></div>
   <div class="card"><div class="num" id="active30">–</div><div class="muted">aktiv (30 Tage)</div></div>

@@ -5,6 +5,7 @@ import type {
   RepoDetails,
   AppUpdateInfo,
   DbStats,
+  GitHubAccountState,
   LiveSearchResult,
   MyDataResult,
   NetworkState,
@@ -41,6 +42,11 @@ export const IPC = {
   autoUpdateSet: 'settings:autoUpdate',
   tokenSet: 'token:set',
   tokenClear: 'token:clear',
+  githubGet: 'github:get',
+  githubEvent: 'github:event',
+  githubSignIn: 'github:signIn',
+  githubCancel: 'github:cancel',
+  githubSignOut: 'github:signOut',
   networkGet: 'network:get',
   networkAsk: 'network:ask',
   networkEvent: 'network:event',
@@ -58,7 +64,7 @@ export const IPC = {
 } as const;
 
 /** The API the preload script exposes as window.api. */
-export interface GratisStattApi {
+export interface MoatlyApi {
   search(params: SearchParams): Promise<SearchResult>;
   curated(repos: string[]): Promise<Record<string, RepoResult>>;
   newlyDiscovered(): Promise<RepoResult[]>;
@@ -86,6 +92,13 @@ export interface GratisStattApi {
   setAutoUpdate(on: boolean): Promise<void>;
   setToken(token: string): Promise<TokenResult>;
   clearToken(): Promise<SettingsState>;
+
+  /** "Sign in with GitHub" (works without the network). */
+  githubState(): Promise<GitHubAccountState>;
+  onGitHubState(listener: (s: GitHubAccountState) => void): () => void;
+  githubSignIn(): Promise<void>;
+  githubCancel(): Promise<void>;
+  githubSignOut(): Promise<void>;
 
   networkState(): Promise<NetworkState>;
   onNetworkState(listener: (s: NetworkState) => void): () => void;

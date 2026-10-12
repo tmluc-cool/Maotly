@@ -27,7 +27,7 @@ export interface Env {
   ADMIN_OAUTH_CLIENT_SECRET: string;
   /** Random secret to sign the admin cookie (wrangler secret). */
   SESSION_SECRET: string;
-  /** "owner/gratisstatt-data" – for the weekly history in the dashboard. */
+  /** "owner/moatly-data" – for the weekly history in the dashboard. */
   DATA_REPO: string;
 }
 

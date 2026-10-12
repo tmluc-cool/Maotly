@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { config } from '../src/main/config';
 import { AppDatabase } from '../src/main/database';
+import { GitHubAccount } from '../src/main/github-account';
 import { Network, type Secrets } from '../src/main/network';
 import { toRepoRow } from '../src/shared/crawler';
 import { setLang } from '../src/shared/i18n';
@@ -26,6 +27,7 @@ function setup(opts: { serverDown?: boolean } = {}) {
     calls.push({ url, method: init?.method ?? 'GET', body, auth });
     const json = (o: unknown, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json' } });
     if (url === 'https://github.com/login/device/code') return json({ device_code: 'dc', user_code: 'ABCD-1234', verification_uri: 'https://github.com/login/device', expires_in: 900, interval: 5 });
+    if (url === 'https://api.github.com/user') return json({ login: 'octo', id: 7 });
     if (url === 'https://github.com/login/oauth/access_token') return json(++polls < 3 ? { error: 'authorization_pending' } : { access_token: 'gho_token' });
     if (url.startsWith(config.serverUrl)) {
       if (opts.serverDown) throw new TypeError('fetch failed');
@@ -41,8 +43,16 @@ function setup(opts: { serverDown?: boolean } = {}) {
     }
     return json({}, 404);
   }) as typeof fetch;
-  const network = new Network({ db, secrets, fetch: fetchFn, appVersion: '1.0.0', available: () => true, now: () => now, sleep: (ms) => new Promise((r) => setTimeout(() => { now += ms; r(); }, 1)) });
-  return { db, network, calls, store, advance: (ms: number) => (now += ms), serverCalls: () => calls.filter((c) => c.url.startsWith(config.serverUrl)) };
+  const account = new GitHubAccount({
+    secrets: { get: (n) => store.get(n) ?? null, set: (n, v) => void store.set(n, v), clear: (n) => void store.delete(n) },
+    store: db,
+    fetch: fetchFn,
+    clientId: () => 'Ov23test',
+    now: () => now,
+    sleep: (ms) => new Promise<void>((r) => setTimeout(() => { now += ms; r(); }, 1)),
+  });
+  const network = new Network({ db, secrets, account, fetch: fetchFn, appVersion: '1.0.0', available: () => true, now: () => now });
+  return { db, network, account, calls, store, advance: (ms: number) => (now += ms), serverCalls: () => calls.filter((c) => c.url.startsWith(config.serverUrl)) };
 }
 
 describe('network (opt-in)', () => {
@@ -51,9 +61,12 @@ describe('network (opt-in)', () => {
     const { db } = AppDatabase.open(dir, join(dir, 'no-base.db'));
     const calls: string[] = [];
     const store = new Map<string, string>();
+    const secrets = { get: (k: string) => store.get(k) ?? null, set: (k: string, v: string) => void store.set(k, v), clear: (k: string) => void store.delete(k) };
+    const account = new GitHubAccount({ secrets, store: db, fetch: (async () => new Response('{}')) as unknown as typeof fetch, clientId: () => null });
     const n = new Network({
       db,
-      secrets: { get: (k) => store.get(k) ?? null, set: (k, v) => void store.set(k, v), clear: (k) => void store.delete(k) },
+      secrets,
+      account,
       fetch: (async (u: string) => (calls.push(String(u)), new Response('{}'))) as unknown as typeof fetch,
       appVersion: '1',
       available: () => false,
@@ -90,8 +103,8 @@ describe('network (opt-in)', () => {
     expect(st.member).toEqual({ login: 'octo', joinedDay: '2026-10-12' });
     expect(st.askConsent).toBe(false);
     expect(s.store.get('session')).toBe('sess');
-    expect(s.store.get('network-github')).toBe('gho_token');
-    expect(s.network.githubToken()).toBe('gho_token');
+    expect(s.store.get('github')).toBe('gho_token');
+    expect(s.account.state().login).toBe('octo');
     const reg = s.serverCalls().find((c) => c.url.endsWith('/v1/register'))!;
     expect(reg.body).toEqual({ githubToken: 'gho_token' });
     // Device code request asks for no scopes.
@@ -153,7 +166,8 @@ describe('network (opt-in)', () => {
     const r = await s.network.leave();
     expect(r.ok).toBe(true);
     expect(s.serverCalls().some((c) => c.method === 'DELETE' && c.url.endsWith('/v1/me'))).toBe(true);
-    expect(s.store.size).toBe(0);
+    // The server session is gone; the GitHub sign-in stays until the user signs out.
+    expect([...s.store.keys()]).toEqual(['github']);
     expect(s.db.pendingSubmissions()).toEqual([]);
     expect(s.network.state()).toMatchObject({ consent: 'no', member: null });
   });
@@ -222,7 +236,7 @@ describe('network (opt-in)', () => {
   it('explains server refusals in the app language, not with the server text', async () => {
     const s = setup();
     await s.network.join();
-    s.store.set('network-github', 'gho_someone_else');
+    s.store.set('github', 'gho_someone_else');
     expect(await s.network.reply(5, 'Danke')).toEqual({ ok: false, message: 'Only the owner of the project can reply.' });
     setLang('de');
     try {
@@ -230,5 +244,34 @@ describe('network (opt-in)', () => {
     } finally {
       setLang('en');
     }
+  });
+
+  it('joining reuses an existing GitHub sign-in (no second code)', async () => {
+    const s = setup();
+    await s.account.signIn();
+    expect(s.account.state()).toMatchObject({ available: true, login: 'octo', flow: { state: 'idle' } });
+    const codes = () => s.calls.filter((c) => c.url.endsWith('/login/device/code')).length;
+    expect(codes()).toBe(1);
+    await s.network.join();
+    expect(codes()).toBe(1);
+    expect(s.network.state().member?.login).toBe('octo');
+  });
+
+  it('sign-in: refuses without safe storage, signs out on request', async () => {
+    const s = setup();
+    await s.account.signIn();
+    s.account.signOut();
+    expect(s.account.state()).toMatchObject({ login: null, flow: { state: 'idle' } });
+    expect(s.store.has('github')).toBe(false);
+
+    const noStore = new GitHubAccount({
+      secrets: { get: () => null, set: () => undefined, clear: () => undefined },
+      store: s.db,
+      fetch: (async () => new Response('{}')) as unknown as typeof fetch,
+      clientId: () => 'Ov23test',
+      canStore: () => false,
+    });
+    await expect(noStore.signIn()).rejects.toThrow();
+    expect(noStore.state().flow.state).toBe('error');
   });
 });

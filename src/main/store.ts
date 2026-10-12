@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync 
 import { join } from 'node:path';
 import { isLang, type Lang } from '../shared/i18n';
 import type { ThemeSetting } from '../shared/types';
+import type { AccountSecrets } from './github-account';
 import type { Secrets } from './network';
 
 function userFile(name: string) {
@@ -72,7 +73,7 @@ export function saveWindowState(state: WindowState) {
 
 // --- Secrets (encrypted with safeStorage, never plain text, never in the renderer) ----
 
-type SecretName = 'own-github' | 'network-github' | 'session';
+type SecretName = 'own-github' | 'github' | 'session';
 const cache = new Map<SecretName, string | null>();
 
 export function encryptionAvailable(): boolean {
@@ -102,6 +103,12 @@ export function clearSecret(name: SecretName) {
   rmSync(userFile(`${name}.bin`), { force: true });
   cache.set(name, null);
 }
+
+export const accountSecrets: AccountSecrets = {
+  get: (n) => getSecret(n),
+  set: (n, v) => setSecret(n, v),
+  clear: (n) => clearSecret(n),
+};
 
 export const networkSecrets: Secrets = {
   get: (n) => getSecret(n),

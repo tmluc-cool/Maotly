@@ -69,7 +69,7 @@ async function register(req: Request, env: Env, deps: Deps): Promise<Response> {
   if (body instanceof Response) return body;
 
   const gh = await deps.fetch('https://api.github.com/user', {
-    headers: { Authorization: `Bearer ${body.githubToken}`, Accept: 'application/vnd.github+json', 'User-Agent': 'GratisStatt-Server' },
+    headers: { Authorization: `Bearer ${body.githubToken}`, Accept: 'application/vnd.github+json', 'User-Agent': 'Moatly-Server' },
   });
   if (!gh.ok) return error(401, 'GitHub-Anmeldung ungültig');
   const user = (await gh.json()) as { id?: number; login?: string };

@@ -8,7 +8,7 @@ import { applyPackages, ChecksumError, missingDeltas, parseManifest, type Manife
 import { makeRepos } from './helpers/fake-github';
 import { fakeFileFetch, writePackage } from './helpers/package';
 
-const MANIFEST = 'https://github.com/o/gratisstatt-data/releases/latest/download/manifest.json';
+const MANIFEST = 'https://github.com/o/moatly-data/releases/latest/download/manifest.json';
 
 function setup() {
   const dir = mkdtempSync(join(tmpdir(), 'gs-pkg-'));

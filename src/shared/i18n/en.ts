@@ -19,6 +19,8 @@ export const en = {
   'common.language': 'Language',
 
   // Header
+  'nav.signIn': 'Sign in',
+  'nav.signedInTitle': 'Signed in with GitHub – settings',
   'nav.settings': 'Settings',
   'nav.about': 'About',
 
@@ -140,10 +142,9 @@ export const en = {
   'category.topLead': 'Assigned using the projects’ GitHub topics.',
 
   // About
-  'about.title': 'About GratisStatt',
+  'about.title': 'About Moatly',
   'about.intro':
-    'GratisStatt shows you free open-source projects from GitHub that can replace paid software. The database is on your computer – you can search everything offline. No account, no ads, no tracking.',
-  'about.name': 'The name is German for “free instead”.',
+    'Moatly shows you free open-source projects from GitHub that can replace paid software. The database is on your computer – you can search everything offline. No account, no ads, no tracking.',
   'about.version': 'Version',
   'about.baseVersion': 'Base version',
   'about.dataDate': 'Data as of',
@@ -153,17 +154,17 @@ export const en = {
     '**Which paid product?**\n\n**Which open-source alternative (GitHub link)?**\n\n**Runs on (Windows, Mac, Linux, Android, iOS, Web, Server)?**\n\n**How hard is the installation (easy, medium, expert)?**\n',
   'about.disclaimerTitle': 'Disclaimer',
   'about.disclaimer':
-    'GratisStatt is a private fun project. Use it at your own risk. No liability whatsoever is accepted – neither for the app itself nor for the programs, data, links or downloads shown.',
+    'Moatly is a private fun project. Use it at your own risk. No liability whatsoever is accepted – neither for the app itself nor for the programs, data, links or downloads shown.',
   'about.disclaimerMore':
     'The information is maintained carefully, but without guarantee. You have to check yourself whether a project suits you. You download programs directly from GitHub or the official website. Their developers are responsible for the content and security of the programs. Projects outside the curated list have not been checked by us.',
   'about.noAffiliation': 'Not affiliated with the companies mentioned. Product names belong to their respective owners.',
 
   // Sponsoring
-  'sponsor.title': 'Support GratisStatt',
+  'sponsor.title': 'Support Moatly',
   'sponsor.text':
-    'GratisStatt is free and stays free – without ads or tracking. If it saves you money, you can support the project with a small amount on GitHub Sponsors. Completely voluntary: the app works exactly the same without it.',
+    'Moatly is free and stays free – without ads or tracking. If it saves you money, you can support the project with a small amount on GitHub Sponsors. Completely voluntary: the app works exactly the same without it.',
   'sponsor.button': 'Sponsor on GitHub',
-  'sponsor.coffeeTitle': 'Buy me a coffee – support GratisStatt on GitHub Sponsors',
+  'sponsor.coffeeTitle': 'Buy me a coffee – support Moatly on GitHub Sponsors',
 
   // Not found
   'notFound.title': 'This page doesn’t exist',
@@ -199,7 +200,7 @@ export const en = {
   'progress.vacuum': 'Optimizing the database …',
 
   // Welcome dialog
-  'consent.title': 'Welcome to GratisStatt!',
+  'consent.title': 'Welcome to Moatly!',
   'consent.step1': '1. Open GitHub and enter this code:',
   'consent.openGitHub': 'Open GitHub',
   'consent.step2': '2. Confirm the sign-in there. This window notices it automatically …',
@@ -208,7 +209,7 @@ export const en = {
   'consent.p1': 'The app works completely without signing in.',
   'consent.p2':
     'If you like, you can join the {network}. Projects you find with the live search are then checked and reach all users with the next update. You can also rate projects and upvote helpful reviews.',
-  'consent.networkName': 'GratisStatt network',
+  'consent.networkName': 'Moatly network',
   'consent.storedLabel': 'Stored:',
   'consent.stored':
     'your GitHub username, the app version, the day you last used the app, how many projects you contributed, your reviews and which reviews you upvoted.',
@@ -222,9 +223,25 @@ export const en = {
   'consent.readPrivacy': 'Read the privacy policy',
   'consent.fun': 'A fun project – no warranty and no liability.',
 
+  // GitHub sign-in
+  'account.title': 'GitHub account',
+  'account.signIn': 'Sign in with GitHub',
+  'account.lead':
+    'Sign in with your GitHub account: Moatly then searches GitHub faster (30 instead of 10 searches per minute). Nothing is sent to us – only GitHub sees the sign-in. You can sign out at any time.',
+  'account.signedInAs': 'Signed in as @{login}',
+  'account.signOut': 'Sign out',
+  'account.signOutMember': 'To sign out, leave the Moatly network first.',
+  'account.checking': 'Confirmed on GitHub. One moment …',
+  'account.tryAgain': 'Try again',
+  'account.copy': 'Copy code',
+  'account.copied': 'Copied',
+  'account.notAvailable': 'Signing in with GitHub isn’t set up in this version yet.',
+  'account.done': 'Done! You are signed in as @{login}.',
+  'common.close': 'Close',
+
   // Settings
   'settings.title': 'Settings',
-  'net.title': 'GratisStatt network',
+  'net.title': 'Moatly network',
   'net.lead':
     'Voluntary. Members suggest projects from the live search for everyone and can rate projects. Only your GitHub username, app version, last active day, number of contributions and your reviews and upvotes are stored. Reviews are public with your GitHub username.',
   'net.memberSince': 'Member as @{login} since {date}',
@@ -285,9 +302,9 @@ export const en = {
   'project.reviews_one': '{count} review',
   'project.reviews_other': '{count} reviews',
   'project.writeOwn': 'Write your own review',
-  'project.linkHint': 'To rate, upvote and reply, link your GitHub account (GratisStatt network). Anyone can read reviews.',
+  'project.linkHint': 'To rate, upvote and reply, link your GitHub account (Moatly network). Anyone can read reviews.',
   'project.link': 'Link GitHub account',
-  'project.notAvailable': 'Writing reviews will be possible once the GratisStatt network is set up. Anyone can read reviews.',
+  'project.notAvailable': 'Writing reviews will be possible once the Moatly network is set up. Anyone can read reviews.',
   'project.reviewsTitle': 'Reviews',
   'project.sortAria': 'Sorting',
   'project.top': 'Most helpful',
@@ -307,7 +324,7 @@ export const en = {
   'review.saveChange': 'Save changes',
   'review.submit': 'Submit review',
   'review.needJoin': 'To upvote, join the network (Settings).',
-  'review.voteNotAvailable': 'Upvoting will be possible once the GratisStatt network is set up.',
+  'review.voteNotAvailable': 'Upvoting will be possible once the Moatly network is set up.',
   'review.confirmDeleteReply': 'Delete your reply?',
   'review.cantVoteOwn': 'You can’t upvote your own review',
   'review.unvote': 'Remove upvote',

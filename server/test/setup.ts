@@ -9,7 +9,7 @@ export function setup(start = Date.parse('2026-10-12T10:00:00Z')) {
   const DB = createD1();
   const env: Env = {
     DB, ADMIN_SECRET, ADMIN_GITHUB_ID: '999', ADMIN_OAUTH_CLIENT_ID: 'cid', ADMIN_OAUTH_CLIENT_SECRET: 'csecret',
-    SESSION_SECRET: 's'.repeat(40), DATA_REPO: 'o/gratisstatt-data',
+    SESSION_SECRET: 's'.repeat(40), DATA_REPO: 'o/moatly-data',
   };
   let now = start;
   const ghUsers: Record<string, { id: number; login: string }> = { gho_alice_000: { id: 1, login: 'alice' }, gho_bob_00000: { id: 2, login: 'bob' }, gho_admin_000: { id: 999, login: 'boss' } };

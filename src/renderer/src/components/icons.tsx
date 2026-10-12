@@ -26,6 +26,12 @@ export const CoffeeIcon = (p: P) => (
     <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1" />
   </svg>
 );
+export const UserIcon = (p: P) => (
+  <svg {...base} {...p}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21a8 8 0 0 1 16 0" />
+  </svg>
+);
 export const SearchIcon = (p: P) => (
   <svg {...base} {...p}>
     <circle cx="11" cy="11" r="7" />

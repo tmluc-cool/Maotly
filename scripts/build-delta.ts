@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
-// Builds the weekly update package (runs in the GitHub Action of the gratisstatt-data repo).
+// Builds the weekly update package (runs in the GitHub Action of the moatly-data repo).
 //
-//   tsx scripts/build-delta.ts --repo owner/gratisstatt-data --out ../out [--prev ../prev/manifest.json] [--base ../out/base-2026-10-12.db]
+//   tsx scripts/build-delta.ts --repo owner/moatly-data --out ../out [--prev ../prev/manifest.json] [--base ../out/base-2026-10-12.db]
 //
 // Env: GITHUB_TOKEN (search 30/min), SERVER_URL + ADMIN_SECRET (optional: network submissions)
 
@@ -54,7 +54,7 @@ async function main() {
 
   const client = new GitHubClient({
     token: envVar('GITHUB_TOKEN'),
-    userAgent: 'GratisStatt-weekly',
+    userAgent: 'Moatly-weekly',
     onWait: (ms, why) => ms > 10_000 && console.log(`   … warte ${Math.round(ms / 1000)} s (${why})`),
   });
 

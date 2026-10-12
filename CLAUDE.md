@@ -1,6 +1,6 @@
-# GratisStatt – Projektbeschreibung für Claude Code
+# Moatly – Projektbeschreibung für Claude Code
 
-> Arbeitstitel "GratisStatt" (kann später geändert werden).
+> Name: "Moatly" (früherer Arbeitstitel: "GratisStatt").
 > Diese Datei beschreibt das ganze Projekt. Halte dich bei allen Aufgaben daran.
 
 ## Idee
@@ -12,7 +12,7 @@ Eine **Desktop-App für Windows (.exe)** mit einer **lokalen Datenbank von GitHu
 - Ein Klick auf ein Projekt **öffnet die GitHub-Seite im Browser**. Dort lädt man selbst herunter.
 - **Einmal pro Woche** lädt die App im Hintergrund ein **Update-Paket** herunter (neue und geänderte Projekte), das eine GitHub Action zentral erstellt. Die Datenbank wächst mit der Zeit. Gelöscht wird nichts, nur aktualisiert.
 - Man kann **manuell aktualisieren** und bei fehlenden Treffern **live auf GitHub suchen**. Gefundene Projekte werden lokal gespeichert.
-- **GratisStatt-Netzwerk (freiwillig, standardmässig aus):** Wer mitmacht, meldet sich mit GitHub an. Projekte, die er über die Live-Suche findet, kommen nach einer Prüfung ins nächste Update-Paket für **alle**. Der Admin (ich) sieht in einem Dashboard, wer aktiv mitmacht: nur GitHub-Username, App-Version, letzter aktiver Tag und Anzahl Beiträge.
+- **Moatly-Netzwerk (freiwillig, standardmässig aus):** Wer mitmacht, meldet sich mit GitHub an. Projekte, die er über die Live-Suche findet, kommen nach einer Prüfung ins nächste Update-Paket für **alle**. Der Admin (ich) sieht in einem Dashboard, wer aktiv mitmacht: nur GitHub-Username, App-Version, letzter aktiver Tag und Anzahl Beiträge.
 
 Zielgruppe: normale Leute, keine Entwickler. Alles muss in einfacher Sprache erklärt sein.
 
@@ -48,7 +48,7 @@ Zielgruppe: normale Leute, keine Entwickler. Alles muss in einfacher Sprache erk
 - Admin-Dashboard als statische Seite, ausgeliefert vom selben Worker unter `/admin`
 
 **Update-Pakete**
-- **GitHub Action** im öffentlichen Repo `gratisstatt-data`, läuft wöchentlich
+- **GitHub Action** im öffentlichen Repo `moatly-data`, läuft wöchentlich
 - Veröffentlicht die Pakete als **GitHub Release Assets**
 
 ### Code-Aufteilung
@@ -59,7 +59,7 @@ Zielgruppe: normale Leute, keine Entwickler. Alles muss in einfacher Sprache erk
 - `src/preload/`: kleines, typisiertes IPC-API
 - `src/renderer/`: Oberfläche (React)
 - `server/`: Cloudflare Worker, D1-Schema und Migrationen, Admin-Dashboard
-- `.github/workflows/weekly-delta.yml`: wöchentliches Update-Paket (läuft im Repo `gratisstatt-data`, Code kommt aus diesem Repo)
+- `.github/workflows/weekly-delta.yml`: wöchentliches Update-Paket (läuft im Repo `moatly-data`, Code kommt aus diesem Repo)
 
 ### Sicherheit (wichtig)
 
@@ -74,7 +74,7 @@ Zielgruppe: normale Leute, keine Entwickler. Alles muss in einfacher Sprache erk
 
 ## Datenbank (lokal in der App)
 
-Datei: `gratisstatt.db` im Ordner `app.getPath('userData')`.
+Datei: `moatly.db` im Ordner `app.getPath('userData')`.
 
 ### Schema
 
@@ -149,12 +149,12 @@ CREATE TABLE pending_submissions (     -- Live-Funde, die noch an den Server geh
 - Token aus `GITHUB_TOKEN` in `.env` (steht in `.gitignore`).
 - Läuft etwa 1 Stunde, zeigt den Fortschritt an, kann abgebrochen und fortgesetzt werden.
 - Am Ende: Anzahl Projekte, Dateigrösse, `VACUUM`, `meta.base_version` = Datum.
-- **Erster Start der App:** Gibt es noch keine `gratisstatt.db`, wird `base.db` aus den Ressourcen dorthin kopiert.
+- **Erster Start der App:** Gibt es noch keine `moatly.db`, wird `base.db` aus den Ressourcen dorthin kopiert.
 - **App-Update mit neuerer Basis:** Ist `base_version` der mitgelieferten Datei neuer, wird sie per `ATTACH` und Upsert eingemischt. Vorhandene Daten bleiben erhalten.
 
 ## Wöchentliches Update-Paket (für alle Nutzer)
 
-### Erstellen: GitHub Action im Repo `gratisstatt-data`
+### Erstellen: GitHub Action im Repo `moatly-data`
 1. Jeden Montag früh: Crawler mit "Updates" und "Neue Projekte" seit dem letzten Paket.
 2. **Netzwerk-Beiträge** abholen: geprüfte Repo-IDs vom Server (`GET /v1/admin/submissions?status=pending`, mit Admin-Secret). Jedes Repo **selbst bei GitHub prüfen**: existiert, öffentlich, kein Fork, mind. 20 Sterne. Ergebnis zurückmelden (`accepted` oder `rejected` mit Grund).
 3. Alles in **ein Paket** schreiben: kleine SQLite-Datei `delta-YYYY-MM-DD.db` mit derselben `repos`-Tabelle.
@@ -163,7 +163,7 @@ CREATE TABLE pending_submissions (     -- Live-Funde, die noch an den Server geh
 
 ### Einmischen: in der App (für alle, auch ohne Netzwerk)
 - Beim Start und danach stündlich prüfen, ob die letzte Prüfung älter als 7 Tage ist.
-- `manifest.json` laden über `https://github.com/<owner>/gratisstatt-data/releases/latest/download/manifest.json`. Das ist anonym, nur GitHub wird kontaktiert.
+- `manifest.json` laden über `https://github.com/<owner>/moatly-data/releases/latest/download/manifest.json`. Das ist anonym, nur GitHub wird kontaktiert.
 - Fehlende Pakete der Reihe nach laden, SHA-256 prüfen, per `ATTACH` und Upsert im Worker einmischen, in `meta.applied_deltas` eintragen.
 - Fehlen mehr als 12 Pakete: stattdessen die neueste Basis laden und einmischen.
 - Statusleiste unten: "Aktualisiere… 1'240 neu, 3'500 aktualisiert". Danach: "Datenbank: 104'213 Projekte · Stand 12.10.2026".
@@ -183,15 +183,15 @@ Button **"Jetzt aktualisieren"** in der Statusleiste und in den Einstellungen:
 - Alle Funde werden **lokal gespeichert** (`source = 'live'`) und erscheinen sofort mit Badge "Neu".
 - **Nur wenn das Netzwerk eingeschaltet ist:** Funde, die nicht schon aus Basis oder Paket stammen, kommen in `pending_submissions`. Sie werden gesammelt (max. 1× pro Stunde) als reine Repo-IDs an den Server geschickt.
 
-## GratisStatt-Netzwerk (freiwillig)
+## Moatly-Netzwerk (freiwillig)
 
 ### Dialog beim ersten Start
 Erscheint einmal, direkt nach dem ersten Start, als Fenster über der App. Er lässt sich nur mit einer der beiden Antworten schliessen. Text in einfacher Sprache, sinngemäss:
 
-> **Willkommen bei GratisStatt!**
+> **Willkommen bei Moatly!**
 > Die App funktioniert komplett ohne Anmeldung.
 >
-> Wenn du willst, kannst du beim **GratisStatt-Netzwerk** mitmachen. Projekte, die du über die Live-Suche findest, landen dann nach einer Prüfung beim nächsten Update bei allen Nutzern.
+> Wenn du willst, kannst du beim **Moatly-Netzwerk** mitmachen. Projekte, die du über die Live-Suche findest, landen dann nach einer Prüfung beim nächsten Update bei allen Nutzern.
 >
 > **Gespeichert wird:** dein GitHub-Benutzername, die App-Version, an welchem Tag du die App zuletzt benutzt hast und wie viele Projekte du beigetragen hast.
 > **Nicht gespeichert wird:** E-Mail, IP-Adresse, Suchbegriffe, Dateien auf deinem Computer.
@@ -210,11 +210,17 @@ Erscheint einmal, direkt nach dem ersten Start, als Fenster über der App. Er l�
 - Danach `POST /v1/register` mit dem GitHub-Token. Der Server prüft ihn einmal über `GET https://api.github.com/user`, speichert GitHub-ID und Username und gibt ein **eigenes Session-Token** zurück. Den GitHub-Token speichert der Server **nicht**.
 - Der GitHub-Token bleibt lokal (safeStorage) und wird für Suchen bei GitHub benutzt (30 statt 10 Suchen pro Minute).
 
+### Mit GitHub anmelden (auch ohne Netzwerk)
+- Knopf **"Anmelden"** oben rechts und Abschnitt **"GitHub-Konto"** in den Einstellungen. Gleicher Device Flow wie unten, braucht nur die OAuth Client-ID, keinen Server.
+- Der Token (ohne Scopes) bleibt verschlüsselt lokal (safeStorage) und wird nur für Suchen bei GitHub benutzt (30 statt 10 pro Minute). An den eigenen Server geht dabei nichts.
+- "Mitmachen" nutzt diese Anmeldung (kein zweiter Code). Netzwerk verlassen löscht die Server-Session, die GitHub-Anmeldung bleibt bis "Abmelden". Abmelden geht erst nach dem Verlassen des Netzwerks.
+- Ohne Client-ID bleibt das Feld für einen eigenen GitHub-Token (Personal Access Token) in den Einstellungen.
+
 ### Einstellungen → "Netzwerk"
 - Status: "Nicht dabei" oder "Dabei als @username seit 12.10.2026 · 37 Beiträge"
 - Schalter **Mitmachen an/aus**:
   - **Einschalten:** zeigt denselben Erklärtext wie beim ersten Start, dann die Anmeldung.
-  - **Ausschalten:** Dialog "Netzwerk verlassen? Deine Daten auf dem Server werden gelöscht." mit [Verlassen und Daten löschen] [Abbrechen]. Ruft `DELETE /v1/me` auf, löscht Session-Token und GitHub-Token lokal, leert `pending_submissions`.
+  - **Ausschalten:** Dialog "Netzwerk verlassen? Deine Daten auf dem Server werden gelöscht." mit [Verlassen und Daten löschen] [Abbrechen]. Ruft `DELETE /v1/me` auf, löscht das Session-Token lokal, leert `pending_submissions` (die GitHub-Anmeldung bleibt).
 - Button **"Meine gespeicherten Daten anzeigen"** (`GET /v1/me`): zeigt genau, was der Server über mich weiss.
 - Link zur Datenschutzerklärung.
 
@@ -347,7 +353,7 @@ Kuratierte Produkte der Kategorie, darunter die Top-Projekte der Kategorie nach 
 
 ### Über
 Version, Basis-Version, Datenstand, Haftungshinweis, Link "Alternative vorschlagen" (öffnet ein neues GitHub Issue im Projekt-Repo, im Browser).
-Abschnitt "GratisStatt unterstützen" mit Link zu **GitHub Sponsors** (`https://github.com/sponsors/tmluc-cool`), dazu ein Kaffee-Symbol unten rechts in der Statusleiste (Tooltip "Spendier mir einen Kaffee"). Freiwillig und zurückhaltend: keine Pop-ups, keine Erinnerungen, die App funktioniert ohne genau gleich. `.github/FUNDING.yml` zeigt den Sponsor-Knopf im Repo.
+Abschnitt "Moatly unterstützen" mit Link zu **GitHub Sponsors** (`https://github.com/sponsors/tmluc-cool`), dazu ein Kaffee-Symbol unten rechts in der Statusleiste (Tooltip "Spendier mir einen Kaffee"). Freiwillig und zurückhaltend: keine Pop-ups, keine Erinnerungen, die App funktioniert ohne genau gleich. `.github/FUNDING.yml` zeigt den Sponsor-Knopf im Repo.
 
 ## Build und Deploy
 
@@ -356,8 +362,9 @@ Abschnitt "GratisStatt unterstützen" mit Link zu **GitHub Sponsors** (`https://
 - `npm run validate`: prüft die kuratierte Liste gegen `base.db`
 - `npm run dist`: prüft, dass `resources/base.db` existiert, führt `validate` aus und baut mit electron-builder. `base.db` wird als `extraResources` mitgeliefert. Ergebnis im Ordner `release/`: Installer-.exe und portable .exe.
 - `npm run server:dev` / `npm run server:deploy`: Worker lokal bzw. auf Cloudflare
+- `.github/workflows/deploy-server.yml` («Set up sign-in and server»): nur mit der OAuth Client-ID schaltet sie «Mit GitHub anmelden» ein; mit den Secrets `CLOUDFLARE_API_TOKEN` und `CLOUDFLARE_ACCOUNT_ID` richtet sie zusätzlich den Server ein. Trägt Client-ID und Server-URL in `src/main/config.ts` ein und startet den Windows-Build
 - Konfiguration in `src/main/config.ts`: Server-URL, OAuth Client-ID, Name des Daten-Repos. Keine Secrets in der App.
-- App-Name "GratisStatt", eigenes einfaches Icon (selbst gezeichnet als SVG, in .ico umgewandelt)
+- App-Name "Moatly", eigenes einfaches Icon (selbst gezeichnet als SVG, in .ico umgewandelt)
 - Fenster: min. 900×600, merkt sich Grösse und Position
 - Grössenordnung: 100'000 Projekte ≈ 50–80 MB Datenbank inkl. Volltextindex, ein Wochenpaket wenige MB
 

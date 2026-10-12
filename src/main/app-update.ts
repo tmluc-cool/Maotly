@@ -24,7 +24,7 @@ export function compareVersions(a: string, b: string): number {
 export async function checkAppUpdate(fetchFn: typeof fetch, releasesApiUrl: string, current: string): Promise<AppUpdateInfo | null> {
   try {
     const res = await fetchFn(releasesApiUrl, {
-      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'GratisStatt' },
+      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'Moatly' },
     });
     if (!res.ok) return null;
     const rel = (await res.json()) as { tag_name?: string; html_url?: string; draft?: boolean; prerelease?: boolean };

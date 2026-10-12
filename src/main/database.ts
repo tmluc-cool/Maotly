@@ -43,11 +43,11 @@ export class AppDatabase {
   ) {}
 
   /**
-   * Opens gratisstatt.db. On the very first start the bundled base.db is copied.
+   * Opens moatly.db. On the very first start the bundled base.db is copied.
    * Before each schema migration a backup copy is made.
    */
   static open(userDataDir: string, bundledBase: string): OpenResult {
-    const path = join(userDataDir, 'gratisstatt.db');
+    const path = join(userDataDir, 'moatly.db');
     const firstStart = !existsSync(path);
     if (firstStart && existsSync(bundledBase)) copyFileSync(bundledBase, path);
 
@@ -55,7 +55,7 @@ export class AppDatabase {
     configure(db);
     migrate(db, (fromVersion) => {
       db.pragma('wal_checkpoint(TRUNCATE)');
-      copyFileSync(path, join(userDataDir, `gratisstatt.backup-v${fromVersion}-${Date.now()}.db`));
+      copyFileSync(path, join(userDataDir, `moatly.backup-v${fromVersion}-${Date.now()}.db`));
     });
     registerFunctions(db);
 
