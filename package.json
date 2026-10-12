@@ -2,7 +2,7 @@
   "name": "gratisstatt",
   "productName": "GratisStatt",
   "version": "0.1.0",
-  "description": "Kostenlose Open-Source-Alternativen zu bezahlter Software finden.",
+  "description": "Find free open-source alternatives to paid software.",
   "author": "GratisStatt",
   "license": "MIT",
   "private": true,

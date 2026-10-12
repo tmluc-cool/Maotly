@@ -68,7 +68,7 @@ jobs:
           mkdir -p prev out
           gh release download --repo "$GITHUB_REPOSITORY" --pattern manifest.json --dir prev || echo "No previous release yet."
 
-      - name: Build base database (monthly, ~1 hour)
+      - name: Build base database (monthly, ~2 hours)
         if: steps.plan.outputs.base == '1'
         working-directory: app
         env:
@@ -93,8 +93,8 @@ jobs:
           DATE="${{ steps.plan.outputs.date }}"
           gh release create "delta-$DATE" out/* \
             --repo "$GITHUB_REPOSITORY" \
-            --title "Update-Paket $DATE" \
-            --notes "Wöchentliches Update-Paket für GratisStatt. Prüfsummen stehen in manifest.json." \
+            --title "Update package $DATE" \
+            --notes "Weekly update package for GratisStatt. Checksums are in manifest.json." \
             --latest
 
       - name: Remove old review copies

@@ -1,6 +1,6 @@
 # GratisStatt
 
-Desktop app for Windows with a **local database of GitHub projects** (about 100,000). You type in what you are
+Desktop app for Windows with a **local database of GitHub projects** (about 230,000). You type in what you are
 paying for – the curated free alternatives appear at the top, and below them all matching projects from the database.
 Everything can be searched offline. One click opens the project on GitHub.
 
@@ -23,8 +23,8 @@ The ready-to-use Windows program is available under **[Releases](https://github.
 Windows shows a warning on the first start because the program is not signed: "More info" → "Run anyway".
 
 It is built automatically by the GitHub Action `.github/workflows/build-windows.yml` on every push to `main`
-(or manually under *Actions → Windows-Programm bauen → Run workflow*). The database is crawled again once a week
-(about 1 hour); otherwise it is taken from the cache.
+(or manually under *Actions → Build Windows app → Run workflow*). The database is crawled again once a week
+(about 2 hours); otherwise it is taken from the cache. The download is about 175 MB, mostly the database.
 
 ## Support
 
@@ -37,7 +37,7 @@ Completely voluntary.
 ```bash
 npm install
 npm run fetch-base          # download the latest base database (once gratisstatt-data has releases)
-# or: npm run build-base-db  (crawl it yourself, about 1 hour with a token in .env)
+# or: npm run build-base-db  (crawl it yourself, about 2 hours with a token in .env)
 npm run dev
 npm test                    # crawler, database, search (<100 ms with 100,000 projects), packages, network, server
 npm run typecheck
