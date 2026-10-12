@@ -7,3 +7,5 @@ dist/
 *.log
 .DS_Store
 !.env.example
+resources/*.db
+resources/*.db-*

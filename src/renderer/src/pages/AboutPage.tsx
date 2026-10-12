@@ -1,12 +1,12 @@
-import { formatDate } from '../lib/format';
+import { formatCount, formatDate } from '../lib/format';
+import { href } from '../lib/router';
 import { useApp } from '../state';
 
 export function AboutPage() {
-  const { info, snapshotDate, newestFetch } = useApp();
+  const { info, stats } = useApp();
 
   const suggest = () => {
     if (!info) return;
-    const title = 'Alternative vorschlagen: ';
     const body = [
       '**Für welches bezahlte Produkt?**',
       '',
@@ -18,39 +18,45 @@ export function AboutPage() {
       '',
     ].join('\n');
     void window.api.openExternal(
-      `${info.projectRepoUrl}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`,
+      `${info.projectRepoUrl}/issues/new?title=${encodeURIComponent('Alternative vorschlagen: ')}&body=${encodeURIComponent(body)}`,
     );
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 px-6 pb-16 pt-8">
+    <div className="mx-auto max-w-3xl space-y-6 px-6 pb-20 pt-8">
       <h1 className="text-3xl font-extrabold tracking-tight">Über GratisStatt</h1>
-
       <section className="card space-y-3">
         <p>
-          GratisStatt zeigt dir kostenlose Open-Source-Programme von GitHub, die bezahlte Software ersetzen können. Alles
-          läuft lokal auf deinem Computer – ohne Konto, ohne Werbung und ohne Tracking. Die App spricht nur mit GitHub.
+          GratisStatt zeigt dir kostenlose Open-Source-Projekte von GitHub, die bezahlte Software ersetzen können. Die
+          Datenbank liegt auf deinem Computer – du kannst alles offline durchsuchen. Ohne Konto, ohne Werbung, ohne Tracking.
         </p>
         <dl className="grid grid-cols-[auto,1fr] gap-x-6 gap-y-1 text-sm">
           <dt className="text-slate-500 dark:text-slate-400">Version</dt>
           <dd>{info?.version ?? '…'}</dd>
+          <dt className="text-slate-500 dark:text-slate-400">Basis-Version</dt>
+          <dd>{formatDate(stats?.baseVersion)}</dd>
           <dt className="text-slate-500 dark:text-slate-400">Datenstand</dt>
           <dd>
-            {formatDate(snapshotDate)}
-            {newestFetch && <> (teilweise live aktualisiert am {formatDate(newestFetch)})</>}
+            {formatDate(stats?.dataDate)}
+            {stats && <> · {formatCount(stats.count)} Projekte</>}
           </dd>
         </dl>
-        <button type="button" className="btn-primary" onClick={suggest}>
-          Alternative vorschlagen
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" className="btn-primary" onClick={suggest}>
+            Alternative vorschlagen
+          </button>
+          <a className="btn-secondary" href={href.privacy()}>
+            Datenschutzerklärung
+          </a>
+        </div>
       </section>
-
       <section className="card space-y-2 text-sm text-slate-700 dark:text-slate-300">
         <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Haftungshinweis</h2>
         <p>
-          Die Angaben werden sorgfältig gepflegt, aber ohne Gewähr. Ob eine Alternative für dich passt, musst du selbst
-          prüfen. Programme werden direkt von GitHub heruntergeladen und nie automatisch gestartet. Für Inhalt und
-          Sicherheit der Programme sind deren Entwicklerinnen und Entwickler verantwortlich.
+          Die Angaben werden sorgfältig gepflegt, aber ohne Gewähr. Ob ein Projekt für dich passt, musst du selbst prüfen.
+          Programme lädst du direkt bei GitHub oder auf der offiziellen Website herunter. Für Inhalt und Sicherheit der
+          Programme sind deren Entwicklerinnen und Entwickler verantwortlich. Projekte ausserhalb der kuratierten Liste sind
+          nicht von uns geprüft.
         </p>
         <p className="font-medium">Keine Verbindung zu den genannten Firmen. Produktnamen gehören den jeweiligen Inhabern.</p>
       </section>

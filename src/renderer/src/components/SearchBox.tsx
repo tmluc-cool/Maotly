@@ -7,21 +7,24 @@ interface Props {
   size?: 'large' | 'small';
   autoFocus?: boolean;
   initialValue?: string;
+  /** Keep the text after searching (search page). */
+  keepText?: boolean;
 }
 
-export function SearchBox({ size = 'large', autoFocus = false, initialValue = '' }: Props) {
+export function SearchBox({ size = 'large', autoFocus = false, initialValue = '', keepText = false }: Props) {
   const [query, setQuery] = useState(initialValue);
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(0);
+  // -1 = nothing selected: Enter starts the full-text search.
+  const [active, setActive] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const listId = useId();
 
   const results = useMemo(() => productSearch.search(query, 8), [query]);
   const trimmed = query.trim();
-  // Last option: live search on GitHub.
+  // Last option: full-text search over all projects.
   const optionCount = results.length + (trimmed.length >= 2 ? 1 : 0);
 
-  useEffect(() => setActive(0), [query]);
+  useEffect(() => setActive(-1), [query]);
   useEffect(() => {
     if (autoFocus) inputRef.current?.focus();
   }, [autoFocus]);
@@ -29,9 +32,10 @@ export function SearchBox({ size = 'large', autoFocus = false, initialValue = ''
   const choose = (index: number) => {
     setOpen(false);
     if (index < results.length) {
-      setQuery('');
+      if (!keepText) setQuery('');
       navigate(href.product(results[index].id));
-    } else if (trimmed.length >= 2) {
+    } else if (trimmed.length >= 1) {
+      if (!keepText) setQuery('');
       navigate(href.search(trimmed));
     }
     inputRef.current?.blur();
@@ -41,14 +45,15 @@ export function SearchBox({ size = 'large', autoFocus = false, initialValue = ''
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setOpen(true);
-      setActive((a) => (optionCount ? (a + 1) % optionCount : 0));
+      setActive((a) => (optionCount ? (a + 1) % optionCount : -1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setOpen(true);
-      setActive((a) => (optionCount ? (a - 1 + optionCount) % optionCount : 0));
+      setActive((a) => (optionCount ? (a <= 0 ? optionCount - 1 : a - 1) : -1));
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (optionCount > 0) choose(open ? active : 0);
+      if (open && active >= 0) choose(active);
+      else if (trimmed) choose(results.length);
     } else if (e.key === 'Escape') {
       setOpen(false);
     }
@@ -73,7 +78,7 @@ export function SearchBox({ size = 'large', autoFocus = false, initialValue = ''
           aria-expanded={showList}
           aria-controls={listId}
           aria-autocomplete="list"
-          aria-activedescendant={showList && optionCount ? `${listId}-${active}` : undefined}
+          aria-activedescendant={showList && active >= 0 ? `${listId}-${active}` : undefined}
           aria-label="Wofür zahlst du gerade?"
           placeholder={large ? 'Wofür zahlst du gerade?' : 'Suchen …  (Ctrl+K)'}
           value={query}
@@ -131,8 +136,8 @@ export function SearchBox({ size = 'large', autoFocus = false, initialValue = ''
               active === results.length ? 'bg-brand-50 dark:bg-brand-900/40' : ''
             }`}
           >
-            {results.length === 0 ? 'Kein Treffer – ' : 'Nicht dabei? '}
-            <span className="font-medium text-brand-700 dark:text-brand-300">Live auf GitHub suchen nach „{trimmed}“</span>
+            <span className="font-medium text-brand-700 dark:text-brand-300">Alle Projekte durchsuchen nach „{trimmed}“</span>
+            <span className="ml-2 text-xs text-slate-400">Enter</span>
           </li>
         </ul>
       )}

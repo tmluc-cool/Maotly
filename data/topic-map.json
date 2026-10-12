@@ -1,0 +1,24 @@
+{
+  "categories": {
+    "buero-pdf": ["pdf", "office", "office-suite", "spreadsheet", "word-processor", "document", "documents", "docx", "xlsx", "presentation", "e-signature", "diagram", "diagrams", "grammar", "spellcheck", "translation", "translate", "ocr", "markdown-editor"],
+    "kreativ-design": ["image-editor", "photo-editor", "photography", "raw", "drawing", "painting", "illustration", "vector-graphics", "graphic-design", "svg", "video-editor", "video-editing", "audio", "audio-editor", "music", "daw", "music-production", "animation", "screenshot", "screen-recorder", "screen-capture", "stable-diffusion", "image-generation", "figma", "prototyping"],
+    "notizen-organisation": ["notes", "note-taking", "notion-alternative", "knowledge-base", "wiki", "todo", "todolist", "task-manager", "task-management", "kanban", "project-management", "productivity", "calendar", "scheduling", "forms", "survey", "automation", "workflow-automation", "rss", "rss-reader", "read-it-later", "bookmarks", "pkm"],
+    "speicher-medien": ["cloud-storage", "file-sharing", "file-sync", "synchronization", "backup", "photos", "photo-gallery", "google-photos-alternative", "media-server", "music-server", "streaming", "video", "jellyfin", "plex", "nas", "storage"],
+    "sicherheit-netzwerk": ["security", "password-manager", "passwords", "encryption", "vpn", "wireguard", "firewall", "antivirus", "privacy", "remote-desktop", "2fa", "authentication", "adblock", "dns", "network"],
+    "kommunikation": ["chat", "messaging", "messenger", "video-conferencing", "videoconferencing", "webrtc", "email", "email-client", "newsletter", "mailing-list", "social-media", "voip", "slack-alternative", "matrix"],
+    "ki-entwicklung": ["ai", "llm", "llms", "chatgpt", "machine-learning", "deep-learning", "speech-recognition", "speech-to-text", "whisper", "transcription", "api-client", "api-testing", "ide", "code-editor", "developer-tools", "devops", "paas", "coding-assistant", "local-llm", "ollama"],
+    "business-finanzen": ["accounting", "invoice", "invoicing", "invoices", "finance", "personal-finance", "budget", "budgeting", "crm", "erp", "ecommerce", "e-commerce", "shop", "cms", "blog", "website-builder", "hr", "pos"],
+    "lernen-fitness": ["education", "learning", "flashcards", "spaced-repetition", "e-learning", "lms", "language-learning", "fitness", "workout", "sports", "health", "running", "cycling"],
+    "gaming-pc-tools": ["game", "games", "gaming", "emulator", "game-streaming", "steam", "launcher", "cleaner", "system-cleaner", "archiver", "compression", "zip", "windows-tweaks", "debloat", "utility", "system-monitor", "file-manager"],
+    "cad-3d-gis": ["cad", "3d", "3d-modeling", "3d-printing", "blender", "modeling", "gis", "maps", "mapping", "geospatial", "openstreetmap", "cam", "bim", "rendering"]
+  },
+  "platforms": {
+    "windows": ["windows", "windows-10", "windows-11", "win32", "winforms", "wpf"],
+    "mac": ["macos", "mac", "osx", "macos-app"],
+    "linux": ["linux", "gnome", "kde", "gtk", "flatpak", "appimage"],
+    "android": ["android", "android-app"],
+    "ios": ["ios", "ios-app", "iphone", "ipad"],
+    "web": ["web", "webapp", "web-app", "pwa", "browser-extension", "chrome-extension", "firefox-extension"],
+    "server": ["self-hosted", "selfhosted", "docker", "docker-compose", "self-hosting", "homelab", "kubernetes"]
+  }
+}

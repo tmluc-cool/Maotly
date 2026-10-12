@@ -1,8 +1,18 @@
+import { useEffect, useState } from 'react';
+import type { RepoResult } from '@shared/types';
+import { RepoCard } from '../components/RepoCard';
 import { SearchBox } from '../components/SearchBox';
 import { data, POPULAR_IDS, POPULAR_LABELS, productsInCategory } from '../lib/data';
 import { href } from '../lib/router';
+import { useApp } from '../state';
 
 export function HomePage() {
+  const { dataVersion } = useApp();
+  const [newest, setNewest] = useState<RepoResult[]>([]);
+  useEffect(() => {
+    void window.api.newlyDiscovered().then(setNewest);
+  }, [dataVersion]);
+
   return (
     <div className="mx-auto max-w-4xl px-6 pb-16 pt-12">
       <section className="text-center">
@@ -10,7 +20,7 @@ export function HomePage() {
           Gratis statt <span className="text-brand-600 dark:text-brand-400">teuer</span>
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
-          Gib ein, für welche Software du bezahlst. Wir zeigen dir kostenlose Open-Source-Alternativen von GitHub.
+          Gib ein, wofür du bezahlst. Wir zeigen dir kostenlose Open-Source-Projekte von GitHub – auch offline.
         </p>
         <div className="mx-auto mt-8 max-w-2xl text-left">
           <SearchBox size="large" autoFocus />
@@ -38,7 +48,7 @@ export function HomePage() {
                 >
                   <span className="block font-semibold">{c.name}</span>
                   <span className="text-sm text-slate-500 dark:text-slate-400">
-                    {count} {count === 1 ? 'Produkt' : 'Produkte'}
+                    {count} {count === 1 ? 'Produkt' : 'Produkte'} mit Gratis-Alternativen
                   </span>
                 </a>
               </li>
@@ -46,6 +56,18 @@ export function HomePage() {
           })}
         </ul>
       </section>
+
+      {newest.length > 0 && (
+        <section className="mt-14">
+          <h2 className="mb-1 text-xl font-bold">Neu entdeckt</h2>
+          <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">Die neuesten Projekte aus dem letzten Update.</p>
+          <div className="space-y-2.5">
+            {newest.map((r) => (
+              <RepoCard key={r.id} repo={r} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

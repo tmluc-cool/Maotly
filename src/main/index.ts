@@ -1,36 +1,38 @@
 import { app, BrowserWindow, ipcMain, nativeTheme, net, screen, session, shell } from 'electron';
 import { join } from 'node:path';
-import snapshotJson from '../../data/repo-stats.snapshot.json';
 import icon from '../../build/icon.png?asset';
+import alternatives from '../../data/alternatives.json';
 import { IPC } from '../shared/ipc';
-import type { Snapshot, ThemeSetting } from '../shared/types';
-import { pickWindowsAsset } from '../shared/assets';
-import { GitHubService } from './github';
-import { downloadedPath, isAllowedDownloadUrl, startDownload } from './downloads';
+import type { AlternativesData, SearchParams, SettingsState, ThemeSetting } from '../shared/types';
+import { GitHubClient } from '../shared/crawler/client';
+import { config } from './config';
+import { AppDatabase } from './database';
+import { liveSearch } from './live-search';
+import { Network } from './network';
 import {
-  clearToken,
-  getToken,
+  clearSecret,
+  encryptionAvailable,
+  getSecret,
   loadSettings,
   loadWindowState,
-  readText,
+  networkSecrets,
   saveSettings,
   saveWindowState,
-  setToken,
-  tokenEncryptionAvailable,
-  writeText,
+  setSecret,
+  type Settings,
   type WindowState,
 } from './store';
+import { Updater } from './updater';
 
-const PROJECT_REPO_URL = 'https://github.com/tmluc-cool/githuub-appstore';
-const CACHE_FILE = 'repo-cache.json';
 const MIN_WIDTH = 900;
 const MIN_HEIGHT = 600;
-
-const isDev = !app.isPackaged && !!process.env.ELECTRON_RENDERER_URL;
+const isDev = !app.isPackaged;
 
 let mainWindow: BrowserWindow | null = null;
-let github: GitHubService;
-let settings = { theme: 'system' as ThemeSetting };
+let settings: Settings = { theme: 'system', autoUpdate: true };
+let database: AppDatabase;
+let updater: Updater;
+let network: Network;
 
 const PROD_CSP = [
   "default-src 'none'",
@@ -44,16 +46,32 @@ const PROD_CSP = [
   "frame-ancestors 'none'",
 ].join('; ');
 
-function isHttpsUrl(url: unknown): url is string {
+/** Only https://github.com/… and the website URLs of the curated list may be opened. */
+const curatedWebsites = new Set(
+  (alternatives as AlternativesData).products.flatMap((p) => p.alternatives.map((a) => a.website).filter((w): w is string => !!w)),
+);
+
+export function isAllowedExternal(url: unknown): url is string {
   if (typeof url !== 'string') return false;
   try {
-    return new URL(url).protocol === 'https:';
+    const u = new URL(url);
+    if (u.protocol !== 'https:') return false;
+    if (u.hostname === 'github.com') return true;
+    return curatedWebsites.has(url);
   } catch {
     return false;
   }
 }
 
-/** Puts the window back where it was, but only if that spot is still on a screen. */
+/** GitHub token for searches: network login, else own token, else none. */
+function githubToken(): string | null {
+  return network.githubToken() ?? getSecret('own-github');
+}
+
+function send(channel: string, value?: unknown) {
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send(channel, value);
+}
+
 function restoreBounds(state: WindowState): WindowState {
   const width = Math.max(MIN_WIDTH, state.width || 1200);
   const height = Math.max(MIN_HEIGHT, state.height || 800);
@@ -66,7 +84,6 @@ function restoreBounds(state: WindowState): WindowState {
 
 function createWindow() {
   const state = restoreBounds(loadWindowState());
-
   mainWindow = new BrowserWindow({
     width: state.width,
     height: state.height,
@@ -77,7 +94,7 @@ function createWindow() {
     show: false,
     title: 'GratisStatt',
     autoHideMenuBar: true,
-    backgroundColor: nativeTheme.shouldUseDarkColors ? '#0f172a' : '#f8fafc',
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#020617' : '#f8fafc',
     icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -91,18 +108,15 @@ function createWindow() {
 
   if (state.maximized) mainWindow.maximize();
   mainWindow.once('ready-to-show', () => mainWindow?.show());
-
-  const saveState = () => {
+  mainWindow.on('close', () => {
     if (!mainWindow || mainWindow.isDestroyed()) return;
     const maximized = mainWindow.isMaximized();
     const b = maximized ? mainWindow.getNormalBounds() : mainWindow.getBounds();
     saveWindowState({ width: b.width, height: b.height, x: b.x, y: b.y, maximized });
-  };
-  mainWindow.on('close', saveState);
+  });
 
-  // No new windows, no navigation away from the app. https links open in the browser.
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (isHttpsUrl(url)) void shell.openExternal(url);
+    if (isAllowedExternal(url)) void shell.openExternal(url);
     return { action: 'deny' };
   });
   mainWindow.webContents.on('will-navigate', (event, url) => {
@@ -110,129 +124,162 @@ function createWindow() {
     if (url.split('#')[0] !== current.split('#')[0]) event.preventDefault();
   });
 
-  if (isDev) {
-    void mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL!);
-  } else {
-    void mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
-  }
+  if (isDev && process.env.ELECTRON_RENDERER_URL) void mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
+  else void mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
 }
 
-function applyTheme(theme: ThemeSetting) {
-  nativeTheme.themeSource = theme;
+function settingsState(): SettingsState {
+  return {
+    theme: settings.theme,
+    autoUpdate: settings.autoUpdate,
+    hasOwnToken: !!getSecret('own-github'),
+    encryptionAvailable: encryptionAvailable(),
+  };
+}
+
+function sanitizeSearch(p: unknown): SearchParams {
+  const o = (p && typeof p === 'object' ? p : {}) as Record<string, unknown>;
+  const str = (v: unknown) => (typeof v === 'string' ? v.slice(0, 200) : undefined);
+  const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
+  return {
+    q: str(o.q) ?? '',
+    anyOf: Array.isArray(o.anyOf) ? o.anyOf.filter((x): x is string => typeof x === 'string').slice(0, 20).map((x) => x.slice(0, 60)) : undefined,
+    excludeIds: Array.isArray(o.excludeIds) ? o.excludeIds.filter((x): x is number => Number.isInteger(x)).slice(0, 100) : undefined,
+    category: str(o.category) ?? null,
+    platform: (str(o.platform) as SearchParams['platform']) ?? null,
+    minStars: num(o.minStars),
+    updatedWithin: str(o.updatedWithin) as SearchParams['updatedWithin'],
+    licensed: o.licensed === true,
+    activeOnly: o.activeOnly === true,
+    sort: str(o.sort) as SearchParams['sort'],
+    offset: num(o.offset),
+    limit: num(o.limit),
+  };
 }
 
 function registerIpc() {
-  ipcMain.handle(IPC.statsGetAll, () => github.getState());
+  ipcMain.handle(IPC.search, (_e, p) => database.search(sanitizeSearch(p)));
+  ipcMain.handle(IPC.curated, (_e, repos: unknown) =>
+    database.curated(Array.isArray(repos) ? repos.filter((r): r is string => typeof r === 'string').slice(0, 50) : []),
+  );
+  ipcMain.handle(IPC.newly, () => database.newlyDiscovered(12));
+  ipcMain.handle(IPC.stats, () => database.stats());
+  ipcMain.handle(IPC.vacuum, () => updater.vacuum());
 
-  ipcMain.handle(IPC.statsRefresh, (_e, repos: unknown) => {
-    const known = github.getState().repos;
-    const list = Array.isArray(repos) ? repos.filter((r): r is string => typeof r === 'string' && r in known).slice(0, 20) : [];
-    return github.refresh(list);
+  ipcMain.handle(IPC.liveSearch, async (_e, term: unknown) => {
+    const res = await liveSearch(database, typeof term === 'string' ? term : '', {
+      token: githubToken(),
+      networkOn: network.isMember(),
+      fetch: (input, init) => net.fetch(input as string, init),
+    });
+    if (res.ok) void network.flushSubmissions();
+    return res;
   });
 
-  ipcMain.handle(IPC.statsRefreshAll, () => github.refreshAll());
-  ipcMain.handle(IPC.cacheClear, () => github.clearCache());
+  ipcMain.handle(IPC.updateStatus, () => updater.status);
+  ipcMain.handle(IPC.updateNow, () => updater.manualUpdate());
+  ipcMain.handle(IPC.updatePause, () => updater.pause(true));
 
-  ipcMain.handle(IPC.searchLive, (_e, term: unknown) => github.searchLive(typeof term === 'string' ? term : ''));
-
-  ipcMain.handle(IPC.settingsGet, async () => {
-    await github.updateRateLimits();
-    const limits = github.getRateLimits();
-    return {
-      hasToken: !!getToken(),
-      tokenEncryptionAvailable: tokenEncryptionAvailable(),
-      theme: settings.theme,
-      rateLimit: limits.core,
-      searchRateLimit: limits.search,
-    };
-  });
-
-  ipcMain.handle(IPC.tokenSet, async (_e, token: unknown) => {
-    const value = typeof token === 'string' ? token.trim() : '';
-    if (!/^[A-Za-z0-9_]{20,255}$/.test(value)) {
-      return { ok: false, message: 'Das sieht nicht wie ein GitHub-Token aus.' };
-    }
-    if (!tokenEncryptionAvailable()) {
-      return { ok: false, message: 'Dein System kann den Token nicht sicher speichern.' };
-    }
-    const check = await github.checkToken(value);
-    if (!check.ok) return check;
-    setToken(value);
-    await github.updateRateLimits();
-    return { ok: true };
-  });
-
-  ipcMain.handle(IPC.tokenClear, async () => {
-    clearToken();
-    await github.updateRateLimits();
-    const limits = github.getRateLimits();
-    return {
-      hasToken: false,
-      tokenEncryptionAvailable: tokenEncryptionAvailable(),
-      theme: settings.theme,
-      rateLimit: limits.core,
-      searchRateLimit: limits.search,
-    };
-  });
-
+  ipcMain.handle(IPC.settingsGet, () => settingsState());
   ipcMain.handle(IPC.themeSet, (_e, theme: unknown) => {
     if (theme !== 'system' && theme !== 'light' && theme !== 'dark') return;
     settings = { ...settings, theme };
     saveSettings(settings);
-    applyTheme(theme);
+    nativeTheme.themeSource = theme;
   });
+  ipcMain.handle(IPC.autoUpdateSet, (_e, on: unknown) => {
+    settings = { ...settings, autoUpdate: on === true };
+    saveSettings(settings);
+    if (settings.autoUpdate) updater.checkSchedule();
+  });
+  ipcMain.handle(IPC.tokenSet, async (_e, token: unknown) => {
+    const value = typeof token === 'string' ? token.trim() : '';
+    if (!/^[A-Za-z0-9_]{20,255}$/.test(value)) return { ok: false, message: 'Das sieht nicht wie ein GitHub-Token aus.' };
+    if (!encryptionAvailable()) return { ok: false, message: 'Dein System kann den Token nicht sicher speichern.' };
+    try {
+      const client = new GitHubClient({ token: value, maxRetries: 0, fetch: (i, init) => net.fetch(i as string, init) });
+      await client.getRepo('octocat/Hello-World');
+    } catch (err) {
+      const status = (err as { status?: number }).status;
+      return { ok: false, message: status === 401 ? 'Der Token ist ungültig oder abgelaufen.' : 'GitHub ist gerade nicht erreichbar.' };
+    }
+    setSecret('own-github', value);
+    return { ok: true };
+  });
+  ipcMain.handle(IPC.tokenClear, () => {
+    clearSecret('own-github');
+    return settingsState();
+  });
+
+  ipcMain.handle(IPC.networkGet, () => network.state());
+  ipcMain.handle(IPC.networkAsk, () => network.showConsentAgain());
+  ipcMain.handle(IPC.networkDecline, () => network.decline());
+  ipcMain.handle(IPC.networkJoin, () => void network.join());
+  ipcMain.handle(IPC.networkCancelJoin, () => network.cancelJoin());
+  ipcMain.handle(IPC.networkLeave, () => network.leave());
+  ipcMain.handle(IPC.networkMyData, () => network.myData());
 
   ipcMain.handle(IPC.appInfo, () => ({
     version: app.getVersion(),
     platform: process.platform,
-    projectRepoUrl: PROJECT_REPO_URL,
+    projectRepoUrl: `https://github.com/${config.projectRepo}`,
+    isDev,
   }));
-
   ipcMain.handle(IPC.openExternal, async (_e, url: unknown) => {
-    if (isHttpsUrl(url)) await shell.openExternal(url);
+    if (isAllowedExternal(url)) await shell.openExternal(url);
   });
 
-  // The renderer only names repo + asset; the URL comes from our own data.
-  ipcMain.handle(IPC.downloadStart, (e, repo: unknown, assetName: unknown) => {
-    if (typeof repo !== 'string' || typeof assetName !== 'string') return { ok: false, message: 'Ungültige Anfrage.' };
-    const entry = github.getState().repos[repo];
-    const asset = entry?.stats.latestRelease?.assets.find((a) => a.name === assetName);
-    if (!asset || asset !== pickWindowsAsset(entry?.stats.latestRelease?.assets) || !isAllowedDownloadUrl(asset.url)) {
-      return { ok: false, message: 'Diese Datei ist nicht bekannt.' };
-    }
-    return { ok: true, id: startDownload(asset, e.sender) };
+  // Testing helpers, only in development.
+  ipcMain.handle(IPC.devResetCheck, () => {
+    if (isDev) updater.resetLastCheck();
   });
+  ipcMain.handle(IPC.devShowConsent, () => {
+    if (isDev) network.showConsentAgain();
+  });
+}
 
-  ipcMain.handle(IPC.downloadShow, (_e, id: unknown) => {
-    const path = typeof id === 'string' ? downloadedPath(id) : undefined;
-    if (path) shell.showItemInFolder(path);
-  });
+function bundledBasePath(): string {
+  return app.isPackaged ? join(process.resourcesPath, 'base.db') : join(app.getAppPath(), 'resources', 'base.db');
 }
 
 app.whenReady().then(() => {
   app.setAppUserModelId('ch.gratisstatt.app');
   settings = loadSettings();
-  applyTheme(settings.theme);
+  nativeTheme.themeSource = settings.theme;
 
-  github = new GitHubService({
+  const opened = AppDatabase.open(app.getPath('userData'), bundledBasePath());
+  database = opened.db;
+
+  network = new Network({
+    db: database,
+    secrets: networkSecrets,
     fetch: (input, init) => net.fetch(input as string, init),
-    snapshot: snapshotJson as Snapshot,
-    getToken,
-    readCache: () => readText(CACHE_FILE),
-    writeCache: (data) => writeText(CACHE_FILE, data),
-    userAgent: `GratisStatt/${app.getVersion()}`,
+    appVersion: app.getVersion(),
   });
+  network.on('state', (s) => send(IPC.networkEvent, s));
 
-  if (!isDev) {
+  updater = new Updater(database, { getToken: githubToken, autoUpdate: () => settings.autoUpdate });
+  updater.on('status', (s) => send(IPC.updateEvent, s));
+  updater.on('changed', () => send(IPC.dataChanged));
+  if (opened.baseToMerge) updater.mergeBase(opened.baseToMerge.file, opened.baseToMerge.version);
+
+  if (!isDev || !process.env.ELECTRON_RENDERER_URL) {
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
       callback({ responseHeaders: { ...details.responseHeaders, 'Content-Security-Policy': [PROD_CSP] } });
     });
   }
-  // The renderer never needs camera, microphone, notifications etc.
   session.defaultSession.setPermissionRequestHandler((_wc, _permission, callback) => callback(false));
 
   registerIpc();
   createWindow();
+  updater.start();
+
+  // Network: heartbeat once a day, submissions at most once an hour (only for members).
+  void network.heartbeat();
+  setInterval(() => {
+    void network.heartbeat();
+    void network.flushSubmissions();
+  }, 15 * 60 * 1000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -241,6 +288,18 @@ app.whenReady().then(() => {
 
 app.on('web-contents-created', (_e, contents) => {
   contents.on('will-attach-webview', (event) => event.preventDefault());
+});
+
+let quitting = false;
+app.on('before-quit', (event) => {
+  if (quitting || !updater) return;
+  // Pause a running manual update so it can continue after the next start.
+  event.preventDefault();
+  quitting = true;
+  void updater.stop().finally(() => {
+    database.close();
+    app.quit();
+  });
 });
 
 app.on('window-all-closed', () => {

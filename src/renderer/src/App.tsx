@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
 import { SearchBox } from './components/SearchBox';
-import { StatusBanner } from './components/StatusBanner';
+import { ConsentDialog } from './components/ConsentDialog';
+import { StatusBar } from './components/StatusBar';
 import { GearIcon, InfoIcon } from './components/icons';
 import { href, navigate, useRoute, type Route } from './lib/router';
 import { AboutPage } from './pages/AboutPage';
 import { CategoryPage } from './pages/CategoryPage';
 import { HomePage } from './pages/HomePage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { PrivacyPage } from './pages/PrivacyPage';
 import { ProductPage } from './pages/ProductPage';
 import { SearchPage } from './pages/SearchPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -25,13 +27,15 @@ function Page({ route }: { route: Route }) {
     case 'product':
       return <ProductPage id={route.id} />;
     case 'category':
-      return <CategoryPage id={route.id} />;
+      return <CategoryPage id={route.id} filters={route.filters} />;
     case 'search':
-      return <SearchPage query={route.query} />;
+      return <SearchPage q={route.q} filters={route.filters} />;
     case 'settings':
       return <SettingsPage />;
     case 'about':
       return <AboutPage />;
+    case 'privacy':
+      return <PrivacyPage />;
     default:
       return <NotFoundPage />;
   }
@@ -75,7 +79,6 @@ export function App() {
             GratisStatt
           </a>
           <div className="flex-1">{showHeaderSearch && <div className="max-w-sm">{ready && <SearchBox size="small" />}</div>}</div>
-          <StatusBanner />
           <nav className="flex shrink-0 gap-1">
             <a href={href.settings()} className={navLink(route.name === 'settings')}>
               <GearIcon /> Einstellungen
@@ -86,7 +89,9 @@ export function App() {
           </nav>
         </div>
       </header>
-      <main className="flex-1">{ready ? <Page route={route} /> : null}</main>
+      <main className="flex-1 pb-8">{ready ? <Page route={route} /> : null}</main>
+      {ready && <StatusBar />}
+      {ready && <ConsentDialog />}
     </div>
   );
 }

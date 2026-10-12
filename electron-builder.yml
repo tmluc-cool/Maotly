@@ -9,6 +9,11 @@ files:
   - package.json
   - '!**/*.map'
 asar: true
+asarUnpack:
+  - '**/*.node'
+extraResources:
+  - from: resources/base.db
+    to: base.db
 win:
   icon: build/icon.ico
   target:

@@ -3,6 +3,8 @@ import type { PaidProduct } from '@shared/types';
 
 export interface ProductSearch {
   search(query: string, limit?: number): PaidProduct[];
+  /** The curated product a search term clearly means (exact name/alias or a very close match). */
+  bestMatch(query: string): PaidProduct | null;
 }
 
 /** Typo-tolerant search over product names and aliases. */
@@ -38,6 +40,14 @@ export function createProductSearch(products: PaidProduct[]): ProductSearch {
         if (out.length >= limit) break;
       }
       return out;
+    },
+    bestMatch(query) {
+      const q = query.trim().toLowerCase();
+      if (q.length < 2) return null;
+      const exact = products.find((p) => p.name.toLowerCase() === q || p.aliases.some((a) => a.toLowerCase() === q));
+      if (exact) return exact;
+      const [first] = fuse.search(q, { limit: 1 });
+      return first && (first.score ?? 1) <= 0.15 ? first.item : null;
     },
   };
 }

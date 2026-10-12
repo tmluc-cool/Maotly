@@ -1,4 +1,3 @@
-import type { RepoStats } from '@shared/types';
 
 export type Maintenance = 'green' | 'yellow' | 'red' | 'unknown';
 
@@ -36,11 +35,11 @@ export function relativeTime(iso: string | null | undefined, now: number = Date.
 }
 
 /** Traffic light: green < 6 months, yellow < 18 months, red older or archived. */
-export function maintenance(stats: RepoStats | undefined, now: number = Date.now()): Maintenance {
-  if (!stats) return 'unknown';
-  if (stats.archived) return 'red';
-  if (!stats.pushedAt) return 'unknown';
-  const t = Date.parse(stats.pushedAt);
+export function maintenance(repo: { pushed_at: string | null; archived: number | boolean } | undefined, now: number = Date.now()): Maintenance {
+  if (!repo) return 'unknown';
+  if (repo.archived) return 'red';
+  if (!repo.pushed_at) return 'unknown';
+  const t = Date.parse(repo.pushed_at);
   if (Number.isNaN(t)) return 'unknown';
   const months = monthsBetween(new Date(t), new Date(now));
   if (months < 6) return 'green';
@@ -130,4 +129,16 @@ export function prettyRepoName(repo: string): string {
     .filter(Boolean)
     .map((w) => (w === w.toLowerCase() ? w.charAt(0).toUpperCase() + w.slice(1) : w))
     .join(' ');
+}
+
+/** Swiss number format: 104'213. */
+export function formatCount(n: number): string {
+  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+}
+
+/** Badge "Neu": first seen in the last 7 days, and not just part of the base database. */
+export function isNew(repo: { first_seen_at: string; source: string }, now: number = Date.now()): boolean {
+  if (repo.source === 'base') return false;
+  const t = Date.parse(repo.first_seen_at);
+  return !Number.isNaN(t) && now - t < 7 * DAY;
 }

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import type { GratisStattApi } from '@shared/ipc';
 
 declare global {
