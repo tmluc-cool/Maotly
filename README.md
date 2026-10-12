@@ -72,23 +72,18 @@ Every release contains `delta-YYYY-MM-DD.db`, `manifest.json` (all packages with
 `latest_base`) and, once a month, `base-YYYY-MM-DD.db`. The app loads
 `https://github.com/<owner>/moatly-data/releases/latest/download/manifest.json`.
 
-### 2. GitHub OAuth Apps
-- **App sign-in (Device Flow):** new OAuth App with "Enable Device Flow" turned on. Enter the Client ID in `src/main/config.ts`
-  (`oauthClientId`). No scopes, no secret in the app.
-- **Admin dashboard (Web Flow):** a second OAuth App with the callback `https://<worker>/admin/callback`.
+### 2. Network (OAuth App + Cloudflare server)
+No terminal needed: create a free Cloudflare account, add the repository secrets `CLOUDFLARE_API_TOKEN` and
+`CLOUDFLARE_ACCOUNT_ID`, create a GitHub OAuth App with "Enable Device Flow", then run
+*Actions → Deploy server → Run workflow* with its Client ID. The workflow (`.github/workflows/deploy-server.yml`)
+creates the D1 database, applies the migrations, creates missing random secrets, deploys the Worker, writes the
+server address and Client ID into `src/main/config.ts` and starts a new Windows build. Step by step:
+[docs/EINRICHTUNG.md](docs/EINRICHTUNG.md) (German).
 
-### 3. Server (Cloudflare Worker + D1)
-```bash
-cd server && npm install
-npx wrangler d1 create moatly         # enter the database_id in wrangler.toml
-npx wrangler secret put ADMIN_SECRET        # long random value
-npx wrangler secret put ADMIN_GITHUB_ID     # your numeric GitHub ID
-npx wrangler secret put ADMIN_OAUTH_CLIENT_ID
-npx wrangler secret put ADMIN_OAUTH_CLIENT_SECRET
-npx wrangler secret put SESSION_SECRET      # long random value
-cd .. && npm run server:deploy
-```
-Then enter the Worker URL in `src/main/config.ts` (`serverUrl`). Locally: `npm run server:dev`.
+Manually instead: `cd server && npm install && npx wrangler login`, `npx wrangler d1 create moatly` (enter the
+`database_id` in `wrangler.toml`), set the secrets `ADMIN_SECRET`, `SESSION_SECRET`, `ADMIN_GITHUB_ID`,
+`ADMIN_OAUTH_CLIENT_ID`, `ADMIN_OAUTH_CLIENT_SECRET` with `npx wrangler secret put <NAME>`, then `npm run server:deploy`.
+Locally: `npm run server:dev`.
 
 Endpoints under `/v1`: `POST /register`, `POST /heartbeat`, `POST /submissions`, `GET /me`, `DELETE /me`,
 `GET /admin/submissions`, `POST /admin/submissions/result`. Dashboard under `/admin`.

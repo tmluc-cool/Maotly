@@ -356,6 +356,7 @@ Abschnitt "Moatly unterstützen" mit Link zu **GitHub Sponsors** (`https://githu
 - `npm run validate`: prüft die kuratierte Liste gegen `base.db`
 - `npm run dist`: prüft, dass `resources/base.db` existiert, führt `validate` aus und baut mit electron-builder. `base.db` wird als `extraResources` mitgeliefert. Ergebnis im Ordner `release/`: Installer-.exe und portable .exe.
 - `npm run server:dev` / `npm run server:deploy`: Worker lokal bzw. auf Cloudflare
+- `.github/workflows/deploy-server.yml`: richtet den Server ohne Terminal ein (Secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`; Eingabe: OAuth Client-ID), trägt Server-URL und Client-ID in `src/main/config.ts` ein und startet den Windows-Build
 - Konfiguration in `src/main/config.ts`: Server-URL, OAuth Client-ID, Name des Daten-Repos. Keine Secrets in der App.
 - App-Name "Moatly", eigenes einfaches Icon (selbst gezeichnet als SVG, in .ico umgewandelt)
 - Fenster: min. 900×600, merkt sich Grösse und Position
