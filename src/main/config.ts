@@ -9,7 +9,7 @@ export const config = {
   /** Public repo whose releases carry the weekly update packages. */
   dataRepo: 'tmluc-cool/moatly-data',
   /** Moatly network server (Cloudflare Worker). */
-  serverUrl: 'https://moatly.example.workers.dev',
+  serverUrl: 'https://moatly.lucaalb833.workers.dev',
   /** GitHub OAuth App (device flow enabled, no scopes). Client IDs are public. */
   oauthClientId: 'Ov23liBGAtuqsTy1Ul41',
   /** Increase when the consent text changes substantially; members are asked again. */
