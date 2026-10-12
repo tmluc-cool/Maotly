@@ -141,4 +141,6 @@ jobs:
           > GratisStatt is a private fun project. Use at your own risk – no liability whatsoever is accepted.
           > Ein privates Spass-Projekt, ohne Haftung. · Un proyecto privado hecho por diversión, sin responsabilidad.
 
+          ❤ Like GratisStatt? Support it on GitHub Sponsors: https://github.com/sponsors/tmluc-cool
+
           Built from commit ${{ github.sha }} (${{ github.ref_name }})."

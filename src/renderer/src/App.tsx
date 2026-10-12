@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { SearchBox } from './components/SearchBox';
 import { ConsentDialog } from './components/ConsentDialog';
 import { StatusBar } from './components/StatusBar';
-import { GearIcon, InfoIcon } from './components/icons';
+import { GearIcon, HeartIcon, InfoIcon } from './components/icons';
 import { Logo } from './components/Logo';
 import { t } from './lib/i18n';
 import { href, navigate, useRoute, type Route } from './lib/router';
@@ -48,7 +48,7 @@ function Page({ route }: { route: Route }) {
 
 export function App() {
   const route = useRoute();
-  const { ready, lang } = useApp();
+  const { ready, lang, info } = useApp();
 
   // Ctrl+K (Cmd+K on Mac) jumps into the search field.
   useEffect(() => {
@@ -90,6 +90,11 @@ export function App() {
             <a href={href.about()} className={navLink(route.name === 'about')}>
               <InfoIcon /> {t('nav.about')}
             </a>
+            {info && (
+              <button type="button" className={navLink(false)} title={t('nav.sponsorTitle')} onClick={() => void window.api.openExternal(info.sponsorUrl)}>
+                <HeartIcon className="text-pink-500" /> {t('nav.sponsor')}
+              </button>
+            )}
           </nav>
         </div>
       </header>

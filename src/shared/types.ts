@@ -97,6 +97,8 @@ export interface AppInfo {
   version: string;
   platform: string;
   projectRepoUrl: string;
+  /** GitHub Sponsors page of the project. */
+  sponsorUrl: string;
   isDev: boolean;
 }
 

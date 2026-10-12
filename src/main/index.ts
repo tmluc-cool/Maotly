@@ -7,7 +7,7 @@ import { IPC } from '../shared/ipc';
 import type { AlternativesData, AppUpdateInfo, SearchParams, SettingsState, ThemeSetting } from '../shared/types';
 import { GitHubClient } from '../shared/crawler/client';
 import { checkAppUpdate } from './app-update';
-import { config, releasesApiUrl } from './config';
+import { config, releasesApiUrl, sponsorUrl } from './config';
 import { AppDatabase } from './database';
 import { liveSearch } from './live-search';
 import { Network } from './network';
@@ -260,6 +260,7 @@ function registerIpc() {
     version: app.getVersion(),
     platform: process.platform,
     projectRepoUrl: `https://github.com/${config.projectRepo}`,
+    sponsorUrl: sponsorUrl(),
     isDev,
   }));
   ipcMain.handle(IPC.appUpdate, () => appUpdate);

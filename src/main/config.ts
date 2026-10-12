@@ -4,6 +4,8 @@
 export const config = {
   /** GitHub repo of this project (for "Alternative vorschlagen"). */
   projectRepo: 'tmluc-cool/githuub-appstore',
+  /** GitHub account with GitHub Sponsors (button "Sponsor" in the app). */
+  sponsorUser: 'tmluc-cool',
   /** Public repo whose releases carry the weekly update packages. */
   dataRepo: 'tmluc-cool/gratisstatt-data',
   /** GratisStatt network server (Cloudflare Worker). */
@@ -24,5 +26,7 @@ export const manifestUrl = () => `https://github.com/${config.dataRepo}/releases
 export function networkConfigured(): boolean {
   return !config.oauthClientId.startsWith('REPLACE') && !config.serverUrl.includes('.example.');
 }
+
+export const sponsorUrl = () => `https://github.com/sponsors/${config.sponsorUser}`;
 
 export const releasesApiUrl = () => `https://api.github.com/repos/${config.projectRepo}/releases/latest`;

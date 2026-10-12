@@ -26,6 +26,12 @@ It is built automatically by the GitHub Action `.github/workflows/build-windows.
 (or manually under *Actions → Windows-Programm bauen → Run workflow*). The database is crawled again once a week
 (about 1 hour); otherwise it is taken from the cache.
 
+## Support
+
+GratisStatt is free and stays free – without ads or tracking. If it saves you money, you can support it on
+**[GitHub Sponsors](https://github.com/sponsors/tmluc-cool)** ❤ (also via the "Sponsor" button in the app).
+Completely voluntary.
+
 ## Quick start (development)
 
 ```bash

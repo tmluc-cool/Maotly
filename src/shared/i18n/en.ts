@@ -21,6 +21,8 @@ export const en = {
   // Header
   'nav.settings': 'Settings',
   'nav.about': 'About',
+  'nav.sponsor': 'Sponsor',
+  'nav.sponsorTitle': 'Support GratisStatt on GitHub Sponsors (opens your browser)',
 
   // Search box
   'searchBox.placeholder': 'What are you paying for right now?',
@@ -157,6 +159,12 @@ export const en = {
   'about.disclaimerMore':
     'The information is maintained carefully, but without guarantee. You have to check yourself whether a project suits you. You download programs directly from GitHub or the official website. Their developers are responsible for the content and security of the programs. Projects outside the curated list have not been checked by us.',
   'about.noAffiliation': 'Not affiliated with the companies mentioned. Product names belong to their respective owners.',
+
+  // Sponsoring
+  'sponsor.title': 'Support GratisStatt',
+  'sponsor.text':
+    'GratisStatt is free and stays free – without ads or tracking. If it saves you money, you can support the project with a small amount on GitHub Sponsors. Completely voluntary: the app works exactly the same without it.',
+  'sponsor.button': 'Sponsor on GitHub',
 
   // Not found
   'notFound.title': 'This page doesn’t exist',
