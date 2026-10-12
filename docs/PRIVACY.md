@@ -4,9 +4,10 @@ Stand: 12.10.2026
 
 ## Wer ist verantwortlich?
 
-[Name einfügen]
-[Adresse oder Ort einfügen]
-E-Mail: [Kontakt-E-Mail einfügen]
+GratisStatt ist ein **privates Spass-Projekt** von [@tmluc-cool](https://github.com/tmluc-cool) – kein Unternehmen und kein kommerzielles Angebot.
+Kontakt: über die [Issues im Projekt-Repo](https://github.com/tmluc-cool/githuub-appstore/issues).
+
+Die Nutzung erfolgt auf eigene Gefahr. Es wird keinerlei Haftung übernommen.
 
 ## Kurz gesagt
 

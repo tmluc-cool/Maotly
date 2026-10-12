@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events';
 import type { DeviceFlowInfo, MyDataResult, NetworkState, ServerUserData } from '../shared/types';
-import { config } from './config';
+import { config, networkConfigured } from './config';
 import type { AppDatabase } from './database';
 
 export interface Secrets {
@@ -16,6 +16,8 @@ export interface NetworkDeps {
   appVersion: string;
   now?: () => number;
   sleep?: (ms: number) => Promise<void>;
+  /** Whether server and OAuth App are set up. Without them nobody is asked to join. */
+  available?: () => boolean;
 }
 
 const HOUR = 3_600_000;
@@ -33,9 +35,11 @@ export class Network extends EventEmitter {
   private forceConsentDialog = false;
   private readonly now: () => number;
   private readonly sleep: (ms: number) => Promise<void>;
+  private readonly available: () => boolean;
 
   constructor(private deps: NetworkDeps) {
     super();
+    this.available = deps.available ?? networkConfigured;
     this.now = deps.now ?? Date.now;
     this.sleep = deps.sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)));
   }
@@ -57,9 +61,12 @@ export class Network extends EventEmitter {
     const consent = this.db.getMeta('network_consent') as 'yes' | 'no' | null;
     const version = Number(this.db.getMeta('consent_version') ?? 0);
     const member = this.isMember();
+    const available = this.available();
     const askConsent =
-      this.forceConsentDialog || consent === null || (consent === 'yes' && version < config.consentVersion) || this.signIn.state !== 'idle';
+      available &&
+      (this.forceConsentDialog || consent === null || (consent === 'yes' && version < config.consentVersion) || this.signIn.state !== 'idle');
     return {
+      available,
       consent,
       askConsent,
       member: member ? { login: this.db.getMeta('network_login') ?? '', joinedDay: this.db.getMeta('network_joined_day') ?? '' } : null,
@@ -93,6 +100,7 @@ export class Network extends EventEmitter {
 
   /** "Mitmachen – mit GitHub anmelden": device flow, then registration on our server. */
   async join(): Promise<void> {
+    if (!this.available()) return;
     if (this.signIn.state === 'waiting' || this.signIn.state === 'registering') return;
     // Members who only have to confirm a new consent text don't need to sign in again.
     if (this.isMember()) {

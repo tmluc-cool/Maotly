@@ -63,6 +63,12 @@ export type LiveSearchResult =
 
 export type ThemeSetting = 'system' | 'light' | 'dark';
 
+/** A newer version of the app itself is available on GitHub. */
+export interface AppUpdateInfo {
+  version: string;
+  url: string;
+}
+
 export interface AppInfo {
   version: string;
   platform: string;
@@ -86,6 +92,8 @@ export interface DeviceFlowInfo {
 }
 
 export interface NetworkState {
+  /** false while server/OAuth App of this build are not set up yet. */
+  available: boolean;
   /** null = never answered (first start). */
   consent: 'yes' | 'no' | null;
   /** Show the consent dialog (first start or new consent text for members). */

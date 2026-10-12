@@ -3,6 +3,7 @@ import { SearchBox } from './components/SearchBox';
 import { ConsentDialog } from './components/ConsentDialog';
 import { StatusBar } from './components/StatusBar';
 import { GearIcon, InfoIcon } from './components/icons';
+import { Logo } from './components/Logo';
 import { href, navigate, useRoute, type Route } from './lib/router';
 import { AboutPage } from './pages/AboutPage';
 import { CategoryPage } from './pages/CategoryPage';
@@ -73,9 +74,7 @@ export function App() {
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-slate-50/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
           <a href={href.home()} className="flex shrink-0 items-center gap-2 text-lg font-extrabold tracking-tight">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-brand-500 to-teal-600 text-sm text-white">
-              0
-            </span>
+            <Logo size={32} />
             GratisStatt
           </a>
           <div className="flex-1">{showHeaderSearch && <div className="max-w-sm">{ready && <SearchBox size="small" />}</div>}</div>

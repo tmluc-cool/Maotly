@@ -84,16 +84,29 @@ export async function downloadVerified(fetchFn: typeof fetch, entry: PackageEntr
   if (!res.ok || !res.body) throw new Error(`Download fehlgeschlagen (${res.status})`);
   const hash = createHash('sha256');
   const out = createWriteStream(file);
+  // A write error (e.g. disk full) must end up as a normal error, not crash the worker.
+  let writeError: Error | null = null;
+  out.on('error', (e) => (writeError = e));
   try {
     const reader = res.body.getReader();
     for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
+      if (writeError) throw writeError;
       hash.update(value);
-      if (!out.write(value)) await new Promise<void>((r) => out.once('drain', () => r()));
+      if (!out.write(value)) {
+        await new Promise<void>((r) => {
+          out.once('drain', r);
+          out.once('error', () => r());
+        });
+      }
     }
   } finally {
-    await new Promise<void>((r) => out.end(() => r()));
+    await new Promise<void>((r) => (out.writableFinished || out.destroyed ? r() : out.end(() => r())));
+  }
+  if (writeError) {
+    rmSync(file, { force: true });
+    throw writeError;
   }
   const digest = hash.digest('hex');
   if (digest !== entry.sha256) {

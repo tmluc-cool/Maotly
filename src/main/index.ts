@@ -3,9 +3,10 @@ import { join } from 'node:path';
 import icon from '../../build/icon.png?asset';
 import alternatives from '../../data/alternatives.json';
 import { IPC } from '../shared/ipc';
-import type { AlternativesData, SearchParams, SettingsState, ThemeSetting } from '../shared/types';
+import type { AlternativesData, AppUpdateInfo, SearchParams, SettingsState, ThemeSetting } from '../shared/types';
 import { GitHubClient } from '../shared/crawler/client';
-import { config } from './config';
+import { checkAppUpdate } from './app-update';
+import { config, releasesApiUrl } from './config';
 import { AppDatabase } from './database';
 import { liveSearch } from './live-search';
 import { Network } from './network';
@@ -33,6 +34,7 @@ let settings: Settings = { theme: 'system', autoUpdate: true };
 let database: AppDatabase;
 let updater: Updater;
 let network: Network;
+let appUpdate: AppUpdateInfo | null = null;
 
 const PROD_CSP = [
   "default-src 'none'",
@@ -225,6 +227,7 @@ function registerIpc() {
     projectRepoUrl: `https://github.com/${config.projectRepo}`,
     isDev,
   }));
+  ipcMain.handle(IPC.appUpdate, () => appUpdate);
   ipcMain.handle(IPC.openExternal, async (_e, url: unknown) => {
     if (isAllowedExternal(url)) await shell.openExternal(url);
   });
@@ -273,6 +276,16 @@ app.whenReady().then(() => {
   registerIpc();
   createWindow();
   updater.start();
+
+  // New app version? Once at start and then once a day (anonymous, only GitHub).
+  if (!isDev) {
+    const checkApp = async () => {
+      appUpdate = await checkAppUpdate((i, init) => net.fetch(i as string, init), releasesApiUrl(), app.getVersion());
+      send(IPC.appUpdateEvent, appUpdate);
+    };
+    setTimeout(() => void checkApp(), 10_000);
+    setInterval(() => void checkApp(), 24 * 60 * 60 * 1000);
+  }
 
   // Network: heartbeat once a day, submissions at most once an hour (only for members).
   void network.heartbeat();

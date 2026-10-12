@@ -102,6 +102,11 @@ jobs:
           name: base-db
           path: resources
 
+      - name: Version number for this build
+        shell: bash
+        # 0.1.<run number>: every build gets a higher version, so the app can tell users about new versions.
+        run: npm version "0.1.${{ github.run_number }}" --no-git-tag-version --allow-same-version
+
       - name: Build installer and portable .exe
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
@@ -121,10 +126,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          TAG="v${VERSION}-build.${{ github.run_number }}"
-          gh release create "$TAG" release/GratisStatt-Setup-*.exe release/GratisStatt-*-portable.exe \
+          gh release create "v${VERSION}" release/GratisStatt-Setup-*.exe release/GratisStatt-*-portable.exe \
             --target "${{ github.sha }}" \
-            --title "GratisStatt ${VERSION} (Build ${{ github.run_number }})" \
+            --title "GratisStatt ${VERSION}" \
             --latest \
             --notes "Windows-Programm für GratisStatt.
 
@@ -132,5 +136,7 @@ jobs:
           - **GratisStatt-${VERSION}-portable.exe** – startet ohne Installation
 
           Windows warnt beim ersten Start, weil das Programm nicht signiert ist: «Weitere Informationen» → «Trotzdem ausführen».
+
+          > GratisStatt ist ein privates Spass-Projekt. Die Nutzung erfolgt auf eigene Gefahr – es wird keinerlei Haftung übernommen.
 
           Gebaut aus Commit ${{ github.sha }} (${{ github.ref_name }})."

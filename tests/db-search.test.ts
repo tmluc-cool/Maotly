@@ -78,6 +78,7 @@ describe('searchRepos', () => {
   });
 
   it('survives hostile input', () => {
+    expect(() => searchRepos(db, { q: 'x', category: '__proto__', platform: 'constructor' as never }, topicMap, NOW)).not.toThrow();
     expect(() => searchRepos(db, { q: '"*)(NEAR OR; DROP TABLE repos;--' }, topicMap, NOW)).not.toThrow();
     expect(searchRepos(db, { q: '', sort: 'stars' }, topicMap, NOW).total).toBe(6);
   });

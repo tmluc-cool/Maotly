@@ -19,3 +19,10 @@ export const config = {
 };
 
 export const manifestUrl = () => `https://github.com/${config.dataRepo}/releases/latest/download/manifest.json`;
+
+/** The network only works once server and OAuth App are set up (see docs/EINRICHTUNG.md). */
+export function networkConfigured(): boolean {
+  return !config.oauthClientId.startsWith('REPLACE') && !config.serverUrl.includes('.example.');
+}
+
+export const releasesApiUrl = () => `https://api.github.com/repos/${config.projectRepo}/releases/latest`;

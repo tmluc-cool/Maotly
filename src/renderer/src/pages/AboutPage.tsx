@@ -51,7 +51,11 @@ export function AboutPage() {
         </div>
       </section>
       <section className="card space-y-2 text-sm text-slate-700 dark:text-slate-300">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Haftungshinweis</h2>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Haftungsausschluss</h2>
+        <p className="rounded-lg bg-amber-50 px-3 py-2 font-medium text-amber-900 dark:bg-amber-900/30 dark:text-amber-100">
+          GratisStatt ist ein privates Spass-Projekt. Die Nutzung erfolgt auf eigene Gefahr. Es wird keinerlei Haftung
+          übernommen – weder für die App selbst noch für die angezeigten Programme, Daten, Links oder Downloads.
+        </p>
         <p>
           Die Angaben werden sorgfältig gepflegt, aber ohne Gewähr. Ob ein Projekt für dich passt, musst du selbst prüfen.
           Programme lädst du direkt bei GitHub oder auf der offiziellen Website herunter. Für Inhalt und Sicherheit der

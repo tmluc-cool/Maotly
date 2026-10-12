@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import type { AppInfo, DbStats, NetworkState, ThemeSetting, UpdateStatus } from '@shared/types';
+import type { AppInfo, AppUpdateInfo, DbStats, NetworkState, ThemeSetting, UpdateStatus } from '@shared/types';
 
 interface AppState {
   ready: boolean;
@@ -7,6 +7,7 @@ interface AppState {
   stats: DbStats | null;
   update: UpdateStatus | null;
   network: NetworkState | null;
+  appUpdate: AppUpdateInfo | null;
   theme: ThemeSetting;
   /** Increases whenever new data arrived, so lists can reload. */
   dataVersion: number;
@@ -34,6 +35,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [stats, setStats] = useState<DbStats | null>(null);
   const [update, setUpdate] = useState<UpdateStatus | null>(null);
   const [network, setNetwork] = useState<NetworkState | null>(null);
+  const [appUpdate, setAppUpdate] = useState<AppUpdateInfo | null>(null);
   const [theme, setThemeState] = useState<ThemeSetting>('system');
   const [dataVersion, setDataVersion] = useState(0);
 
@@ -66,7 +68,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }),
       window.api.onDataChanged(bumpData),
       window.api.onNetworkState(setNetwork),
+      window.api.onAppUpdate(setAppUpdate),
     ];
+    void window.api.appUpdate().then(setAppUpdate);
     return () => offs.forEach((off) => off());
   }, [bumpData, refreshStats]);
 
@@ -84,8 +88,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AppState>(
-    () => ({ ready, info, stats, update, network, theme, dataVersion, setTheme, refreshStats, bumpData }),
-    [ready, info, stats, update, network, theme, dataVersion, setTheme, refreshStats, bumpData],
+    () => ({ ready, info, stats, update, network, appUpdate, theme, dataVersion, setTheme, refreshStats, bumpData }),
+    [ready, info, stats, update, network, appUpdate, theme, dataVersion, setTheme, refreshStats, bumpData],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

@@ -103,12 +103,13 @@ export function searchRepos(db: Db, p: SearchParams, topicMap: TopicMap, now = D
   const alternatives = (p.anyOf ?? []).map(toFtsQuery).filter((x): x is string => !!x);
   if (alternatives.length) fts.push(`(${alternatives.map((a) => `(${a})`).join(' OR ')})`);
   const hasText = !!text || alternatives.length > 0;
+  const own = (o: Record<string, string[]>, k: string) => (Object.hasOwn(o, k) && Array.isArray(o[k]) ? o[k] : []);
   if (p.category) {
-    const c = topicsClause(topicMap.categories[p.category] ?? []);
+    const c = topicsClause(own(topicMap.categories, p.category));
     if (c) fts.push(c);
   }
   if (p.platform) {
-    const c = topicsClause(topicMap.platforms[p.platform] ?? []);
+    const c = topicsClause(own(topicMap.platforms, p.platform));
     if (c) fts.push(c);
   }
   const useFts = fts.length > 0;

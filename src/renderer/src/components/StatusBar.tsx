@@ -3,7 +3,7 @@ import { useApp } from '../state';
 
 /** Bottom bar: update progress or database size and date. */
 export function StatusBar() {
-  const { stats, update } = useApp();
+  const { stats, update, appUpdate } = useApp();
   const running = update?.running;
   const manual = update?.job === 'manual';
 
@@ -20,7 +20,17 @@ export function StatusBar() {
           {text}
         </span>
         {!running && update?.error && <span className="truncate text-rose-600 dark:text-rose-400">Update fehlgeschlagen: {update.error}</span>}
-        <span className="ml-auto flex shrink-0 gap-2">
+        <span className="ml-auto flex shrink-0 items-center gap-3">
+          {appUpdate && (
+            <button
+              type="button"
+              className="rounded-full bg-brand-600 px-2.5 py-0.5 font-semibold text-white hover:bg-brand-700"
+              onClick={() => void window.api.openExternal(appUpdate.url)}
+              title="Öffnet die Download-Seite auf GitHub"
+            >
+              Neue Version {appUpdate.version} herunterladen
+            </button>
+          )}
           {running && manual ? (
             <button type="button" className="btn-link" onClick={() => void window.api.updatePause()}>
               Pausieren

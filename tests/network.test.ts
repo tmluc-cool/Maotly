@@ -35,11 +35,28 @@ function setup(opts: { serverDown?: boolean } = {}) {
     }
     return json({}, 404);
   }) as typeof fetch;
-  const network = new Network({ db, secrets, fetch: fetchFn, appVersion: '1.0.0', now: () => now, sleep: (ms) => new Promise((r) => setTimeout(() => { now += ms; r(); }, 1)) });
+  const network = new Network({ db, secrets, fetch: fetchFn, appVersion: '1.0.0', available: () => true, now: () => now, sleep: (ms) => new Promise((r) => setTimeout(() => { now += ms; r(); }, 1)) });
   return { db, network, calls, store, advance: (ms: number) => (now += ms), serverCalls: () => calls.filter((c) => c.url.startsWith(config.serverUrl)) };
 }
 
 describe('network (opt-in)', () => {
+  it('does not ask or join while the network is not set up', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'gs-net-'));
+    const { db } = AppDatabase.open(dir, join(dir, 'no-base.db'));
+    const calls: string[] = [];
+    const store = new Map<string, string>();
+    const n = new Network({
+      db,
+      secrets: { get: (k) => store.get(k) ?? null, set: (k, v) => void store.set(k, v), clear: (k) => void store.delete(k) },
+      fetch: (async (u: string) => (calls.push(String(u)), new Response('{}'))) as unknown as typeof fetch,
+      appVersion: '1',
+      available: () => false,
+    });
+    expect(n.state()).toMatchObject({ available: false, askConsent: false });
+    await n.join();
+    expect(calls).toEqual([]);
+  });
+
   it('asks on first start and sends nothing before joining', async () => {
     const s = setup();
     expect(s.network.state().askConsent).toBe(true);

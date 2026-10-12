@@ -37,6 +37,8 @@ const api: GratisStattApi = {
   myData: () => ipcRenderer.invoke(IPC.networkMyData),
 
   getAppInfo: () => ipcRenderer.invoke(IPC.appInfo),
+  appUpdate: () => ipcRenderer.invoke(IPC.appUpdate),
+  onAppUpdate: (l) => subscribe(IPC.appUpdateEvent, l),
   openExternal: (url) => ipcRenderer.invoke(IPC.openExternal, url),
   devResetCheck: () => ipcRenderer.invoke(IPC.devResetCheck),
   devShowConsent: () => ipcRenderer.invoke(IPC.devShowConsent),

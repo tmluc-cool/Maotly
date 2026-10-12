@@ -80,9 +80,12 @@ export function ConsentDialog() {
                 Nein danke, nur lokal
               </button>
             </div>
-            <button type="button" className="text-sm underline" onClick={() => navigate(href.privacy())}>
-              Datenschutzerklärung lesen
-            </button>
+            <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+              <button type="button" className="underline" onClick={() => navigate(href.privacy())}>
+                Datenschutzerklärung lesen
+              </button>
+              <span className="text-xs text-slate-500 dark:text-slate-400">Ein Spass-Projekt – ohne Gewähr und ohne Haftung.</span>
+            </div>
           </>
         )}
       </div>

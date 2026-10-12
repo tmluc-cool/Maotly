@@ -1,5 +1,6 @@
 import type {
   AppInfo,
+  AppUpdateInfo,
   DbStats,
   LiveSearchResult,
   MyDataResult,
@@ -39,6 +40,8 @@ export const IPC = {
   networkLeave: 'network:leave',
   networkMyData: 'network:myData',
   appInfo: 'app:info',
+  appUpdate: 'app:update',
+  appUpdateEvent: 'app:updateEvent',
   openExternal: 'shell:openExternal',
   devResetCheck: 'dev:resetCheck',
   devShowConsent: 'dev:showConsent',
@@ -77,6 +80,9 @@ export interface GratisStattApi {
   myData(): Promise<MyDataResult>;
 
   getAppInfo(): Promise<AppInfo>;
+  /** Newer app version on GitHub, if any (checked once a day). */
+  appUpdate(): Promise<AppUpdateInfo | null>;
+  onAppUpdate(listener: (u: AppUpdateInfo | null) => void): () => void;
   openExternal(url: string): Promise<void>;
   devResetCheck(): Promise<void>;
   devShowConsent(): Promise<void>;

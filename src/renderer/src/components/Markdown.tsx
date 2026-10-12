@@ -1,10 +1,19 @@
 import type { ReactNode } from 'react';
 
-/** Inline formatting: **bold** and «quotes» stay as text. */
+/** Inline formatting: **bold** and [links](https://…). Links open in the browser via the main process. */
 function inline(text: string): ReactNode[] {
-  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-    part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : part,
-  );
+  return text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\(https:\/\/[^)\s]+\))/g).map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) return <strong key={i}>{inline(part.slice(2, -2))}</strong>;
+    const link = part.match(/^\[([^\]]+)\]\((https:\/\/[^)\s]+)\)$/);
+    if (link) {
+      return (
+        <button key={i} type="button" className="text-brand-700 underline dark:text-brand-300" onClick={() => void window.api.openExternal(link[2])}>
+          {link[1]}
+        </button>
+      );
+    }
+    return part;
+  });
 }
 
 /** Very small Markdown renderer for our own documents (headings, lists, tables, paragraphs). */

@@ -8,6 +8,9 @@ Alles lässt sich offline durchsuchen. Ein Klick öffnet das Projekt auf GitHub.
 - **Live-Suche** auf GitHub bei wenigen Treffern; Funde werden lokal gespeichert.
 - **GratisStatt-Netzwerk** (freiwillig, standardmässig aus): Live-Funde gehen nach einer Prüfung an alle.
 
+> **Hinweis:** GratisStatt ist ein privates Spass-Projekt. Die Nutzung erfolgt auf eigene Gefahr – es wird keinerlei
+> Haftung übernommen, weder für die App noch für die angezeigten Programme, Daten, Links oder Downloads.
+
 ## Herunterladen
 
 Das fertige Windows-Programm gibt es unter **[Releases](https://github.com/tmluc-cool/githuub-appstore/releases/latest)**:
@@ -45,6 +48,8 @@ Für einen schnellen Test reicht eine kleine Datenbank:
 `npm run validate -- --fix` holt Repos der kuratierten Liste, die in `base.db` fehlen, von GitHub nach.
 
 ## Einrichtung (einmalig)
+
+Schritt für Schritt in einfacher Sprache: **[docs/EINRICHTUNG.md](docs/EINRICHTUNG.md)**.
 
 ### 1. Daten-Repo `gratisstatt-data`
 1. Öffentliches Repo `<owner>/gratisstatt-data` anlegen.
