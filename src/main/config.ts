@@ -11,7 +11,7 @@ export const config = {
   /** Moatly network server (Cloudflare Worker). */
   serverUrl: 'https://moatly.example.workers.dev',
   /** GitHub OAuth App (device flow enabled, no scopes). Client IDs are public. */
-  oauthClientId: 'REPLACE_WITH_OAUTH_CLIENT_ID',
+  oauthClientId: 'Ov23liBGAtuqsTy1Ul41',
   /** Increase when the consent text changes substantially; members are asked again. */
   consentVersion: 2, // 2: reviews and upvotes
   /** Days between automatic update checks. */
