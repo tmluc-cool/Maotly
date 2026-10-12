@@ -3,7 +3,17 @@ import { copyFileSync, existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import topicMapJson from '../../data/topic-map.json';
 import { configure, getMeta, migrate, repoCount, setMeta, upsertRepos, type Db, type RepoRow } from '../shared/crawler/store';
-import { newlyDiscovered, registerFunctions, reposByFullName, searchRepos, type SearchParams, type TopicMap } from '../shared/db/search';
+import { newlyDiscovered, registerFunctions, repoById, reposByFullName, searchRepos, type SearchParams, type TopicMap } from '../shared/db/search';
+import {
+  clearMyVotes,
+  ratingSummary,
+  removeOwnReview,
+  reviewsForRepo,
+  saveOwnReview,
+  setLocalReply,
+  setMyVote,
+  type Review,
+} from '../shared/db/reviews';
 import type { DbStats } from '../shared/types';
 
 const topicMap = topicMapJson as TopicMap;
@@ -66,6 +76,36 @@ export class AppDatabase {
 
   newlyDiscovered(limit = 12) {
     return newlyDiscovered(this.db, limit);
+  }
+
+  repoDetails(id: number) {
+    return { repo: repoById(this.db, id), reviews: reviewsForRepo(this.db, id), summary: ratingSummary(this.db, id) };
+  }
+
+  saveOwnReview(r: Omit<Review, 'votes' | 'reply_text' | 'reply_author' | 'reply_day'>) {
+    saveOwnReview(this.db, r);
+  }
+
+  removeOwnReview(repoId: number, author: string) {
+    removeOwnReview(this.db, repoId, author);
+  }
+
+  setMyVote(reviewId: number, on: boolean) {
+    setMyVote(this.db, reviewId, on);
+  }
+
+  setLocalReply(reviewId: number, text: string | null, author: string | null, day: string | null) {
+    setLocalReply(this.db, reviewId, text, author, day);
+  }
+
+  /** After leaving the network: own reviews, answers and upvotes disappear locally too. */
+  forgetMemberReviews(login: string) {
+    this.db.transaction(() => {
+      for (const id of this.db.prepare('SELECT review_id FROM my_votes').pluck().all() as number[]) setMyVote(this.db, id, false);
+      clearMyVotes(this.db);
+      this.db.prepare('DELETE FROM reviews WHERE author = ? COLLATE NOCASE').run(login);
+      this.db.prepare('UPDATE reviews SET reply_text = NULL, reply_author = NULL, reply_day = NULL WHERE reply_author = ? COLLATE NOCASE').run(login);
+    })();
   }
 
   getMeta(key: string) {

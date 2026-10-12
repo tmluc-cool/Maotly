@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:events';
-import type { DeviceFlowInfo, MyDataResult, NetworkState, ServerUserData } from '../shared/types';
+import type { ActionResult, DeviceFlowInfo, MyDataResult, NetworkState, ServerUserData } from '../shared/types';
 import { config, networkConfigured } from './config';
 import type { AppDatabase } from './database';
 
@@ -191,9 +191,12 @@ export class Network extends EventEmitter {
         }
       }
     }
+    const login = this.db.getMeta('network_login');
     this.deps.secrets.clear('session');
     this.deps.secrets.clear('network-github');
     this.db.clearSubmissions();
+    // The server deleted reviews, upvotes and answers; remove the local copies right away too.
+    if (login) this.db.forgetMemberReviews(login);
     this.db.setMeta('network_login', null);
     this.db.setMeta('network_joined_day', null);
     this.db.setMeta('last_heartbeat_day', null);
@@ -209,6 +212,67 @@ export class Network extends EventEmitter {
     } catch (err) {
       return { ok: false, message: err instanceof ServerError ? err.message : 'Der Server ist gerade nicht erreichbar.' };
     }
+  }
+
+  // --- Reviews -------------------------------------------------------------
+
+  private async act(task: () => Promise<void>): Promise<ActionResult> {
+    if (!this.isMember()) return { ok: false, message: 'Dafür musst du beim Netzwerk mitmachen (GitHub-Konto verknüpfen).' };
+    try {
+      await task();
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, message: err instanceof ServerError ? err.message : 'Der Server ist gerade nicht erreichbar. Bitte später nochmals versuchen.' };
+    }
+  }
+
+  /** Writes or edits the own review. It shows up locally at once, for everybody else with the next weekly update. */
+  writeReview(repoId: number, rating: number, text: string): Promise<ActionResult> {
+    return this.act(async () => {
+      const r = await this.server<{ id: number | null; createdDay: string; updatedDay: string }>('POST', '/v1/reviews', { repoId, rating, text });
+      if (r.id) {
+        this.db.saveOwnReview({
+          id: r.id,
+          repo_id: repoId,
+          author: this.db.getMeta('network_login') ?? '',
+          rating,
+          text: text.replace(/\r\n?/g, '\n').trim(),
+          created_day: r.createdDay,
+          updated_day: r.updatedDay,
+        });
+      }
+    });
+  }
+
+  deleteReview(repoId: number): Promise<ActionResult> {
+    return this.act(async () => {
+      await this.server('DELETE', `/v1/reviews/repo/${repoId}`);
+      this.db.removeOwnReview(repoId, this.db.getMeta('network_login') ?? '');
+    });
+  }
+
+  vote(reviewId: number, on: boolean): Promise<ActionResult> {
+    return this.act(async () => {
+      await this.server(on ? 'POST' : 'DELETE', `/v1/reviews/${reviewId}/vote`);
+      this.db.setMyVote(reviewId, on);
+    });
+  }
+
+  /** Only the owner of the GitHub project may answer; the server checks it at GitHub with the member's token. */
+  reply(reviewId: number, text: string): Promise<ActionResult> {
+    return this.act(async () => {
+      const githubToken = this.deps.secrets.get('network-github');
+      if (!githubToken) throw new ServerError(401, 'Bitte melde dich erneut beim Netzwerk an.');
+      const r = await this.server<{ replyDay: string }>('POST', `/v1/reviews/${reviewId}/reply`, { text, githubToken });
+      this.db.setLocalReply(reviewId, text.trim(), this.db.getMeta('network_login'), r.replyDay ?? null);
+    });
+  }
+
+  deleteReply(reviewId: number): Promise<ActionResult> {
+    return this.act(async () => {
+      await this.server('DELETE', `/v1/reviews/${reviewId}/reply`);
+      this.db.setLocalReply(reviewId, null, null, null);
+    });
   }
 
   private inFlight = new Map<string, Promise<void>>();

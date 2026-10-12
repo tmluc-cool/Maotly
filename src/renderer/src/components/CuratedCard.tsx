@@ -1,6 +1,8 @@
 import type { Alternative, RepoResult } from '@shared/types';
 import { formatStars, maintenance, prettyRepoName } from '../lib/format';
+import { href, navigate } from '../lib/router';
 import { LevelBadge, MaintenanceLight, PlatformList } from './badges';
+import { RatingChip } from './Stars';
 import { CodeIcon, ExternalIcon, StarIcon, WarningIcon } from './icons';
 import { updatedText } from './RepoCard';
 
@@ -34,6 +36,16 @@ export function CuratedCard({ alt, repo }: { alt: Alternative; repo: RepoResult 
             {repo ? updatedText(repo) : 'Noch nicht in der Datenbank'}
           </span>
         </dd>
+        {repo && (
+          <>
+            <dt className="text-slate-500 dark:text-slate-400">Bewertung</dt>
+            <dd>
+              <button type="button" className="hover:underline" onClick={() => navigate(href.project(repo.id))}>
+                <RatingChip avg={repo.rating_avg} count={repo.rating_count} />
+              </button>
+            </dd>
+          </>
+        )}
         <dt className="text-slate-500 dark:text-slate-400">Lizenz</dt>
         <dd>{repo?.license ?? 'unbekannt'}</dd>
         <dt className="text-slate-500 dark:text-slate-400">Läuft auf</dt>
@@ -45,6 +57,11 @@ export function CuratedCard({ alt, repo }: { alt: Alternative; repo: RepoResult 
         <button type="button" className="btn-primary" onClick={() => open(repo?.html_url ?? `https://github.com/${alt.repo}`)}>
           <CodeIcon /> Auf GitHub öffnen
         </button>
+        {repo && (
+          <button type="button" className="btn-secondary" onClick={() => navigate(href.project(repo.id))}>
+            Bewertungen
+          </button>
+        )}
         {alt.website && (
           <button type="button" className="btn-secondary" onClick={() => open(alt.website!)}>
             <ExternalIcon /> Zur offiziellen Website

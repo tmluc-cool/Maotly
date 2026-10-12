@@ -1,5 +1,7 @@
 import type {
+  ActionResult,
   AppInfo,
+  RepoDetails,
   AppUpdateInfo,
   DbStats,
   LiveSearchResult,
@@ -19,6 +21,12 @@ export const IPC = {
   curated: 'db:curated',
   newly: 'db:newly',
   stats: 'db:stats',
+  repoDetails: 'db:repoDetails',
+  reviewWrite: 'review:write',
+  reviewDelete: 'review:delete',
+  reviewVote: 'review:vote',
+  reviewReply: 'review:reply',
+  reviewDeleteReply: 'review:deleteReply',
   vacuum: 'db:vacuum',
   liveSearch: 'live:search',
   updateStatus: 'update:status',
@@ -53,6 +61,13 @@ export interface GratisStattApi {
   curated(repos: string[]): Promise<Record<string, RepoResult>>;
   newlyDiscovered(): Promise<RepoResult[]>;
   stats(): Promise<DbStats>;
+  /** One project with its reviews (from the weekly package plus own, not yet published ones). */
+  repoDetails(id: number): Promise<RepoDetails>;
+  writeReview(repoId: number, rating: number, text: string): Promise<ActionResult>;
+  deleteReview(repoId: number): Promise<ActionResult>;
+  voteReview(reviewId: number, on: boolean): Promise<ActionResult>;
+  replyReview(reviewId: number, text: string): Promise<ActionResult>;
+  deleteReply(reviewId: number): Promise<ActionResult>;
   vacuum(): Promise<void>;
   liveSearch(term: string): Promise<LiveSearchResult>;
 

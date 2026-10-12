@@ -33,6 +33,17 @@ export interface AlternativesData {
 }
 
 export type { RepoResult, SearchParams, SearchResult, SortKey, UpdatedWithin } from './db/search';
+export type { RatingSummary, Review, ReviewWithState } from './db/reviews';
+import type { RepoResult } from './db/search';
+import type { RatingSummary, ReviewWithState } from './db/reviews';
+
+export interface RepoDetails {
+  repo: RepoResult | null;
+  reviews: ReviewWithState[];
+  summary: RatingSummary;
+}
+
+export type ActionResult = { ok: true } | { ok: false; message: string };
 
 export interface DbStats {
   count: number;
@@ -110,6 +121,8 @@ export interface ServerUserData {
   submissions: number;
   status: string;
   pendingSubmissions: number;
+  reviews?: number;
+  votes?: number;
 }
 
 export type MyDataResult = { ok: true; data: ServerUserData } | { ok: false; message: string };

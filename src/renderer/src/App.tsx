@@ -11,6 +11,7 @@ import { HomePage } from './pages/HomePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { ProductPage } from './pages/ProductPage';
+import { ProjectPage } from './pages/ProjectPage';
 import { SearchPage } from './pages/SearchPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { useApp } from './state';
@@ -27,6 +28,8 @@ function Page({ route }: { route: Route }) {
       return <HomePage />;
     case 'product':
       return <ProductPage id={route.id} />;
+    case 'project':
+      return <ProjectPage id={route.id} />;
     case 'category':
       return <CategoryPage id={route.id} filters={route.filters} />;
     case 'search':

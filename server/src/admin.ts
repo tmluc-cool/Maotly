@@ -1,5 +1,6 @@
 import { DASHBOARD_HTML, DASHBOARD_JS, LOGIN_HTML } from './admin-page';
 import { deleteUser } from './api';
+import { adminReviewAction, adminReviewList } from './reviews';
 import type { Deps, Env } from './types';
 import { addDays, cookies, day, error, html, json, randomToken, sign, verify } from './util';
 
@@ -120,6 +121,19 @@ export async function handleAdmin(req: Request, env: Env, deps: Deps): Promise<R
 
   if (req.method === 'GET' && pathname === '/admin/api/overview') return json(await overview(env, now));
   if (req.method === 'GET' && pathname === '/admin/api/history') return json(await history(env, deps));
+
+  if (req.method === 'GET' && pathname === '/admin/api/reviews') return json({ reviews: await adminReviewList(env) });
+  const rv = pathname.match(/^\/admin\/api\/reviews\/(\d+)(?:\/(hide|show))?$/);
+  if (rv) {
+    if (req.method === 'POST' && rv[2]) {
+      await adminReviewAction(env, Number(rv[1]), rv[2] as 'hide' | 'show');
+      return json({ ok: true });
+    }
+    if (req.method === 'DELETE' && !rv[2]) {
+      await adminReviewAction(env, Number(rv[1]), 'delete');
+      return json({ ok: true });
+    }
+  }
 
   const m = pathname.match(/^\/admin\/api\/users\/(\d+)(?:\/(block|unblock))?$/);
   if (m) {

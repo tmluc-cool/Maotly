@@ -24,6 +24,7 @@ import {
   upsertRepos,
 } from '../src/shared/crawler';
 import { parseManifest, type Manifest } from '../src/main/sync/packages';
+import { sanitizeReviews } from '../src/shared/db/reviews';
 import { checkSubmission, fileEntry, nextManifest, sinceFrom, type Verdict } from './lib/delta';
 import { envVar, formatNumber } from './lib/env';
 
@@ -96,13 +97,26 @@ async function main() {
     console.log('– Netzwerk-Beiträge übersprungen (SERVER_URL/ADMIN_SECRET fehlen)');
   }
 
+  // 3. Reviews: all public ones as one JSON (only attached to the newest release).
+  let reviewsFile: string | null = null;
+  let reviewsCount = 0;
+  if (serverUrl && adminSecret) {
+    const res = await fetch(`${serverUrl}/v1/admin/reviews`, { headers: { Authorization: `Bearer ${adminSecret}` } });
+    if (!res.ok) throw new Error(`Server (Bewertungen): ${res.status}`);
+    const reviews = sanitizeReviews(await res.json());
+    reviewsCount = reviews.length;
+    reviewsFile = join(outDir, 'reviews.json');
+    writeFileSync(reviewsFile, JSON.stringify({ generated_at: now, reviews }));
+    console.log(`✔ Bewertungen: ${formatNumber(reviewsCount)}`);
+  }
+
   setMeta(db, 'package_date', today);
   setMeta(db, 'since', since);
   const count = repoCount(db);
   db.exec('VACUUM');
   db.close();
 
-  // 3. Manifest with SHA-256 of every file.
+  // 4. Manifest with SHA-256 of every file.
   const releaseUrl = (tag: string, name: string) => `https://github.com/${repo}/releases/download/${tag}/${name}`;
   const delta = fileEntry(file, today, releaseUrl(`delta-${today}`, `delta-${today}.db`), count);
   let base = null;
@@ -114,7 +128,8 @@ async function main() {
     b.close();
     base = fileEntry(basePath, baseDate, releaseUrl(`delta-${today}`, `base-${baseDate}.db`), baseCount);
   }
-  const manifest = nextManifest(prev, delta, base, now);
+  const reviews = reviewsFile ? fileEntry(reviewsFile, today, releaseUrl(`delta-${today}`, 'reviews.json'), reviewsCount) : null;
+  const manifest = nextManifest(prev, delta, base, now, reviews);
   writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
   console.log(`✔ delta-${today}.db: ${formatNumber(count)} Projekte, ${(delta.size / 1024 / 1024).toFixed(1)} MB`);
   console.log(`✔ manifest.json: ${manifest.deltas.length} Pakete${manifest.latest_base ? `, Basis ${manifest.latest_base.date}` : ''}`);

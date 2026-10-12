@@ -1,10 +1,11 @@
 import type Database from 'better-sqlite3';
 import type { GitHubRepo } from './client';
+import { REVIEWS_SQL } from '../db/reviews';
 
 export type Db = Database.Database;
 export type RepoSource = 'base' | 'delta' | 'manual' | 'live';
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export interface RepoRow {
   id: number;
@@ -154,6 +155,7 @@ export function setMeta(db: Db, key: string, value: string | null) {
 /** Migrations by schema version. Each entry upgrades from version i to i+1. */
 const MIGRATIONS: ((db: Db) => void)[] = [
   (db) => db.exec(SCHEMA_SQL), // 0 -> 1
+  (db) => db.exec(REVIEWS_SQL), // 1 -> 2: reviews
 ];
 
 export function schemaVersion(db: Db): number {
@@ -169,8 +171,9 @@ export function schemaVersion(db: Db): number {
 export function migrate(db: Db, backup?: (fromVersion: number) => void) {
   let version = schemaVersion(db);
   if (version > SCHEMA_VERSION) throw new Error(`Database schema ${version} is newer than this app (${SCHEMA_VERSION}).`);
+  // A brand-new database needs no backup; an existing one gets one copy before it is changed.
+  if (version > 0 && version < SCHEMA_VERSION) backup?.(version);
   while (version < SCHEMA_VERSION) {
-    if (version > 0) backup?.(version);
     db.transaction(() => {
       MIGRATIONS[version](db);
       setMeta(db, 'schema_version', String(version + 1));

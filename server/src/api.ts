@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { deleteUserReviewData, exportReviews, handleReviews, reviewCounts } from './reviews';
 import type { Deps, Env } from './types';
 import { addMonths, bearer, day, error, json, randomToken, safeEqual, sha256Hex } from './util';
 
@@ -126,6 +127,7 @@ async function me(env: Env, user: UserRow): Promise<Response> {
   const pending = await env.DB.prepare("SELECT count(*) AS n FROM submissions WHERE github_id = ? AND status = 'pending'")
     .bind(user.github_id)
     .first<{ n: number }>();
+  const rc = await reviewCounts(env, user.github_id);
   return json({
     login: user.login,
     appVersion: user.app_version,
@@ -134,12 +136,15 @@ async function me(env: Env, user: UserRow): Promise<Response> {
     submissions: user.submissions,
     status: user.status,
     pendingSubmissions: pending?.n ?? 0,
+    reviews: rc.reviews,
+    votes: rc.votes,
   });
 }
 
-/** Deletes a user and their open submissions. */
+/** Deletes a user, their open submissions and all their reviews, upvotes and owner answers. */
 export async function deleteUser(env: Env, githubId: number) {
   await env.DB.batch([
+    ...deleteUserReviewData(env, githubId),
     env.DB.prepare("DELETE FROM submissions WHERE github_id = ? AND status = 'pending'").bind(githubId),
     env.DB.prepare('DELETE FROM users WHERE github_id = ?').bind(githubId),
   ]);
@@ -192,11 +197,15 @@ export async function handleApi(req: Request, env: Env, deps: Deps): Promise<Res
     if (!(await isAdminSecret(req, env))) return error(401, 'Nicht erlaubt');
     if (route === 'GET /v1/admin/submissions') return adminSubmissions(req, env);
     if (route === 'POST /v1/admin/submissions/result') return adminResult(req, env);
+    if (route === 'GET /v1/admin/reviews') return exportReviews(env);
     return error(404, 'Nicht gefunden');
   }
 
   const user = await currentUser(req, env);
   if (!user) return error(401, 'Nicht angemeldet');
+  if (pathname === '/v1/reviews' || pathname.startsWith('/v1/reviews/')) {
+    return (await handleReviews(req, env, deps, user)) ?? error(404, 'Nicht gefunden');
+  }
   switch (route) {
     case 'POST /v1/heartbeat':
       return heartbeat(req, env, deps, user);

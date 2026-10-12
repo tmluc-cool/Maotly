@@ -46,6 +46,8 @@ export const DASHBOARD_HTML = `<!doctype html><html lang="de-CH"><head><meta cha
 </tr></thead><tbody></tbody></table></div></section>
 <section class="card"><h2>Letzte 100 Beiträge</h2><div class="scroll"><table id="subs"><thead><tr>
 <th>Repo</th><th>Von</th><th>Tag</th><th>Status</th><th>Grund</th></tr></thead><tbody></tbody></table></div></section>
+<section class="card"><h2>Bewertungen (neueste 200)</h2><div class="scroll"><table id="reviews"><thead><tr>
+<th>Repo</th><th>Von</th><th>Sterne</th><th>Text</th><th>Upvotes</th><th>Tag</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div></section>
 <section class="card"><h2>Neue Projekte pro Woche</h2><div class="bars" id="bars"></div><div class="muted" id="barsinfo"></div></section>
 </main><script src="/admin/app.js"></script></body></html>`;
 
@@ -86,6 +88,15 @@ async function load() {
     return '<tr><td>' + repo + '</td><td>' + (s.login ? '@' + esc(s.login) : '–') + '</td><td>' + esc(s.submitted_day) + '</td>' +
       '<td><span class="pill ' + esc(s.status) + '">' + esc(s.status) + '</span></td><td>' + esc(s.reason || '') + '</td></tr>';
   }).join('');
+  const rv = await api('reviews');
+  $('#reviews tbody').innerHTML = ((rv && rv.reviews) || []).map((r) => '<tr>' +
+    '<td><a href="https://api.github.com/repositories/' + Number(r.repo_id) + '" rel="noreferrer" target="_blank">#' + Number(r.repo_id) + '</a></td>' +
+    '<td>' + (r.author ? '@' + esc(r.author) : '–') + '</td><td>' + '★'.repeat(Number(r.rating) || 0) + '</td>' +
+    '<td style="white-space:normal;min-width:240px">' + esc(r.text) + (r.reply_text ? '<div class="muted">Antwort: ' + esc(r.reply_text) + '</div>' : '') + '</td>' +
+    '<td>' + Number(r.votes) + '</td><td>' + esc(r.updated_day) + '</td>' +
+    '<td><span class="pill ' + (r.status === 'hidden' ? 'rejected' : 'accepted') + '">' + (r.status === 'hidden' ? 'versteckt' : 'sichtbar') + '</span></td>' +
+    '<td><button data-review="' + Number(r.id) + '" data-act="' + (r.status === 'hidden' ? 'show' : 'hide') + '">' + (r.status === 'hidden' ? 'Zeigen' : 'Verstecken') + '</button> ' +
+    '<button class="danger" data-review="' + Number(r.id) + '" data-act="delete">Löschen</button></td></tr>').join('');
   const h = await api('history');
   const weeks = (h && h.weeks) || [];
   const max = Math.max(1, ...weeks.map((w) => w.count));
@@ -110,6 +121,17 @@ $('#users tbody').addEventListener('click', async (e) => {
     await api('users/' + id, 'DELETE');
   } else {
     await api('users/' + id + '/' + b.dataset.act, 'POST');
+  }
+  load();
+});
+$('#reviews tbody').addEventListener('click', async (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.dataset.act === 'delete') {
+    if (!confirm('Bewertung endgültig löschen?')) return;
+    await api('reviews/' + b.dataset.review, 'DELETE');
+  } else {
+    await api('reviews/' + b.dataset.review + '/' + b.dataset.act, 'POST');
   }
   load();
 });

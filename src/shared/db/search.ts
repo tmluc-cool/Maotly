@@ -1,5 +1,6 @@
 import type { Db, RepoSource } from '../crawler/store';
 import type { Platform } from '../types';
+import { ratingsFor } from './reviews';
 
 export type SortKey = 'relevance' | 'stars' | 'updated' | 'new';
 export type UpdatedWithin = '6m' | '1y' | '2y' | 'any';
@@ -36,6 +37,18 @@ export interface RepoResult {
   pushed_at: string | null;
   first_seen_at: string;
   source: RepoSource;
+  /** Average stars of the user reviews (null = no reviews). */
+  rating_avg: number | null;
+  rating_count: number;
+}
+
+/** Adds the review average – only for the rows shown, so search stays fast. */
+function withRatings(db: Db, rows: Omit<RepoResult, 'rating_avg' | 'rating_count'>[]): RepoResult[] {
+  const ratings = ratingsFor(db, rows.map((r) => r.id));
+  return rows.map((r) => {
+    const x = ratings.get(r.id);
+    return { ...r, rating_avg: x ? x.avg : null, rating_count: x ? x.count : 0 };
+  });
 }
 
 export interface SearchResult {
@@ -154,9 +167,10 @@ export function searchRepos(db: Db, p: SearchParams, topicMap: TopicMap, now = D
   const limit = Math.min(Math.max(1, p.limit ?? 50), MAX_LIMIT);
   const offset = Math.max(0, p.offset ?? 0);
 
-  const items = db
-    .prepare(`SELECT ${RESULT_COLUMNS} FROM ${from} ${whereSql} ORDER BY ${order} LIMIT @limit OFFSET @offset`)
-    .all({ ...params, limit, offset }) as RepoResult[];
+  const items = withRatings(
+    db,
+    db.prepare(`SELECT ${RESULT_COLUMNS} FROM ${from} ${whereSql} ORDER BY ${order} LIMIT @limit OFFSET @offset`).all({ ...params, limit, offset }) as RepoResult[],
+  );
 
   let total: number;
   if (offset === 0 && items.length < limit) total = items.length;
@@ -181,19 +195,20 @@ export function reposByFullName(db: Db, names: string[]): Record<string, RepoRes
   const out: Record<string, RepoResult> = {};
   for (const n of names) {
     const row = stmt.get(n) as RepoResult | undefined;
-    if (row) out[n] = row;
+    if (row) out[n] = withRatings(db, [row])[0];
   }
   return out;
 }
 
 /** Newest projects from the update packages and manual updates. */
 export function newlyDiscovered(db: Db, limit = 12): RepoResult[] {
-  return db
+  const rows = db
     .prepare(
       `SELECT ${RESULT_COLUMNS} FROM repos r WHERE r.source IN ('delta', 'manual') AND r.archived = 0
        ORDER BY r.first_seen_at DESC, r.stars DESC LIMIT ?`,
     )
     .all(limit) as RepoResult[];
+  return withRatings(db, rows);
 }
 
 /** Registers SQL functions the queries need (ln is missing in some SQLite builds). */
@@ -203,4 +218,9 @@ export function registerFunctions(db: Db) {
   } catch {
     db.function('ln', { deterministic: true }, (x: unknown) => Math.log(Number(x)));
   }
+}
+
+export function repoById(db: Db, id: number): RepoResult | null {
+  const row = db.prepare(`SELECT ${RESULT_COLUMNS} FROM repos r WHERE r.id = ?`).get(id) as RepoResult | undefined;
+  return row ? withRatings(db, [row])[0] : null;
 }

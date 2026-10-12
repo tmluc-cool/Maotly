@@ -25,6 +25,7 @@ export type Route =
   | { name: 'home' }
   | { name: 'search'; q: string; filters: Filters }
   | { name: 'product'; id: string }
+  | { name: 'project'; id: number }
   | { name: 'category'; id: string; filters: Filters }
   | { name: 'settings' }
   | { name: 'about' }
@@ -75,6 +76,10 @@ export function parseHash(hash: string): Route {
       return { name: 'search', q: params.get('q') ?? '', filters: parseFilters(params) };
     case 'statt':
       return arg ? { name: 'product', id: arg } : { name: 'home' };
+    case 'projekt': {
+      const n = Number(arg);
+      return Number.isSafeInteger(n) && n > 0 ? { name: 'project', id: n } : { name: 'notfound' };
+    }
     case 'kategorie':
       return arg ? { name: 'category', id: arg, filters: parseFilters(params) } : { name: 'home' };
     case 'einstellungen':
@@ -105,6 +110,7 @@ export const href = {
   home: () => '#/',
   search: (q: string, f: Filters = DEFAULT_FILTERS) => withQuery('#/suche', filtersToParams(f, new URLSearchParams(q ? { q } : {}))),
   product: (id: string) => `#/statt/${encodeURIComponent(id)}`,
+  project: (id: number) => `#/projekt/${id}`,
   category: (id: string, f: Filters = DEFAULT_FILTERS) => withQuery(`#/kategorie/${encodeURIComponent(id)}`, filtersToParams(f)),
   settings: () => '#/einstellungen',
   about: () => '#/ueber',

@@ -1,12 +1,13 @@
 import Database from 'better-sqlite3';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { D1Database, D1PreparedStatement, D1Result } from '../src/types';
 
 /** In-memory stand-in for Cloudflare D1, built on SQLite (D1 is SQLite too). */
 export function createD1(): D1Database & { raw: Database.Database } {
   const db = new Database(':memory:');
-  db.exec(readFileSync(join(__dirname, '../migrations/0001_init.sql'), 'utf8'));
+  const dir = join(__dirname, '../migrations');
+  for (const f of readdirSync(dir).filter((f) => f.endsWith('.sql')).sort()) db.exec(readFileSync(join(dir, f), 'utf8'));
   const statement = (sql: string, args: unknown[] = []): D1PreparedStatement & { exec(): D1Result } => {
     const exec = (): D1Result => {
       const stmt = db.prepare(sql);

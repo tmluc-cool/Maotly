@@ -43,8 +43,9 @@ function NetworkSection() {
     <section className="card space-y-4">
       <h2 className="text-lg font-bold">GratisStatt-Netzwerk</h2>
       <p className="text-sm text-slate-600 dark:text-slate-400">
-        Freiwillig. Wer mitmacht, schlägt Projekte aus der Live-Suche für alle vor. Gespeichert werden nur GitHub-Benutzername,
-        App-Version, letzter aktiver Tag und Anzahl Beiträge.
+        Freiwillig. Wer mitmacht, schlägt Projekte aus der Live-Suche für alle vor und kann Projekte bewerten. Gespeichert
+        werden nur GitHub-Benutzername, App-Version, letzter aktiver Tag, Anzahl Beiträge sowie deine Bewertungen und Upvotes.
+        Bewertungen sind öffentlich mit deinem GitHub-Benutzernamen.
       </p>
       <p className="font-medium">
         {member ? (
@@ -97,6 +98,8 @@ function NetworkSection() {
             <dd>
               {myData.data.submissions} ({myData.data.pendingSubmissions} noch in Prüfung)
             </dd>
+            <dt className="text-slate-500">Bewertungen</dt>
+            <dd>{myData.data.reviews ?? 0} geschrieben, {myData.data.votes ?? 0} hochgewählt</dd>
             <dt className="text-slate-500">Status</dt>
             <dd>{myData.data.status === 'active' ? 'aktiv' : 'gesperrt'}</dd>
             <dd className="col-span-2 pt-2 text-xs text-slate-500">Mehr speichert der Server nicht über dich.</dd>
@@ -111,7 +114,7 @@ function NetworkSection() {
         className="w-[min(28rem,calc(100vw-2rem))] rounded-2xl bg-white p-6 text-slate-900 shadow-2xl backdrop:bg-slate-950/60 dark:bg-slate-900 dark:text-slate-100"
       >
         <h3 className="text-lg font-bold">Netzwerk verlassen?</h3>
-        <p className="mt-2">Deine Daten auf dem Server werden gelöscht.</p>
+        <p className="mt-2">Deine Daten auf dem Server werden gelöscht – auch deine Bewertungen, Upvotes und Antworten.</p>
         <div className="mt-5 flex flex-wrap gap-2">
           <button type="button" className="btn-primary bg-rose-600 hover:bg-rose-700" disabled={busy} onClick={() => void leave()}>
             {busy ? 'Lösche …' : 'Verlassen und Daten löschen'}

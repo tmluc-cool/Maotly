@@ -30,6 +30,11 @@ function setup(opts: { serverDown?: boolean } = {}) {
       if (opts.serverDown) throw new TypeError('fetch failed');
       if (url.endsWith('/v1/register')) return json({ sessionToken: 'sess', login: 'octo', joinedDay: '2026-10-12' });
       if (url.endsWith('/v1/me') && init?.method === 'DELETE') return json({ ok: true });
+      if (url.endsWith('/v1/reviews') && init?.method === 'POST') return json({ id: 77, createdDay: '2026-10-12', updatedDay: '2026-10-12' });
+      if (/\/v1\/reviews\/\d+\/vote$/.test(url)) return json({ ok: true });
+      if (/\/v1\/reviews\/\d+\/reply$/.test(url) && init?.method === 'POST') {
+        return body?.githubToken === 'gho_token' ? json({ ok: true, replyDay: '2026-10-12' }) : json({ error: 'Nur der Owner des Projekts kann antworten' }, 403);
+      }
       if (url.endsWith('/v1/me')) return json({ login: 'octo', appVersion: '1.0.0', joinedDay: '2026-10-12', lastActiveDay: '2026-10-12', submissions: 3, status: 'active', pendingSubmissions: 1 });
       return json({ ok: true });
     }
@@ -181,4 +186,36 @@ describe('network (opt-in)', () => {
       config.consentVersion = old;
     }
   });
+
+  it('reviews: only members can write; own review, votes and answers show up locally at once', async () => {
+    const s = setup();
+    const repo = makeRepos(1).map(toRepoRow);
+    s.db.storeLive(repo);
+    expect(await s.network.writeReview(1, 5, 'Gut')).toMatchObject({ ok: false });
+    expect(s.serverCalls()).toEqual([]);
+
+    await s.network.join();
+    expect(await s.network.writeReview(1, 4, '  Läuft gut  ')).toEqual({ ok: true });
+    const post = s.serverCalls().find((c) => c.url.endsWith('/v1/reviews'))!;
+    expect(post.body).toEqual({ repoId: 1, rating: 4, text: '  Läuft gut  ' });
+    let d = s.db.repoDetails(1);
+    expect(d.reviews[0]).toMatchObject({ id: 77, author: 'octo', rating: 4, text: 'Läuft gut', local: 1 });
+    expect(d.summary.count).toBe(1);
+
+    // Someone else's review arrives with the package; vote and answer as owner.
+    s.db.db.prepare("INSERT INTO reviews (id, repo_id, author, rating, text, votes) VALUES (5, 1, 'bob', 2, 'Stürzt ab', 1)").run();
+    expect(await s.network.vote(5, true)).toEqual({ ok: true });
+    expect(await s.network.reply(5, 'Ist behoben')).toEqual({ ok: true });
+    const reply = s.serverCalls().find((c) => c.url.endsWith('/v1/reviews/5/reply'))!;
+    expect(reply.body).toEqual({ text: 'Ist behoben', githubToken: 'gho_token' });
+    d = s.db.repoDetails(1);
+    expect(d.reviews.find((r) => r.id === 5)).toMatchObject({ votes: 2, voted: true, reply_text: 'Ist behoben', reply_author: 'octo' });
+
+    // Leaving removes all of it locally too.
+    await s.network.leave();
+    d = s.db.repoDetails(1);
+    expect(d.reviews.map((r) => r.id)).toEqual([5]);
+    expect(d.reviews[0]).toMatchObject({ votes: 1, voted: false, reply_text: null });
+  });
 });
+

@@ -1,6 +1,6 @@
 # Datenschutzerklärung GratisStatt
 
-Stand: 12.10.2026
+Stand: 12.10.2026 (Version 2: Bewertungen)
 
 ## Wer ist verantwortlich?
 
@@ -29,8 +29,22 @@ Auf deinem Computer speichert die App eine Datenbank mit öffentlichen Angaben z
 | App-Version | um zu sehen, welche Versionen noch benutzt werden |
 | Tag des Beitritts und letzter aktiver Tag (nur Datum, keine Uhrzeit) | um inaktive Mitglieder automatisch zu löschen |
 | Anzahl Beiträge und die IDs der vorgeschlagenen GitHub-Projekte | um die Vorschläge zu prüfen und ins nächste Update aufzunehmen |
+| Deine Bewertungen (Sterne, Text, Datum) und Antworten als Projekt-Owner | damit andere sie lesen können – **öffentlich mit deinem GitHub-Benutzernamen** |
+| Welche Bewertungen du hochgewählt hast | damit jede Person nur einmal wählen kann – veröffentlicht wird nur die Anzahl, nicht wer gewählt hat |
 
 **Nicht gespeichert werden:** E-Mail-Adresse, IP-Adresse, Suchbegriffe, Geräte-IDs, Dateien auf deinem Computer. Deinen GitHub-Token prüfen wir bei der Anmeldung ein einziges Mal und speichern ihn nicht.
+
+## Bewertungen
+
+- Bewertungen schreiben, hochwählen und beantworten kann nur, wer beim Netzwerk mitmacht. **Lesen kann jeder.**
+- Einmal pro Woche werden alle Bewertungen mit deinem GitHub-Benutzernamen in das öffentliche Update-Paket auf GitHub
+  (Repository «gratisstatt-data», neuestes Release) geschrieben. So bekommen alle Nutzer sie, ohne mit unserem Server
+  zu sprechen. Ältere Kopien entfernen wir aus früheren Releases.
+- Ob du der Owner eines Projekts bist, prüft der Server beim Antworten einmalig bei GitHub mit deinem GitHub-Token.
+  Den Token speichert er nicht.
+- Deine eigene Bewertung kannst du jederzeit ändern oder löschen. Gelöschte Bewertungen verschwinden mit dem nächsten
+  wöchentlichen Update auch bei allen anderen.
+- Wir können Bewertungen ausblenden oder löschen, z.B. bei Spam oder Beleidigungen.
 
 ## Wo werden die Daten gespeichert?
 
@@ -43,7 +57,7 @@ Bis du das Netzwerk verlässt – oder automatisch nach **12 Monaten ohne Aktivi
 ## Deine Rechte: einsehen und löschen
 
 - **Einsehen:** Einstellungen → Netzwerk → «Meine gespeicherten Daten anzeigen» zeigt genau, was der Server über dich weiss.
-- **Löschen:** Einstellungen → Netzwerk → Schalter «Mitmachen» ausschalten → «Verlassen und Daten löschen». Dein Konto und deine noch offenen Vorschläge werden sofort gelöscht.
+- **Löschen:** Einstellungen → Netzwerk → Schalter «Mitmachen» ausschalten → «Verlassen und Daten löschen». Dein Konto, deine noch offenen Vorschläge, deine Bewertungen, Upvotes und Antworten werden sofort auf dem Server gelöscht und verschwinden mit dem nächsten wöchentlichen Update auch aus den Apps der anderen.
 - Für alle anderen Fragen kannst du dich an die oben genannte Kontaktadresse wenden.
 
 ## Änderungen

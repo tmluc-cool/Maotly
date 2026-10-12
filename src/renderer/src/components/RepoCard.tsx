@@ -1,6 +1,8 @@
 import type { RepoResult } from '@shared/types';
 import { formatStars, isNew, maintenance, relativeTime } from '../lib/format';
+import { href, navigate } from '../lib/router';
 import { MaintenanceLight } from './badges';
+import { RatingChip } from './Stars';
 import { ExternalIcon, StarIcon } from './icons';
 
 export function updatedText(repo: { archived: number | boolean; pushed_at: string | null }): string {
@@ -44,6 +46,17 @@ export function RepoCard({ repo }: { repo: RepoResult }) {
             <MaintenanceLight value={maintenance(repo)} />
             {updatedText(repo)}
           </span>
+          <button
+            type="button"
+            className="rounded px-1 hover:bg-slate-100 hover:underline dark:hover:bg-slate-800"
+            title="Bewertungen ansehen und schreiben"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(href.project(repo.id));
+            }}
+          >
+            {repo.rating_count ? <RatingChip avg={repo.rating_avg} count={repo.rating_count} /> : 'Bewerten'}
+          </button>
           {repo.license && <span>Lizenz: {repo.license}</span>}
           {repo.language && <span>{repo.language}</span>}
           {topics.map((t) => (

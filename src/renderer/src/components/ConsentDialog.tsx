@@ -56,11 +56,15 @@ export function ConsentDialog() {
             <p>Die App funktioniert komplett ohne Anmeldung.</p>
             <p>
               Wenn du willst, kannst du beim <strong>GratisStatt-Netzwerk</strong> mitmachen. Projekte, die du über die
-              Live-Suche findest, landen dann nach einer Prüfung beim nächsten Update bei allen Nutzern.
+              Live-Suche findest, landen dann nach einer Prüfung beim nächsten Update bei allen Nutzern. Ausserdem kannst du
+              Projekte bewerten und hilfreiche Bewertungen hochwählen.
             </p>
             <p>
               <strong>Gespeichert wird:</strong> dein GitHub-Benutzername, die App-Version, an welchem Tag du die App zuletzt
-              benutzt hast und wie viele Projekte du beigetragen hast.
+              benutzt hast, wie viele Projekte du beigetragen hast, deine Bewertungen und welche Bewertungen du hochgewählt hast.
+              <br />
+              <strong>Öffentlich sichtbar:</strong> deine Bewertungen mit deinem GitHub-Benutzernamen. Bei Upvotes nur die Anzahl,
+              nicht wer gewählt hat.
               <br />
               <strong>Nicht gespeichert wird:</strong> E-Mail, IP-Adresse, Suchbegriffe, Dateien auf deinem Computer.
             </p>

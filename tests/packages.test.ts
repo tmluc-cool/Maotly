@@ -106,6 +106,6 @@ describe('applyPackages', () => {
   it('does nothing while no manifest is published', async () => {
     const { dir, db } = setup();
     const r = await applyPackages({ db, fetch: fakeFileFetch({}), manifestUrl: MANIFEST, tmpDir: join(dir, 'tmp'), maxMissing: 12 });
-    expect(r).toEqual({ applied: [], usedBase: null, added: 0, updated: 0 });
+    expect(r).toEqual({ applied: [], usedBase: null, added: 0, updated: 0, reviews: null });
   });
 });

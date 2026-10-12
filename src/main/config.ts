@@ -11,7 +11,7 @@ export const config = {
   /** GitHub OAuth App (device flow enabled, no scopes). Client IDs are public. */
   oauthClientId: 'REPLACE_WITH_OAUTH_CLIENT_ID',
   /** Increase when the consent text changes substantially; members are asked again. */
-  consentVersion: 1,
+  consentVersion: 2, // 2: reviews and upvotes
   /** Days between automatic update checks. */
   updateIntervalDays: 7,
   /** If more packages than this are missing, the newest base is loaded instead. */

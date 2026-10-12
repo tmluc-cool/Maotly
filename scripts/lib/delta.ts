@@ -33,7 +33,14 @@ export function sinceFrom(prev: Manifest | null, fallback: string): string {
   return dates.at(-1) ?? fallback;
 }
 
-export function nextManifest(prev: Manifest | null, delta: PackageEntry, base: PackageEntry | null, now: string): Manifest {
+export function nextManifest(
+  prev: Manifest | null,
+  delta: PackageEntry,
+  base: PackageEntry | null,
+  now: string,
+  reviews: PackageEntry | null = null,
+): Manifest {
   const deltas = [...(prev?.deltas ?? []).filter((d) => d.date !== delta.date), delta].sort((a, b) => a.date.localeCompare(b.date));
-  return { version: 1, generated_at: now, deltas, latest_base: base ?? prev?.latest_base ?? null };
+  // Reviews only point to the newest release: older copies are removed from earlier releases.
+  return { version: 1, generated_at: now, deltas, latest_base: base ?? prev?.latest_base ?? null, reviews };
 }

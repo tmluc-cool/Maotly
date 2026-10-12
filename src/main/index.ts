@@ -166,6 +166,28 @@ function registerIpc() {
   );
   ipcMain.handle(IPC.newly, () => database.newlyDiscovered(12));
   ipcMain.handle(IPC.stats, () => database.stats());
+  const id = (v: unknown) => (Number.isSafeInteger(v) && (v as number) > 0 ? (v as number) : null);
+  const bad = { ok: false, message: 'Ungültige Eingabe.' } as const;
+  ipcMain.handle(IPC.repoDetails, (_e, repoId: unknown) => {
+    const rid = id(repoId);
+    return rid ? database.repoDetails(rid) : { repo: null, reviews: [], summary: { avg: 0, count: 0, distribution: [0, 0, 0, 0, 0] } };
+  });
+  ipcMain.handle(IPC.reviewWrite, (_e, repoId: unknown, rating: unknown, text: unknown) => {
+    const rid = id(repoId);
+    if (!rid || !Number.isInteger(rating) || (rating as number) < 1 || (rating as number) > 5 || typeof text !== 'string') return bad;
+    const t = text.trim();
+    if (t.length < 3 || t.length > 500) return { ok: false, message: 'Der Text muss zwischen 3 und 500 Zeichen lang sein.' };
+    return network.writeReview(rid, rating as number, t);
+  });
+  ipcMain.handle(IPC.reviewDelete, (_e, repoId: unknown) => (id(repoId) ? network.deleteReview(id(repoId)!) : bad));
+  ipcMain.handle(IPC.reviewVote, (_e, reviewId: unknown, on: unknown) => (id(reviewId) ? network.vote(id(reviewId)!, on === true) : bad));
+  ipcMain.handle(IPC.reviewReply, (_e, reviewId: unknown, text: unknown) => {
+    if (!id(reviewId) || typeof text !== 'string') return bad;
+    const t = text.trim();
+    if (t.length < 3 || t.length > 500) return { ok: false, message: 'Die Antwort muss zwischen 3 und 500 Zeichen lang sein.' };
+    return network.reply(id(reviewId)!, t);
+  });
+  ipcMain.handle(IPC.reviewDeleteReply, (_e, reviewId: unknown) => (id(reviewId) ? network.deleteReply(id(reviewId)!) : bad));
   ipcMain.handle(IPC.vacuum, () => updater.vacuum());
 
   ipcMain.handle(IPC.liveSearch, async (_e, term: unknown) => {

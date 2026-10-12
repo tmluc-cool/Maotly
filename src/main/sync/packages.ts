@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto';
-import { createWriteStream, existsSync, mkdirSync, rmSync } from 'node:fs';
+import { createWriteStream, existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { getMeta, mergeDatabase, setMeta, type Db } from '../../shared/crawler/store';
+import { replaceReviews, sanitizeReviews } from '../../shared/db/reviews';
 
 export interface PackageEntry {
   /** Day of the package (YYYY-MM-DD). */
@@ -18,6 +19,8 @@ export interface Manifest {
   generated_at: string;
   deltas: PackageEntry[];
   latest_base?: PackageEntry | null;
+  /** All public reviews as JSON (only attached to the newest release). */
+  reviews?: PackageEntry | null;
 }
 
 export interface PackageProgress {
@@ -34,6 +37,8 @@ export interface ApplyResult {
   usedBase: string | null;
   added: number;
   updated: number;
+  /** Number of reviews loaded, or null if they were already up to date. */
+  reviews: number | null;
 }
 
 export class ChecksumError extends Error {}
@@ -59,6 +64,7 @@ export function parseManifest(json: unknown): Manifest {
     generated_at: m.generated_at,
     deltas: m.deltas.filter(ok).sort((a, b) => a.date.localeCompare(b.date)),
     latest_base: m.latest_base && ok(m.latest_base) ? m.latest_base : null,
+    reviews: m.reviews && ok(m.reviews) ? m.reviews : null,
   };
 }
 
@@ -136,12 +142,12 @@ export async function applyPackages(o: ApplyOptions): Promise<ApplyResult> {
   o.onProgress?.(progress);
 
   const res = await o.fetch(o.manifestUrl, { redirect: 'follow', signal: o.signal });
-  if (res.status === 404) return { applied: [], usedBase: null, added: 0, updated: 0 }; // nothing published yet
+  if (res.status === 404) return { applied: [], usedBase: null, added: 0, updated: 0, reviews: null }; // nothing published yet
   if (!res.ok) throw new Error(`Manifest nicht erreichbar (${res.status})`);
   const manifest = parseManifest(await res.json());
 
   if (!existsSync(o.tmpDir)) mkdirSync(o.tmpDir, { recursive: true });
-  const result: ApplyResult = { applied: [], usedBase: null, added: 0, updated: 0 };
+  const result: ApplyResult = { applied: [], usedBase: null, added: 0, updated: 0, reviews: null };
   let applied = appliedDeltas(o.db);
   let missing = missingDeltas(manifest, applied, getMeta(o.db, 'base_version'));
 
@@ -177,6 +183,21 @@ export async function applyPackages(o: ApplyOptions): Promise<ApplyResult> {
     setMeta(o.db, 'applied_deltas', JSON.stringify(applied));
     setMeta(o.db, 'last_delta_date', d.date);
     result.applied.push(d.date);
+  }
+  // Reviews: one small JSON with all of them, replaced completely (deleted reviews disappear too).
+  const rv = manifest.reviews;
+  if (rv && !o.signal?.aborted && rv.sha256 !== getMeta(o.db, 'reviews_sha256')) {
+    const file = join(o.tmpDir, `reviews-${rv.date}.json`);
+    o.onProgress?.({ ...progress, phase: 'download', current: rv.file, added: result.added, updated: result.updated });
+    await downloadVerified(o.fetch, rv, file, o.signal);
+    try {
+      const reviews = sanitizeReviews(JSON.parse(readFileSync(file, 'utf8')));
+      result.reviews = replaceReviews(o.db, reviews, rv.date);
+      setMeta(o.db, 'reviews_sha256', rv.sha256);
+      setMeta(o.db, 'reviews_date', rv.date);
+    } finally {
+      rmSync(file, { force: true });
+    }
   }
   return result;
 }

@@ -1,54 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { handle } from '../src/index';
 import { cleanupInactive, MAX_PER_DAY } from '../src/api';
-import type { Env } from '../src/types';
 import { sign } from '../src/util';
-import { createD1 } from './d1-shim';
-
-const ADMIN_SECRET = 'a'.repeat(40);
-const ORIGIN = 'https://gs.example.workers.dev';
-
-function setup(start = Date.parse('2026-10-12T10:00:00Z')) {
-  const DB = createD1();
-  const env: Env = {
-    DB, ADMIN_SECRET, ADMIN_GITHUB_ID: '999', ADMIN_OAUTH_CLIENT_ID: 'cid', ADMIN_OAUTH_CLIENT_SECRET: 'csecret',
-    SESSION_SECRET: 's'.repeat(40), DATA_REPO: 'o/gratisstatt-data',
-  };
-  let now = start;
-  const ghUsers: Record<string, { id: number; login: string }> = { gho_alice_000: { id: 1, login: 'alice' }, gho_bob_00000: { id: 2, login: 'bob' }, gho_admin_000: { id: 999, login: 'boss' } };
-  const outbound: { url: string; init?: RequestInit }[] = [];
-  const fetchFn = (async (input: string | URL | Request, init?: RequestInit) => {
-    const url = String(input);
-    outbound.push({ url, init });
-    const auth = (init?.headers as Record<string, string>)?.Authorization?.replace('Bearer ', '');
-    if (url === 'https://api.github.com/user') {
-      const u = auth && ghUsers[auth];
-      return u ? Response.json(u) : new Response('{}', { status: 401 });
-    }
-    if (url === 'https://github.com/login/oauth/access_token') {
-      const code = JSON.parse(String(init?.body)).code;
-      return Response.json(code === 'good' ? { access_token: 'gho_admin_000' } : code === 'other' ? { access_token: 'gho_alice_000' } : {});
-    }
-    if (url.endsWith('/manifest.json')) return Response.json({ deltas: [{ date: '2026-10-05', count: 1200 }, { date: '2026-10-12', count: 900 }] });
-    return new Response('nope', { status: 404 });
-  }) as typeof fetch;
-  const call = (method: string, path: string, opts: { body?: unknown; token?: string; headers?: Record<string, string> } = {}) =>
-    handle(
-      new Request(ORIGIN + path, {
-        method,
-        headers: {
-          ...(opts.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
-          ...(opts.token ? { Authorization: `Bearer ${opts.token}` } : {}),
-          ...opts.headers,
-        },
-        body: opts.body === undefined ? undefined : typeof opts.body === 'string' ? opts.body : JSON.stringify(opts.body),
-      }),
-      env,
-      { fetch: fetchFn, now: () => now },
-    );
-  const register = async (gh = 'gho_alice_000') => (await (await call('POST', '/v1/register', { body: { githubToken: gh } })).json()) as { sessionToken: string; login: string; joinedDay: string };
-  return { env, DB, call, register, outbound, advanceDays: (d: number) => (now += d * 86_400_000), now: () => now };
-}
+import { ADMIN_SECRET, setup } from './setup';
 
 describe('register', () => {
   it('checks the GitHub token once and stores only id, login, days and a session hash', async () => {
@@ -130,6 +83,7 @@ describe('member endpoints', () => {
     s.DB.raw.prepare("UPDATE submissions SET status = 'accepted' WHERE repo_id = 10").run();
     expect(await (await s.call('GET', '/v1/me', { token: t })).json()).toEqual({
       login: 'alice', appVersion: null, joinedDay: '2026-10-12', lastActiveDay: '2026-10-12', submissions: 2, status: 'active', pendingSubmissions: 1,
+      reviews: 0, votes: 0,
     });
     expect((await s.call('DELETE', '/v1/me', { token: t })).status).toBe(200);
     expect(s.DB.raw.prepare('SELECT count(*) FROM users').pluck().get()).toBe(0);

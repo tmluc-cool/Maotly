@@ -96,3 +96,15 @@ jobs:
             --title "Update-Paket $DATE" \
             --notes "Wöchentliches Update-Paket für GratisStatt. Prüfsummen stehen in manifest.json." \
             --latest
+
+      - name: Remove old review copies
+        # Reviews are only kept in the newest release, so deleted reviews really disappear.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DATE="${{ steps.plan.outputs.date }}"
+          for tag in $(gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName --jq '.[].tagName'); do
+            if [ "$tag" != "delta-$DATE" ]; then
+              gh release delete-asset "$tag" reviews.json --repo "$GITHUB_REPOSITORY" --yes 2>/dev/null || true
+            fi
+          done

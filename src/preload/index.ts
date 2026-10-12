@@ -12,6 +12,12 @@ const api: GratisStattApi = {
   curated: (repos) => ipcRenderer.invoke(IPC.curated, repos),
   newlyDiscovered: () => ipcRenderer.invoke(IPC.newly),
   stats: () => ipcRenderer.invoke(IPC.stats),
+  repoDetails: (id) => ipcRenderer.invoke(IPC.repoDetails, id),
+  writeReview: (repoId, rating, text) => ipcRenderer.invoke(IPC.reviewWrite, repoId, rating, text),
+  deleteReview: (repoId) => ipcRenderer.invoke(IPC.reviewDelete, repoId),
+  voteReview: (reviewId, on) => ipcRenderer.invoke(IPC.reviewVote, reviewId, on),
+  replyReview: (reviewId, text) => ipcRenderer.invoke(IPC.reviewReply, reviewId, text),
+  deleteReply: (reviewId) => ipcRenderer.invoke(IPC.reviewDeleteReply, reviewId),
   vacuum: () => ipcRenderer.invoke(IPC.vacuum),
   liveSearch: (term) => ipcRenderer.invoke(IPC.liveSearch, term),
 
