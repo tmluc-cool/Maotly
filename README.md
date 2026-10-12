@@ -1,74 +1,96 @@
 # GratisStatt
 
-Desktop-App für Windows: Du gibst ein, **für welche Software du gerade zahlst** – und bekommst kostenlose
-Open-Source-Alternativen von GitHub. Mit Ampel für die Pflege, Lizenz, Plattformen, Schwierigkeit und – wenn
-vorhanden – direktem Download des Windows-Installers.
+Desktop-App für Windows mit einer **lokalen Datenbank von GitHub-Projekten** (ca. 100'000). Du gibst ein, wofür du
+zahlst – oben erscheinen die kuratierten Gratis-Alternativen, darunter alle passenden Projekte aus der Datenbank.
+Alles lässt sich offline durchsuchen. Ein Klick öffnet das Projekt auf GitHub.
 
-Alles läuft lokal. Kein Backend, keine Tracker. Die App spricht nur mit `api.github.com` und lädt Dateien von
-GitHub. Offline funktioniert sie mit den mitgelieferten Daten.
+- Einmal pro Woche lädt die App ein **Update-Paket** (von GitHub Releases, per SHA-256 geprüft).
+- **Live-Suche** auf GitHub bei wenigen Treffern; Funde werden lokal gespeichert.
+- **GratisStatt-Netzwerk** (freiwillig, standardmässig aus): Live-Funde gehen nach einer Prüfung an alle.
 
-## Schnellstart
+## Schnellstart (Entwicklung)
 
 ```bash
 npm install
-npm run dev          # App im Entwicklungsmodus
-npm test             # Tests (Suche, Filter, Cache, Installer-Auswahl, GitHub-Service, Daten)
+npm run fetch-base          # neueste Basis-Datenbank herunterladen (sobald gratisstatt-data Releases hat)
+# oder: npm run build-base-db  (selbst crawlen, ca. 1 Stunde mit Token in .env)
+npm run dev
+npm test                    # Crawler, Datenbank, Suche (<100 ms bei 100'000 Projekten), Pakete, Netzwerk, Server
 npm run typecheck
 ```
 
+Für einen schnellen Test reicht eine kleine Datenbank:
+`npm run build-base-db -- --filter "stars:>=20000"` (ca. 2'000 Projekte, ein paar Minuten auch ohne Token).
+
 ## Windows-Programm bauen
 
-1. Einen GitHub-Token erstellen (keine Berechtigungen nötig) und in eine Datei `.env` schreiben
-   (siehe `.env.example`):
-   ```
-   GITHUB_TOKEN=github_pat_...
-   ```
-2. Auf **Windows** ausführen:
-   ```bash
-   npm run dist
-   ```
-   Das holt zuerst frische Daten (`fetch-stats`), prüft sie (`validate`) und baut dann mit electron-builder.
-   Ergebnis im Ordner `release/`:
-   - `GratisStatt-Setup-<version>.exe` (Installer)
-   - `GratisStatt-<version>-portable.exe` (ohne Installation)
+1. `resources/base.db` bereitstellen (`npm run fetch-base` oder `npm run build-base-db`).
+2. Auf **Windows**: `npm run dist`
+   – prüft, dass `base.db` existiert, führt `validate` aus (kuratierte Liste gegen `base.db`) und baut mit
+   electron-builder. Ergebnis in `release/`: `GratisStatt-Setup-<version>.exe` und `GratisStatt-<version>-portable.exe`.
 
-`npm run dist:offline` baut ohne neue Daten. Unter Linux/macOS braucht electron-builder für das Windows-Paket `wine`.
+`npm run validate -- --fix` holt Repos der kuratierten Liste, die in `base.db` fehlen, von GitHub nach.
 
-## Daten
+## Einrichtung (einmalig)
 
-| Datei | Inhalt |
-| --- | --- |
-| `data/alternatives.json` | Von Hand gepflegt: Kategorien, bezahlte Produkte und ihre Alternativen |
-| `data/repo-stats.snapshot.json` | Erzeugt von `npm run fetch-stats`: Sterne, letzte Änderung, Lizenz, neuestes Release |
+### 1. Daten-Repo `gratisstatt-data`
+1. Öffentliches Repo `<owner>/gratisstatt-data` anlegen.
+2. `.github/workflows/weekly-delta.yml` aus diesem Repo dorthin kopieren.
+3. Dort unter *Settings → Secrets and variables → Actions*:
+   - Variable `APP_REPO` = `<owner>/githuub-appstore`
+   - Variable `SERVER_URL` = URL des Workers (nur fürs Netzwerk)
+   - Secret `ADMIN_SECRET` = derselbe Wert wie auf dem Server (nur fürs Netzwerk)
+4. Action einmal manuell starten mit «Also build a fresh base database». Danach läuft sie jeden Montag.
 
-- `npm run fetch-stats` – max. 5 Anfragen gleichzeitig, 2 Wiederholungen. Meldet fehlende (404), umbenannte und
-  archivierte Repos. Exit-Code 1, wenn ein Repo fehlt.
-- `npm run validate` – prüft doppelte IDs, Plattformen, Levels, Kategorien, Länge der `summary` (max. 120), „ß“ und ob
-  jedes Repo Stats hat.
-- `npm run icon` – erzeugt `build/icon.png` und `build/icon.ico` aus `build/icon.svg`.
+Jedes Release enthält `delta-YYYY-MM-DD.db`, `manifest.json` (alle Pakete mit Datum, Anzahl, Grösse, SHA-256 und
+`latest_base`) und einmal im Monat `base-YYYY-MM-DD.db`. Die App lädt
+`https://github.com/<owner>/gratisstatt-data/releases/latest/download/manifest.json`.
 
-Der aktuell eingecheckte Snapshot ist ein **Seed** (nur Sterne, ohne Releases und Lizenzen). Die App ergänzt die
-fehlenden Angaben live, sobald ein Produkt geöffnet wird. Vor einem Release `npm run fetch-stats` laufen lassen.
+### 2. GitHub OAuth Apps
+- **App-Anmeldung (Device Flow):** neue OAuth App, «Enable Device Flow» an. Client-ID in `src/main/config.ts`
+  (`oauthClientId`) eintragen. Keine Scopes, kein Secret in der App.
+- **Admin-Dashboard (Web Flow):** zweite OAuth App mit Callback `https://<worker>/admin/callback`.
+
+### 3. Server (Cloudflare Worker + D1)
+```bash
+cd server && npm install
+npx wrangler d1 create gratisstatt         # database_id in wrangler.toml eintragen
+npx wrangler secret put ADMIN_SECRET        # langer Zufallswert
+npx wrangler secret put ADMIN_GITHUB_ID     # deine numerische GitHub-ID
+npx wrangler secret put ADMIN_OAUTH_CLIENT_ID
+npx wrangler secret put ADMIN_OAUTH_CLIENT_SECRET
+npx wrangler secret put SESSION_SECRET      # langer Zufallswert
+cd .. && npm run server:deploy
+```
+Danach die Worker-URL in `src/main/config.ts` (`serverUrl`) eintragen. Lokal: `npm run server:dev`.
+
+Endpunkte unter `/v1`: `POST /register`, `POST /heartbeat`, `POST /submissions`, `GET /me`, `DELETE /me`,
+`GET /admin/submissions`, `POST /admin/submissions/result`. Dashboard unter `/admin`.
 
 ## Aufbau
 
 ```
-src/main/        Main-Prozess: Fenster, IPC, GitHub-Service, Cache, Token (safeStorage), Downloads
-src/preload/     Kleines, typisiertes API (window.api) über contextBridge
-src/renderer/    React-Oberfläche (Hash-Routing, Tailwind)
-src/shared/      Typen und reine Logik (Cache, Installer-Auswahl), auch von den Tests genutzt
-scripts/         fetch-stats, validate-data, make-icon
-tests/           Vitest
+src/shared/crawler/   Ein Crawler für Basis-Script, GitHub Action und App (Suche, Halbieren, Rate-Limits, Upsert)
+src/shared/db/        Volltextsuche (FTS5, bm25 + Sterne-Bonus), Filter
+src/main/             Fenster, IPC, Datenbank, Update-Planung, Live-Suche, Netzwerk-Client
+src/main/sync-worker  Update-Pakete einmischen, manuelles Update (eigener Thread, eigene DB-Verbindung)
+src/preload/          Kleines, typisiertes IPC-API
+src/renderer/         Oberfläche (React, Tailwind, virtualisierte Liste)
+server/               Cloudflare Worker, D1-Schema, Admin-Dashboard
+scripts/              build-base-db, build-delta, validate-data, fetch-base, make-icon
+data/                 alternatives.json (kuratiert), topic-map.json (Kategorien/Plattformen aus Topics)
+docs/PRIVACY.md       Datenschutzerklärung (auch in der App)
 ```
 
-### Sicherheit
+## Sicherheit und Datenschutz
 
-- `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`, strenge Content-Security-Policy
-- Der Renderer hat keinen Netzwerk- und keinen Dateizugriff; alles läuft über IPC im Main-Prozess
-- Downloads: Der Renderer nennt nur Repo + Dateiname, die URL kommt aus den eigenen Daten und muss auf GitHub zeigen.
-  Dateien werden **nie automatisch ausgeführt**
-- Externe Links nur `https://` und nur über `shell.openExternal`
-- Der eigene GitHub-Token wird mit Electron `safeStorage` verschlüsselt und nie an den Renderer gegeben
+- `contextIsolation`, `sandbox`, kein `nodeIntegration`, strenge CSP. Der Renderer hat keinen Netz-, Datei- oder DB-Zugriff.
+- Externe Links nur `https://github.com/…` und die `website`-URLs der kuratierten Liste.
+- Alle SQL-Abfragen mit Parametern, Sucheingaben für FTS5 escaped.
+- Update-Pakete werden vor dem Einmischen per SHA-256 geprüft.
+- Tokens nur mit Electron `safeStorage`, nie im Klartext, nie im Renderer.
+- Ohne Netzwerk spricht die App nur mit GitHub. Das Netzwerk ist Opt-in; vorher wird nichts an den Server gesendet.
+- Server: Eingaben mit zod geprüft, Limits pro Nutzer, keine IP-Adressen, keine Logs, Inaktive nach 12 Monaten gelöscht.
 
 ---
 

@@ -12,7 +12,7 @@
     "build": "electron-vite build",
     "preview": "electron-vite preview",
     "postinstall": "electron-builder install-app-deps",
-    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json && tsc --noEmit -p server/tsconfig.json",
     "test": "vitest run",
     "build-base-db": "tsx scripts/build-base-db.ts",
     "validate": "tsx scripts/validate-data.ts",
@@ -21,9 +21,11 @@
     "dist": "tsx scripts/check-base.ts && npm run validate && electron-vite build && electron-builder --win --x64",
     "server:dev": "npm --prefix server run dev",
     "server:deploy": "npm --prefix server run deploy",
-    "server:test": "vitest run --root server"
+    "fetch-base": "tsx scripts/fetch-base.ts",
+    "server:typecheck": "tsc --noEmit -p server/tsconfig.json"
   },
   "devDependencies": {
+    "@tanstack/react-virtual": "^3.14.15",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
@@ -43,7 +45,8 @@
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vite": "^7.3.7",
-    "vitest": "^3.2.7"
+    "vitest": "^3.2.7",
+    "zod": "^3.25.76"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3"

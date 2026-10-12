@@ -31,7 +31,13 @@ const missing = repos.filter((r) => !find.get(r));
 
 async function main() {
 if (missing.length && fix) {
-  const client = new GitHubClient({ token: envVar('GITHUB_TOKEN'), userAgent: 'GratisStatt-validate' });
+  const client = new GitHubClient({
+    token: envVar('GITHUB_TOKEN'),
+    userAgent: 'GratisStatt-validate',
+    onWait: (ms, why) => {
+      if (ms > 10_000) console.log(`   … GitHub-Limit erreicht, warte ${Math.ceil(ms / 60_000)} min (${why}). Mit GITHUB_TOKEN in .env geht es schneller.`);
+    },
+  });
   console.log(`Hole ${missing.length} fehlende Repos von GitHub …`);
   for (const name of [...missing]) {
     const repo = await client.getRepo(name);
