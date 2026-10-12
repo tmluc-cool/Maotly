@@ -7,6 +7,7 @@ Everything can be searched offline. One click opens the project on GitHub.
 The app is available in English, German and Spanish (Settings → Language).
 
 - Once a week, the app downloads an **update package** (from GitHub Releases, verified with SHA-256).
+- **New app versions** install with one click: the green **Update** button at the top right (installer verified with SHA-256, Moatly restarts by itself).
 - **Live search** on GitHub when there are only a few results; finds are saved locally.
 - **Moatly network** (optional, off by default): after a review, live finds are shared with everyone.
 
@@ -115,6 +116,11 @@ docs/PRIVACY.md       Privacy policy (also in the app); German: PRIVACY.de.md, S
 - Server: input validated with zod, limits per user, no IP addresses, no logs, inactive users deleted after 12 months.
 
 Full privacy policy: [docs/PRIVACY.md](docs/PRIVACY.md) (also in [German](docs/PRIVACY.de.md) and [Spanish](docs/PRIVACY.es.md)).
+
+## License
+
+Moatly is open source under the [MIT License](LICENSE).
+The project data shown in the app comes from public GitHub repositories and belongs to their owners.
 
 ---
 

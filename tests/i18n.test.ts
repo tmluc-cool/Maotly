@@ -23,7 +23,7 @@ describe('translations', () => {
   });
 
   it('fills placeholders and picks plural forms', () => {
-    expect(t('status.newVersion', { version: '0.1.9' })).toBe('Download new version 0.1.9');
+    expect(t('appUpdate.downloading', { percent: 42 })).toBe('Updating … 42%');
     expect(tn('common.projects', 1)).toBe('1 project');
     expect(tn('common.projects', 104213)).toBe('104,213 projects');
     setLang('de');

@@ -59,7 +59,7 @@ export function SearchPage({ q, filters }: { q: string; filters: Filters }) {
   const showLive = q.trim().length >= 2 && !info.loading && info.total < FEW_RESULTS;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 pb-20 pt-8">
+    <div className="page pb-20 pt-8">
       <div className="max-w-2xl">
         <SearchBox size="large" initialValue={q} keepText key={q} />
       </div>

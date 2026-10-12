@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { FilterBar } from '../components/FilterBar';
+import { CategoryIcon } from '../components/icons';
 import { ResultList } from '../components/ResultList';
 import { categoryById, productsInCategory } from '../lib/data';
 import { prettyRepoName } from '../lib/format';
@@ -26,18 +27,23 @@ export function CategoryPage({ id, filters }: { id: string; filters: Filters }) 
   const products = productsInCategory(id);
 
   return (
-    <div className="mx-auto max-w-6xl px-6 pb-20 pt-8">
+    <div className="page pb-20 pt-8">
       <nav className="text-sm text-slate-500 dark:text-slate-400">
         <a href={href.home()} className="hover:underline">
           {t('common.home')}
         </a>
       </nav>
-      <h1 className="mt-2 text-3xl font-extrabold tracking-tight">{tx(category.name)}</h1>
+      <h1 className="mt-2 flex items-center gap-3 text-3xl font-extrabold tracking-tight">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
+          <CategoryIcon id={id} width={24} height={24} />
+        </span>
+        {tx(category.name)}
+      </h1>
 
       {products.length > 0 && (
         <>
           <p className="mt-1 text-slate-600 dark:text-slate-400">{t('category.pick')}</p>
-          <ul className="mt-4 grid gap-2 md:grid-cols-2">
+          <ul className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
             {products.map((p) => (
               <li key={p.id}>
                 <a

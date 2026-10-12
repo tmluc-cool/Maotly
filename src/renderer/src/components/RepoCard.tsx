@@ -18,7 +18,7 @@ export function RepoCard({ repo }: { repo: RepoResult }) {
   const open = () => void window.api.openExternal(repo.html_url);
   return (
     <article
-      className="group flex cursor-pointer gap-4 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-brand-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-brand-600"
+      className="group flex h-full cursor-pointer gap-4 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-brand-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-brand-600"
       onClick={open}
       onKeyDown={(e) => {
         if (e.key === 'Enter') open();

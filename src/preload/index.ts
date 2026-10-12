@@ -52,6 +52,7 @@ const api: MoatlyApi = {
   getAppInfo: () => ipcRenderer.invoke(IPC.appInfo),
   appUpdate: () => ipcRenderer.invoke(IPC.appUpdate),
   onAppUpdate: (l) => subscribe(IPC.appUpdateEvent, l),
+  installAppUpdate: () => ipcRenderer.invoke(IPC.appUpdateInstall),
   openExternal: (url) => ipcRenderer.invoke(IPC.openExternal, url),
   devResetCheck: () => ipcRenderer.invoke(IPC.devResetCheck),
   devShowConsent: () => ipcRenderer.invoke(IPC.devShowConsent),
