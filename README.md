@@ -8,6 +8,19 @@ Alles lässt sich offline durchsuchen. Ein Klick öffnet das Projekt auf GitHub.
 - **Live-Suche** auf GitHub bei wenigen Treffern; Funde werden lokal gespeichert.
 - **GratisStatt-Netzwerk** (freiwillig, standardmässig aus): Live-Funde gehen nach einer Prüfung an alle.
 
+## Herunterladen
+
+Das fertige Windows-Programm gibt es unter **[Releases](https://github.com/tmluc-cool/githuub-appstore/releases/latest)**:
+
+- `GratisStatt-Setup-<version>.exe` – Installer (empfohlen)
+- `GratisStatt-<version>-portable.exe` – startet ohne Installation
+
+Windows warnt beim ersten Start, weil das Programm nicht signiert ist: «Weitere Informationen» → «Trotzdem ausführen».
+
+Gebaut wird automatisch von der GitHub Action `.github/workflows/build-windows.yml` bei jedem Push auf `main`
+(oder von Hand unter *Actions → Windows-Programm bauen → Run workflow*). Die Datenbank wird dabei einmal pro Woche
+neu gecrawlt (ca. 1 Stunde), sonst aus dem Cache genommen.
+
 ## Schnellstart (Entwicklung)
 
 ```bash
@@ -25,7 +38,7 @@ Für einen schnellen Test reicht eine kleine Datenbank:
 ## Windows-Programm bauen
 
 1. `resources/base.db` bereitstellen (`npm run fetch-base` oder `npm run build-base-db`).
-2. Auf **Windows**: `npm run dist`
+2. Auf **Windows**: `npm run dist` (oder einfach die GitHub Action machen lassen, siehe «Herunterladen»)
    – prüft, dass `base.db` existiert, führt `validate` aus (kuratierte Liste gegen `base.db`) und baut mit
    electron-builder. Ergebnis in `release/`: `GratisStatt-Setup-<version>.exe` und `GratisStatt-<version>-portable.exe`.
 

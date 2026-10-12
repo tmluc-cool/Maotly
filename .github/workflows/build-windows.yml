@@ -1,0 +1,136 @@
+# Builds the Windows program (installer + portable .exe) on GitHub and publishes it as a release.
+# Download: https://github.com/<owner>/<repo>/releases/latest
+#
+# The base database is crawled on Linux (about 1 hour, once per week thanks to the cache),
+# the .exe files are built on Windows.
+
+name: Windows-Programm bauen
+
+on:
+  push:
+    branches: [main, 'claude/**']
+    paths-ignore: ['**.md', 'docs/**', 'server/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+
+jobs:
+  base-db:
+    name: Datenbank erstellen
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci --ignore-scripts
+
+      - name: Cache key (one base per week)
+        id: week
+        run: echo "key=base-db-$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore base.db from this week
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: resources/base.db
+          key: ${{ steps.week.outputs.key }}
+
+      - name: Crawl GitHub (about 1 hour)
+        if: steps.cache.outputs.cache-hit != 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          # The crawler continues where it stopped, so a retry never starts from scratch.
+          ok=0
+          for attempt in 1 2 3; do
+            if npx tsx scripts/build-base-db.ts; then ok=1; break; fi
+            echo "Attempt $attempt failed, retrying in 2 minutes …"
+            sleep 120
+          done
+          [ "$ok" = 1 ]
+
+      - name: Add curated repos missing from the base
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npx tsx scripts/validate-data.ts --fix
+
+      - name: Save base.db for this week
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: resources/base.db
+          key: ${{ steps.week.outputs.key }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: base-db
+          path: resources/base.db
+          retention-days: 7
+
+  windows:
+    name: Windows-Programm
+    needs: base-db
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: base-db
+          path: resources
+
+      - name: Build installer and portable .exe
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npm run dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GratisStatt-Windows
+          path: |
+            release/GratisStatt-Setup-*.exe
+            release/GratisStatt-*-portable.exe
+          retention-days: 30
+
+      - name: Publish release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v${VERSION}-build.${{ github.run_number }}"
+          gh release create "$TAG" release/GratisStatt-Setup-*.exe release/GratisStatt-*-portable.exe \
+            --target "${{ github.sha }}" \
+            --title "GratisStatt ${VERSION} (Build ${{ github.run_number }})" \
+            --latest \
+            --notes "Windows-Programm für GratisStatt.
+
+          - **GratisStatt-Setup-${VERSION}.exe** – Installer (empfohlen)
+          - **GratisStatt-${VERSION}-portable.exe** – startet ohne Installation
+
+          Windows warnt beim ersten Start, weil das Programm nicht signiert ist: «Weitere Informationen» → «Trotzdem ausführen».
+
+          Gebaut aus Commit ${{ github.sha }} (${{ github.ref_name }})."
