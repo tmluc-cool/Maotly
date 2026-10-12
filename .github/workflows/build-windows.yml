@@ -15,9 +15,10 @@ on:
 permissions:
   contents: write
 
+# A new push waits for the running build instead of cancelling it (the crawl takes up to an hour).
 concurrency:
   group: build-windows-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
